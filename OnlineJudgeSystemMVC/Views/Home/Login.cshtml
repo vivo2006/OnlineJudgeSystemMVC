@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Влез";
+}
+<div class="container">
+    <h1>Влез</h1>
+    <form method="post" action="/Home/Login">
+        <div class="mb-3">
+            <label for="username" class="form-label">Потребителско име</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Парола</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Влез</button>
+    </form>
+</div>
