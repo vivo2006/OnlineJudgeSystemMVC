@@ -23,7 +23,7 @@ namespace BusinessLayer
         [Required(ErrorMessage = "Foreign key is required.")]
         public int CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]
-        public Competition Competition { get; set; }
+        public GroupCompetition Competition { get; set; }
         public ICollection<Submission> Submissions {  get; set; } 
         public Problem() 
         {

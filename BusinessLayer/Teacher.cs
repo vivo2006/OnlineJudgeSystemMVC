@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
-    public class Teacher : IdentityUser
+    public class Teacher : User
     {
         public ICollection<Student>? Students { get; set; }
         public Teacher() 
         {
             Students = new List<Student>();
         }
-        public Teacher(List<Student> students)
+        public Teacher(string name, int age, string city, int points, List<Submission> submissions, List<Student> students) : base(name, age, city, points, submissions)
         {
             Students = students;
         }

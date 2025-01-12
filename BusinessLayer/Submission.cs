@@ -13,7 +13,7 @@ namespace BusinessLayer
         [Key]
         public int Id { get; set; }
         [Required(ErrorMessage ="Foreign key is required.")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
         public int? Points { get; set; }
@@ -31,7 +31,7 @@ namespace BusinessLayer
         {
 
         }
-        public Submission(int id, int userId, int points, DateTime submissionTime, string? error, DateTime time, int memory, int problemId)
+        public Submission(int id, string userId, int points, DateTime submissionTime, string? error, DateTime time, int memory, int problemId)
         {
             Id = id;
             UserId = userId;
