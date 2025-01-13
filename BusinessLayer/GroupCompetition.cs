@@ -15,7 +15,7 @@ namespace BusinessLayer
         [Required(ErrorMessage = "Group name is required.")] 
         [MaxLength(100, ErrorMessage = "Group name cannot exceed 100 characters.")]
         public string Group { get; set; }
-        public List<Problem> Problems { get; set; }
+        public List<Problem>? Problems { get; set; }
         [Required(ErrorMessage = "Foreign key is required.")]
         public int CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]
