@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal interface IDb<T, K>
+    public interface IDb<T, K>
     {
         Task CreateAsync(T item);
         Task<T> ReadAsync(K key, bool navigationalProperties = false, bool isReadOnly = true);
