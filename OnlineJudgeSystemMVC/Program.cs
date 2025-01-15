@@ -1,7 +1,17 @@
+using BusinessLayer;
+using DataLayer;
+using Microsoft.EntityFrameworkCore;
+using ServiceLayer;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(Connection.conString));
+builder.Services.AddScoped<ProblemsManager, ProblemsManager>();
+builder.Services.AddScoped<IDb<Problem, int>, ProblemContext>();
+builder.Services.AddScoped<ProblemContext, ProblemContext>();
+
 
 var app = builder.Build();
 

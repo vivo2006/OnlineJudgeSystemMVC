@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal class TeacherContext : IDb<Teacher, string>
+    public class TeacherContext : IDb<Teacher, string>
     {
         private readonly OnlineJudgeDbContext _context;
         public TeacherContext(OnlineJudgeDbContext context)

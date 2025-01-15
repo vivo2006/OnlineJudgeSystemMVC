@@ -77,7 +77,7 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompetitionId")
+                    b.Property<int?>("CompetitionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
@@ -412,9 +412,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("BusinessLayer.GroupCompetition", "Competition")
                         .WithMany("Problems")
-                        .HasForeignKey("CompetitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompetitionId");
 
                     b.HasOne("BusinessLayer.Student", null)
                         .WithMany("SolvedProblems")

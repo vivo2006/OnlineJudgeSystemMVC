@@ -20,11 +20,10 @@ namespace BusinessLayer
         [Required(ErrorMessage = "URL is required.")]
         [Url(ErrorMessage = "Invalid URL format.")]
         public string URL { get; set; }
-        [Required(ErrorMessage = "Foreign key is required.")]
-        public int CompetitionId {  get; set; }
+        public int? CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]
-        public GroupCompetition Competition { get; set; }
-        public ICollection<Submission> Submissions {  get; set; } 
+        public GroupCompetition? Competition { get; set; }
+        public ICollection<Submission>? Submissions {  get; set; } 
         public Problem() 
         {
             Submissions = new List<Submission>();

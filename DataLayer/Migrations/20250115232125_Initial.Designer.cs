@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250112230203_Initial")]
+    [Migration("20250115232125_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -80,7 +80,7 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompetitionId")
+                    b.Property<int?>("CompetitionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
@@ -415,9 +415,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("BusinessLayer.GroupCompetition", "Competition")
                         .WithMany("Problems")
-                        .HasForeignKey("CompetitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompetitionId");
 
                     b.HasOne("BusinessLayer.Student", null)
                         .WithMany("SolvedProblems")

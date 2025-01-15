@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DataLayer
 {
-    internal class OnlineJudgeDbContext : IdentityDbContext<User>
+    public class OnlineJudgeDbContext : IdentityDbContext<User>
     {
         public OnlineJudgeDbContext() : base()
         {

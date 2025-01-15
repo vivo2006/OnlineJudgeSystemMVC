@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal class ProblemContext : IDb<Problem, int>
+    public class ProblemContext : IDb<Problem, int>
     {
         private readonly OnlineJudgeDbContext _context;
         public ProblemContext(OnlineJudgeDbContext context)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal class SubmissionContext : IDb<Submission, int>
+    public class SubmissionContext : IDb<Submission, int>
     {
         private readonly OnlineJudgeDbContext _context;
         public SubmissionContext(OnlineJudgeDbContext context)
