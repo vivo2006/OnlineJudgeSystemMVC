@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal class GroupCompetitionContext : IDb<GroupCompetition, int>
+    public class GroupCompetitionContext : IDb<GroupCompetition, int>
     {
         private readonly OnlineJudgeDbContext _context;
         public GroupCompetitionContext(OnlineJudgeDbContext context)
@@ -20,6 +20,8 @@ namespace DataLayer
         {
             try
             {
+                item.Created = DateTime.Now;
+                item.LastModified = DateTime.Now;
                 _context.GroupCompetitions.Add(item);
                 await _context.SaveChangesAsync();
             }
@@ -60,7 +62,7 @@ namespace DataLayer
                 IQueryable<GroupCompetition> query = _context.GroupCompetitions;
                 if (NavigationalProperties)
                 {
-                    query = query.Include(groupCompetition => groupCompetition.Competition);
+                    query = query.Include(groupCompetition => groupCompetition.YearCompetition);
                     query = query.Include(groupCompetition => groupCompetition.Problems);
                 }
 
@@ -84,7 +86,7 @@ namespace DataLayer
                 if (NavigationalProperties)
                 {
                     query = query.Include(groupCompetition => groupCompetition.Problems);
-                    query = query.Include(groupCompetition => groupCompetition.Competition);
+                    query = query.Include(groupCompetition => groupCompetition.YearCompetition);
                 }
 
                 if (isReadOnly)
@@ -106,10 +108,12 @@ namespace DataLayer
             {
                 GroupCompetition groupCompetitionFromDb = await ReadAsync(item.Id, NavigationalProperties, false);
                 _context.Entry(groupCompetitionFromDb).CurrentValues.SetValues(item);
+                groupCompetitionFromDb.LastModified = DateTime.Now;
+
                 if (NavigationalProperties)
                 {
                     groupCompetitionFromDb.Problems = item.Problems;
-                    groupCompetitionFromDb.CompetitionId = item.CompetitionId;
+                    groupCompetitionFromDb.YearCompetitionId = item.YearCompetitionId;
 
                 }
                 await _context.SaveChangesAsync();

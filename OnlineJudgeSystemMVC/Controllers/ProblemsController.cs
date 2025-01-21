@@ -14,10 +14,12 @@ namespace OnlineJudgeSystemMVC.Controllers
     public class ProblemsController : Controller
     {
         private readonly ProblemsManager manager;
+        private readonly GroupCompetitionsManager groupCompetitionsManager;
 
-        public ProblemsController(ProblemsManager manager)
+        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager)
         {
             this.manager = manager;
+            this.groupCompetitionsManager = groupCompetitionsManager;
         }
 
         // GET: Problems
@@ -44,9 +46,9 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Problems/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
-            //ViewData["CompetitionId"] = new SelectList(_context.GroupCompetitions, "Id", "Group");
+            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group");
             return View();
         }
 
@@ -57,14 +59,13 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,URL,CompetitionId")] Problem problem)
         {
-            problem.Created = DateTime.Now;
-            problem.LastModified = DateTime.Now;
+
             if (ModelState.IsValid)
             {
                 await manager.CreateAsync(problem);
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CompetitionId"] = new SelectList(_context.GroupCompetitions, "Id", "Group", problem.CompetitionId);
+            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group", problem.CompetitionId);
             return View(problem);
         }
 
@@ -81,7 +82,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 return NotFound();
             }
-            //ViewData["CompetitionId"] = new SelectList(_context.GroupCompetitions, "Id", "Group", problem.CompetitionId);
+            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group", problem.CompetitionId);
             return View(problem);
         }
 
@@ -97,7 +98,6 @@ namespace OnlineJudgeSystemMVC.Controllers
                 return BadRequest();
             }
             problem.LastModified = DateTime.Now;
-            problem.Created = (await manager.ReadAsync((int)id)).Created;
             if (ModelState.IsValid)
             {
                 try

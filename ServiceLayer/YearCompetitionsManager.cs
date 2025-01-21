@@ -1,0 +1,29 @@
+﻿using BusinessLayer;
+using DataLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ServiceLayer
+{
+    public class YearCompetitionsManager
+    {
+        private readonly IDb<YearCompetition, int> context;
+
+        public YearCompetitionsManager(IDb<YearCompetition, int> competitionContext)
+        {
+            context = competitionContext;
+        }
+
+        public async Task CreateAsync(YearCompetition competition)
+        {
+            await context.CreateAsync(competition);
+        }
+        public async Task UpdateAsync(YearCompetition competition)
+        {
+            await context.UpdateAsync(competition);
+        }
+    }
+}

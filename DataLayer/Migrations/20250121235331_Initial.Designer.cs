@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250115232125_Initial")]
+    [Migration("20250121235331_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -36,8 +36,14 @@ namespace DataLayer.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("FirstYear")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("LastYear")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -57,17 +63,23 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompetitionId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Group")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("YearCompetitionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CompetitionId");
+                    b.HasIndex("YearCompetitionId");
 
                     b.ToTable("GroupCompetitions");
                 });
@@ -80,7 +92,7 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CompetitionId")
+                    b.Property<int>("CompetitionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
@@ -89,13 +101,16 @@ namespace DataLayer.Migrations
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MemoryLimit")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<double>("TimeLimit")
+                        .HasColumnType("float");
 
                     b.Property<string>("URL")
                         .IsRequired()
@@ -104,8 +119,6 @@ namespace DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompetitionId");
-
-                    b.HasIndex("StudentId");
 
                     b.ToTable("Problems");
                 });
@@ -118,6 +131,9 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Error")
                         .HasColumnType("nvarchar(max)");
 
@@ -129,9 +145,6 @@ namespace DataLayer.Migrations
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("SubmissionTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime2");
@@ -167,11 +180,6 @@ namespace DataLayer.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -232,10 +240,33 @@ namespace DataLayer.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
 
-                    b.HasDiscriminator().HasValue("User");
+            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.UseTphMappingStrategy();
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompetitionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompetitionId");
+
+                    b.ToTable("YearCompetitions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -371,55 +402,24 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("StudentTeacher", b =>
-                {
-                    b.Property<string>("StudentsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TeachersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("StudentsId", "TeachersId");
-
-                    b.HasIndex("TeachersId");
-
-                    b.ToTable("StudentTeacher");
-                });
-
-            modelBuilder.Entity("BusinessLayer.Student", b =>
-                {
-                    b.HasBaseType("BusinessLayer.User");
-
-                    b.HasDiscriminator().HasValue("Student");
-                });
-
-            modelBuilder.Entity("BusinessLayer.Teacher", b =>
-                {
-                    b.HasBaseType("BusinessLayer.User");
-
-                    b.HasDiscriminator().HasValue("Teacher");
-                });
-
             modelBuilder.Entity("BusinessLayer.GroupCompetition", b =>
                 {
-                    b.HasOne("BusinessLayer.Competition", "Competition")
+                    b.HasOne("BusinessLayer.YearCompetition", "YearCompetition")
                         .WithMany("GroupCompetitions")
-                        .HasForeignKey("CompetitionId")
+                        .HasForeignKey("YearCompetitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Competition");
+                    b.Navigation("YearCompetition");
                 });
 
             modelBuilder.Entity("BusinessLayer.Problem", b =>
                 {
                     b.HasOne("BusinessLayer.GroupCompetition", "Competition")
                         .WithMany("Problems")
-                        .HasForeignKey("CompetitionId");
-
-                    b.HasOne("BusinessLayer.Student", null)
-                        .WithMany("SolvedProblems")
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("CompetitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Competition");
                 });
@@ -441,6 +441,17 @@ namespace DataLayer.Migrations
                     b.Navigation("Problem");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
+                {
+                    b.HasOne("BusinessLayer.Competition", "Competition")
+                        .WithMany("YearCompetitions")
+                        .HasForeignKey("CompetitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Competition");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -494,24 +505,9 @@ namespace DataLayer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StudentTeacher", b =>
-                {
-                    b.HasOne("BusinessLayer.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.HasOne("BusinessLayer.Teacher", null)
-                        .WithMany()
-                        .HasForeignKey("TeachersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BusinessLayer.Competition", b =>
                 {
-                    b.Navigation("GroupCompetitions");
+                    b.Navigation("YearCompetitions");
                 });
 
             modelBuilder.Entity("BusinessLayer.GroupCompetition", b =>
@@ -529,9 +525,9 @@ namespace DataLayer.Migrations
                     b.Navigation("Submissions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Student", b =>
+            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
                 {
-                    b.Navigation("SolvedProblems");
+                    b.Navigation("GroupCompetitions");
                 });
 #pragma warning restore 612, 618
         }

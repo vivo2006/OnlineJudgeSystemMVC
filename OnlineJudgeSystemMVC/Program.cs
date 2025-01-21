@@ -12,6 +12,20 @@ builder.Services.AddScoped<ProblemsManager, ProblemsManager>();
 builder.Services.AddScoped<IDb<Problem, int>, ProblemContext>();
 builder.Services.AddScoped<ProblemContext, ProblemContext>();
 
+builder.Services.AddScoped<CompetitionsManager, CompetitionsManager>();
+builder.Services.AddScoped<IDb<Competition, int>, CompetitionContext>();
+builder.Services.AddScoped<CompetitionContext, CompetitionContext>();
+
+
+builder.Services.AddScoped<GroupCompetitionsManager, GroupCompetitionsManager>();
+builder.Services.AddScoped<IDb<GroupCompetition, int>, GroupCompetitionContext>();
+builder.Services.AddScoped<GroupCompetitionContext, GroupCompetitionContext>();
+
+builder.Services.AddScoped<YearCompetitionsManager, YearCompetitionsManager>();
+builder.Services.AddScoped<IDb<YearCompetition, int>, YearCompetitionContext>();
+builder.Services.AddScoped<YearCompetitionContext, YearCompetitionContext>();
+
+
 
 var app = builder.Build();
 

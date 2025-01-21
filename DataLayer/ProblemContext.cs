@@ -106,6 +106,8 @@ namespace DataLayer
             {
                 Problem problemFromDb = await ReadAsync(item.Id, navigationalProperties, false);
                 _context.Entry(problemFromDb).CurrentValues.SetValues(item);
+                _context.Entry(problemFromDb).Property(problem => problem.Created).IsModified = false;
+
                 if (navigationalProperties)
                 {
                     problemFromDb.Submissions = item.Submissions;

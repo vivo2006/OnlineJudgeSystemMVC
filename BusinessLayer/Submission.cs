@@ -17,7 +17,7 @@ namespace BusinessLayer
         [ForeignKey("UserId")]
         public User User { get; set; }
         public int? Points { get; set; }
-        public DateTime SubmissionTime { get; set; }
+        public DateTime Created { get; set; }
         public string? Error { get; set; }
         [Required(ErrorMessage = "Time is required.")]
         public DateTime Time { get; set; }
@@ -31,12 +31,11 @@ namespace BusinessLayer
         {
 
         }
-        public Submission(int id, string userId, int points, DateTime submissionTime, string? error, DateTime time, int memory, int problemId)
+        public Submission(int id, string userId, int points, string? error, DateTime time, int memory, int problemId)
         {
             Id = id;
             UserId = userId;
             Points = points;
-            SubmissionTime = submissionTime;
             Error = error;
             Time = time;
             Memory = memory;

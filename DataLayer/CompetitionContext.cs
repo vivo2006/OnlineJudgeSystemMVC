@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    internal class CompetitionContext : IDb<Competition, int>
+    public class CompetitionContext : IDb<Competition, int>
     {
         private readonly OnlineJudgeDbContext _context;
         public CompetitionContext(OnlineJudgeDbContext context)
@@ -20,6 +20,8 @@ namespace DataLayer
         {
             try
             {
+                item.Created = DateTime.Now;
+                item.LastModified = DateTime.Now;
                 _context.Competitions.Add(item);
                 await _context.SaveChangesAsync();
             }
@@ -60,7 +62,7 @@ namespace DataLayer
                 IQueryable<Competition> query = _context.Competitions;
                 if (navigationalProperties)
                 {
-                    query = query.Include(competition => competition.GroupCompetitions);
+                    query = query.Include(competition => competition.YearCompetitions);
                 }
 
                 if (isReadOnly)
@@ -82,7 +84,7 @@ namespace DataLayer
                 IQueryable<Competition> query = _context.Competitions;
                 if (navigationalProperties)
                 {
-                    query = query.Include(competition => competition.GroupCompetitions);
+                    query = query.Include(competition => competition.YearCompetitions);
                 }
 
                 if (isReadOnly)
@@ -104,9 +106,11 @@ namespace DataLayer
             {
                 Competition competitionFromDb = await ReadAsync(item.Id, navigationalProperties, false);
                 _context.Entry(competitionFromDb).CurrentValues.SetValues(item);
+                competitionFromDb.LastModified = DateTime.Now;
+                _context.Entry(competitionFromDb).Property(e => e.Created).IsModified = false;
                 if (navigationalProperties)
                 {
-                    competitionFromDb.GroupCompetitions = item.GroupCompetitions;
+                    competitionFromDb.YearCompetitions = item.YearCompetitions;
                 }
                 await _context.SaveChangesAsync();
             }

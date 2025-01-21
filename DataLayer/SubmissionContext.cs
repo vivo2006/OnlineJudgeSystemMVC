@@ -20,6 +20,7 @@ namespace DataLayer
         {
             try
             {
+                item.Created = DateTime.Now;
                 _context.Submissions.Add(item);
                 await _context.SaveChangesAsync();
             }
@@ -106,6 +107,8 @@ namespace DataLayer
             {
                 Submission submissionFromDb = await ReadAsync(item.Id, navigationalProperties, false);
                 _context.Entry(submissionFromDb).CurrentValues.SetValues(item);
+                _context.Entry(submissionFromDb).Property(submission => submission.Created).IsModified = false;
+
                 if (navigationalProperties)
                 {
                     submissionFromDb.ProblemId = item.ProblemId;

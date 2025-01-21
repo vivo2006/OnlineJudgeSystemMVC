@@ -14,20 +14,24 @@ namespace BusinessLayer
         [Required(ErrorMessage = "Name is required.")] 
         [MaxLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         public string Name { get; set; }
-        public ICollection<GroupCompetition> GroupCompetitions { get; set; }
+        public ICollection<YearCompetition>? YearCompetitions { get; set; }
+        public int FirstYear { get; set; }
+        public int LastYear {  get; set; }
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
         public Competition()
         {
 
         }
-        public Competition(int id, string name, ICollection<GroupCompetition> groupCompetitions, DateTime created, DateTime lastModified)
+        public Competition(int id, string name, ICollection<YearCompetition> yearCompetitions, int groupNumber, DateTime created, DateTime lastModified, int firstYear, int lastYear)
         {
             Id = id;
             Name = name;
-            GroupCompetitions = groupCompetitions;
+            YearCompetitions = yearCompetitions;
             Created = created;
             LastModified = lastModified;
+            FirstYear = firstYear;
+            LastYear = lastYear;
         }
     }
 }

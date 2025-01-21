@@ -17,18 +17,22 @@ namespace BusinessLayer
         public string Name { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
+        [Required]
+        public double TimeLimit {  get; set; }
+        [Required]
+        public int MemoryLimit { get; set; }
         [Required(ErrorMessage = "URL is required.")]
         [Url(ErrorMessage = "Invalid URL format.")]
         public string URL { get; set; }
-        public int? CompetitionId {  get; set; }
+        public int CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]
-        public GroupCompetition? Competition { get; set; }
-        public ICollection<Submission>? Submissions {  get; set; } 
+        public GroupCompetition Competition { get; set; }
+        public ICollection<Submission> Submissions {  get; set; } 
         public Problem() 
         {
             Submissions = new List<Submission>();
         }
-        public Problem(int id, string name, DateTime created, DateTime lastModified, string uRL, int competitionId, List<Submission> submissions)
+        public Problem(int id, string name, DateTime created, DateTime lastModified, string uRL, int competitionId, List<Submission> submissions, double timeLimit, int memoryLimit)
         {
             Id = id;
             Name = name;
@@ -37,6 +41,8 @@ namespace BusinessLayer
             URL = uRL;
             CompetitionId = competitionId;
             Submissions = submissions;
+            TimeLimit = timeLimit;
+            MemoryLimit = memoryLimit;
         }
     }
 }
