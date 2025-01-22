@@ -30,6 +30,15 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View(await manager.ReadAllAsync());
         }
+        public async Task<IActionResult> IndexYears(int id)
+        {
+            var competition = await manager.ReadAsync(id, true);
+            if (competition == null)
+            {
+                return NotFound();
+            }
+            return View(competition.YearCompetitions);
+        }
 
         // GET: Competitions/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -65,7 +74,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 await manager.CreateAsync(competition);
-
+                List<YearCompetition> yearCompetitions = new List<YearCompetition>();
                 for (int i = competition.FirstYear; i <= competition.LastYear; i++)
                 {
                     YearCompetition yearCompetition = new YearCompetition();
@@ -82,7 +91,10 @@ namespace OnlineJudgeSystemMVC.Controllers
                     }
                     yearCompetition.GroupCompetitions = groupCompetitions;
                     await yearCompetitionsManager.UpdateAsync(yearCompetition);
+                    yearCompetitions.Add(yearCompetition);
                 }
+                competition.YearCompetitions = yearCompetitions;
+                await manager.UpdateAsync(competition, true);
                 return RedirectToAction(nameof(Index));
             }
             return View(competition);
