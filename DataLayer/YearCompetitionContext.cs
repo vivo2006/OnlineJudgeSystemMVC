@@ -85,8 +85,8 @@ namespace DataLayer
                 IQueryable<YearCompetition> query = _context.YearCompetitions;
                 if (navigationalProperties)
                 {
-                    query = query.Include(yearCompetitionFromDb => yearCompetitionFromDb.GroupCompetitions);
-                    query = query.Include(yearCompetitionFromDb => yearCompetitionFromDb.Competition);
+                    query = query.Include(yearCompetition => yearCompetition.GroupCompetitions).ThenInclude(groupCompetition => groupCompetition.Problems);
+                    query = query.Include(yearCompetition => yearCompetition.Competition);
                 }
 
                 if (isReadOnly)

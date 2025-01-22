@@ -30,6 +30,27 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View(await manager.ReadAllAsync());
         }
+        [HttpGet]
+        [Route("api/competitions/{id}/years")]
+        public async Task<IActionResult> GetYears(int id)
+        {
+            // Retrieve the competition by ID, including related YearCompetitions
+            var competition = await yearCompetitionsManager.ReadAsync(id, true);
+
+            if (competition == null)
+            {
+                return BadRequest();
+            }
+
+            // Transform data into a simpler format for the client
+            var groupCompetitions = competition.GroupCompetitions.Select(groupCompetition => new
+            {
+                groupCompetition.Group,
+                groupCompetition.Problems
+            });
+
+            return Json(groupCompetitions);
+        }
         public async Task<IActionResult> IndexYears(int id)
         {
             var competition = await manager.ReadAsync(id, true);
@@ -85,7 +106,7 @@ namespace OnlineJudgeSystemMVC.Controllers
                     List<GroupCompetition> groupCompetitions = new List<GroupCompetition>();
                     for(int j = 0; j < 5; j ++)
                     {
-                        var groupCompetition = new GroupCompetition(((char)(i + 'A')).ToString(), yearCompetition.Id);
+                        var groupCompetition = new GroupCompetition(((char)(j + 'A')).ToString(), yearCompetition.Id);
                         await groupCompetitionsManager.CreateAsync(groupCompetition);
                         groupCompetitions.Add(groupCompetition);
                     }

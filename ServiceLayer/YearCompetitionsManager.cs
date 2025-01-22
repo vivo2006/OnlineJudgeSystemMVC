@@ -25,5 +25,9 @@ namespace ServiceLayer
         {
             await context.UpdateAsync(competition);
         }
+        public async Task<YearCompetition> ReadAsync(int key, bool useNavigationalProperties = false, bool isReadOnly = true)
+        {
+            return await context.ReadAsync(key, useNavigationalProperties, isReadOnly);
+        }
     }
 }

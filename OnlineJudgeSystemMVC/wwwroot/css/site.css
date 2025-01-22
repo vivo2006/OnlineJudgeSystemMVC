@@ -3,15 +3,20 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f8f9fa;
+    overflow-y: hidden; /* Prevent vertical scroll when dropdown is open */
+    height:100vh;
 }
 
 .container {
-    margin: 50px auto;
-    max-width: 800px;
+    margin: 5% ;
+    max-width: 80%;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 50%;
+    max-height: 100%;
+
 }
 
 h1 {
@@ -39,6 +44,11 @@ h1 {
 .btn-success {
     background-color: #28a745;
     border: none;
+}
+
+.dropdown-menu {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto; /* Enable scrolling within the dropdown if items exceed max height */
 }
 
 .table {

@@ -9,7 +9,7 @@ namespace DataLayer
     public class Connection
     {
         public const string conString =
-            @"Server=212-1\SQLEXPRESS;
+            @"Server=DESKTOP-K42STG6\SQLEXPRESS;
             Database=OnlineJudgeSystem; Trusted_Connection=True; TrustServerCertificate=True;";
     }
 }
