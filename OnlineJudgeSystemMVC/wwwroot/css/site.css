@@ -4,19 +4,28 @@ body {
     padding: 0;
     background-color: #f8f9fa;
     overflow-y: hidden; /* Prevent vertical scroll when dropdown is open */
-    height:100vh;
+    height:100%;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
-    margin: 5% ;
-    max-width: 80%;
+    margin: 5%;
+    flex: 1 100%;
+    justify-content:center;
+    max-width: 90%;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 50%;
-    max-height: 100%;
-
 }
 
 h1 {
@@ -65,4 +74,7 @@ h1 {
     .table th {
         background-color: #007bff;
         color: #fff;
+    }
+    .list-group-item{
+
     }

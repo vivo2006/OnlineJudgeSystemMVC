@@ -30,26 +30,14 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View(await manager.ReadAllAsync());
         }
-        [HttpGet]
+
         [Route("api/competitions/{id}/years")]
+        [HttpGet]
         public async Task<IActionResult> GetYears(int id)
         {
-            // Retrieve the competition by ID, including related YearCompetitions
-            var competition = await yearCompetitionsManager.ReadAsync(id, true);
-
-            if (competition == null)
-            {
-                return BadRequest();
-            }
-
-            // Transform data into a simpler format for the client
-            var groupCompetitions = competition.GroupCompetitions.Select(groupCompetition => new
-            {
-                groupCompetition.Group,
-                groupCompetition.Problems
-            });
-
-            return Json(groupCompetitions);
+            Competition competition = await manager.ReadAsync(id, true);
+            List<Tuple<int, int>> yearId = competition.YearCompetitions.Select(x => new Tuple<int, int> (x.Id, x.Year)).ToList();
+            return Ok(yearId);
         }
         public async Task<IActionResult> IndexYears(int id)
         {
@@ -89,7 +77,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,")]Competition competition)
+        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,CompetitionAnnotation")]Competition competition)
         {
             
             if (ModelState.IsValid)

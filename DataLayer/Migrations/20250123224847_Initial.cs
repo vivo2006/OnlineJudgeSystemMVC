@@ -64,7 +64,8 @@ namespace DataLayer.Migrations
                     FirstYear = table.Column<int>(type: "int", nullable: false),
                     LastYear = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompetitionAnnotation = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -233,6 +234,7 @@ namespace DataLayer.Migrations
                     TimeLimit = table.Column<double>(type: "float", nullable: false),
                     MemoryLimit = table.Column<int>(type: "int", nullable: false),
                     URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaskAnnotation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompetitionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

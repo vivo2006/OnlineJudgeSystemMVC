@@ -4,45 +4,49 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/IndexCompetitions.css" asp-append-version=true />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastModified)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModified)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                <a asp-action="IndexYears" asp-route-id="@item.Id">Years</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+
+<h1>Състезания</h1>
+<a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Create">Добави състезание</a>
+
+<div class="container">
+    @foreach (var competition in Model)
+    {
+        <div class="competition-item">
+            <button class="btn btn-primary btn-open-modal"
+                    data-id="@competition.Id"
+                    data-name="@competition.Name"
+                    data-bs-toggle="modal"
+                    data-bs-target="#yearsModal">
+                @competition.Name
+            </button>
+        </div>
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="yearsModal" tabindex="-1" aria-labelledby="yearsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="yearsModalLabel">Години</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="yearsList" class="list-group">
+                    <!-- Years will be loaded dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/FillTable.js">
+    
+</script>
+
+
+

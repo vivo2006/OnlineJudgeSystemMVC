@@ -1,0 +1,28 @@
+﻿@model ICollection<BusinessLayer.GroupCompetition>
+
+
+@{
+    ViewData["Title"] = "IndexFromYearCompetition";
+}
+
+<h1>Competitions</h1>
+
+<div class="container">
+    @foreach (var group in Model)
+    {
+        <div class="group-competition">
+            <h3>@group.Group</h3>
+            <ul>
+                @foreach (var task in group.Problems)
+                {
+                    <li>
+                        <a href="@task.URL">@task.Name</a>
+                    </li>
+                }
+                <li>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Create" asp-route-GroupId="@group.Id">+</a>
+                </li>
+            </ul>
+        </div>
+    }
+</div>

@@ -24,6 +24,8 @@ namespace BusinessLayer
         [Required(ErrorMessage = "URL is required.")]
         [Url(ErrorMessage = "Invalid URL format.")]
         public string URL { get; set; }
+        [Required]
+        public string TaskAnnotation { get; set; }
         public int CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]
         public GroupCompetition Competition { get; set; }

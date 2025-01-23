@@ -15,11 +15,15 @@ namespace OnlineJudgeSystemMVC.Controllers
     {
         private readonly ProblemsManager manager;
         private readonly GroupCompetitionsManager groupCompetitionsManager;
+        private readonly YearCompetitionsManager yearCompetitionsManager;
+        private readonly CompetitionsManager competitionsManager ;
 
-        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager)
+        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager)
         {
             this.manager = manager;
             this.groupCompetitionsManager = groupCompetitionsManager;
+            this.yearCompetitionsManager = yearCompetitionsManager;
+            this.competitionsManager = competitionsManager;
         }
 
         // GET: Problems
@@ -46,9 +50,9 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Problems/Create
-        public async Task<IActionResult> CreateAsync()
+        public IActionResult CreateAsync(int GroupId)
         {
-            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group");
+            ViewBag.GroupId = GroupId;
             return View();
         }
 
@@ -57,15 +61,42 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,URL,CompetitionId")] Problem problem)
+        public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string taskAnnotation, IFormFile pdfFile)
         {
+            Problem problem = new Problem();
+            problem.Name = name;
+            problem.TimeLimit = timeLimit;
+            problem.MemoryLimit = memoryLimit;
+            problem.TaskAnnotation = taskAnnotation;
+            problem.CompetitionId = groupId;
 
+            GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
+            YearCompetition competition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
+            Competition comp = await competitionsManager.ReadAsync(competition.CompetitionId, true);
+            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", comp.CompetitionAnnotation, competition.Year.ToString());
+
+            // Check if the directory exists, and create it if it doesn't
+            if (!Directory.Exists(uploadDirectory))
+            {
+                Directory.CreateDirectory(uploadDirectory);
+            }
+
+            // Define the full path for the uploaded file
+            var filePath = Path.Combine(uploadDirectory, pdfFile.FileName);
+
+            // Save the PDF file to the specified path
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await pdfFile.CopyToAsync(stream);
+            }
+            //problem.URL = "Problems/{$comp.CompetitionAnnotation}";
             if (ModelState.IsValid)
             {
                 await manager.CreateAsync(problem);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group", problem.CompetitionId);
+            
+
             return View(problem);
         }
 

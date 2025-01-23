@@ -15,10 +15,14 @@ namespace BusinessLayer
         [MaxLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         public string Name { get; set; }
         public ICollection<YearCompetition>? YearCompetitions { get; set; }
+        [Required]
         public int FirstYear { get; set; }
+        [Required]
         public int LastYear {  get; set; }
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
+        [Required]
+        public string CompetitionAnnotation {  get; set; }
         public Competition()
         {
 

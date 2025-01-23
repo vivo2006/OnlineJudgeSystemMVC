@@ -29,5 +29,13 @@ namespace ServiceLayer
         {
             return await context.ReadAsync(key, useNavigationalProperties, isReadOnly);
         }
+        public async Task<ICollection<YearCompetition>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        {
+            return await context.ReadAllAsync(useNavigationalProperties, isReadOnly);
+        }
+        public async Task DeleteAsync(int key)
+        {
+            await context.DeleteAsync(key);
+        }
     }
 }
