@@ -82,14 +82,20 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
 
             // Define the full path for the uploaded file
-            var filePath = Path.Combine(uploadDirectory, pdfFile.FileName);
+            string filePath = Path.Combine(uploadDirectory, taskAnnotation + ".pdf");
+            string port = HttpContext.Request.Host.Port.ToString() ?? "80"; // Replace with your actual port
+            string localhost = $"https://localhost:{port}";
+
+            // Construct the new URL
+            string newUrl = $"{localhost}/Problems/{comp.CompetitionAnnotation}/{competition.Year.ToString()}/{taskAnnotation}.pdf";
+            problem.URL = newUrl;
+
 
             // Save the PDF file to the specified path
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await pdfFile.CopyToAsync(stream);
             }
-            //problem.URL = "Problems/{$comp.CompetitionAnnotation}";
             if (ModelState.IsValid)
             {
                 await manager.CreateAsync(problem);

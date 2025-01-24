@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ServiceLayer\ServiceLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Problems\" />
+  </ItemGroup>
+
 </Project>
