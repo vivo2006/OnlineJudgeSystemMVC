@@ -12,22 +12,36 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OnlineJudgeSystemMVC</a>
+        <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light bg-white border-bottom box-shadow height-inherit">
+            <div class="container-fluid height-inherit">
+                <img src="~/Logo/logo.png" alt="Logo" class="responsive-img">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 me-auto">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Index">Състезания</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Класиране</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Профил</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark d-lg-none" asp-area="" asp-controller="Home" asp-action="Index">Влез</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark d-lg-none" asp-area="" asp-controller="Home" asp-action="Index">Регистрация</a>
+                        </li>
                     </ul>
+                    <button class="btn btn-primary d-none d-lg-block">Влез</button>
+                    <button class="btn btn-secondary d-none d-lg-block">Регистрация</button>
                 </div>
             </div>
         </nav>

@@ -8,8 +8,31 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+header{
+    height:10%;
+}
+.navbar-nav{
+    gap:4%;
+    margin-left:4%;
+    display:flex;
+}
+
+.navbar-nav {
+    justify-content: left;
+    gap: 8%;
+}
+.nav-item{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+}
+
 a {
   color: #0077cc;
+}
+
+.btn{
+    margin-left: 2%;
 }
 
 .btn-primary {
