@@ -1,48 +1,31 @@
 ﻿@model BusinessLayer.Problem
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Problem Page";
 }
+<link rel="stylesheet" href="~/css/ProblemDetails.css" asp-append-version="true" />
 
-<h1>Details</h1>
+<div id="container-row">
+    <h1 class="mb-4">@Model.TaskAnnotation. @Model.Name</h1>
 
-<div>
-    <h4>Problem</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastModified)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastModified)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.URL)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.URL)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Competition)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Competition.Group)
-        </dd>
-    </dl>
+    <!-- Time and Memory Limit -->
+    <div class="d-flex align-items-center mb-4">
+        <div class="me-4">
+            <span class="fs-5 me-2">⏳</span>
+            <span>@Model.TimeLimit sec</span>
+        </div>
+        <div>
+            <span class="fs-5 me-2">💾</span>
+            <span>@Model.MemoryLimit mb</span>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mb-4">
+        <a href=@Model.URL class="btn btn-primary" target="_blank">Отвори</a> 
+        <button class="btn btn-secondary">Изпрати</button>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+<!-- Code Field -->
+<textarea class="form-control border-danger" rows="10" placeholder="Постави кода тук..."></textarea>

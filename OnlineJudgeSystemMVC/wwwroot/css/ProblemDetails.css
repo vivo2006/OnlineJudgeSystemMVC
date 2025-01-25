@@ -1,0 +1,8 @@
+﻿#container-row{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5%;
+    margin: 5%;
+}

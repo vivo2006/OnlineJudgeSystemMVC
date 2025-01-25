@@ -2,8 +2,13 @@
     text-align:center;
     padding: 2% 0 0 0;
 }
-a{
-    text-decoration:none;
+a {
+    text-decoration: none;
+    color: #ED2A4F;
+}
+a:hover {
+    text-decoration: none;
+    color: #000000;
 }
 #container-table {
     display: grid;
