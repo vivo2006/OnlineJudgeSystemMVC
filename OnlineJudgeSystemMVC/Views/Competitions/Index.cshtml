@@ -8,15 +8,17 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 
+<div>
+    <h1>Състезания</h1>
+    <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Create">Добави състезание</a>
 
-<h1>Състезания</h1>
-<a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Create">Добави състезание</a>
+</div>
 
-<div class="container">
+<div id="container-table">
     @foreach (var competition in Model)
     {
         <div class="competition-item">
-            <button class="btn btn-primary btn-open-modal"
+            <button class="btn btn-primary btn-open-modal button-table"
                     data-id="@competition.Id"
                     data-name="@competition.Name"
                     data-bs-toggle="modal"

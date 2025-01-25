@@ -1,2 +1,12 @@
-﻿h1 {
+﻿.h {
+    margin-top:12%;
+    font-size: 350%;
+    font-family: Verdana;
+}
+.p{
+    font-size: 120%;
+    margin-top: 2%;
+}
+.buttons{
+    margin-top: 5%;
 }

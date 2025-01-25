@@ -7,9 +7,20 @@ a.navbar-brand {
   text-align: center;
   word-break: break-all;
 }
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    text-align: center;
+}
 
 header{
     height:10%;
+}
+.main{
+    flex:1 1;
+    width:100%;
 }
 .navbar-nav{
     gap:4%;

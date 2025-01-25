@@ -2,7 +2,11 @@
     ViewData["Title"] = "Начална страница";
 }
 
-<h1>Добре дошли в CodeXpert</h1>
-<p>Платформа за състезателно програмиране.</p>
-<a href="/Home/Register" class="btn btn-primary">Регистрация</a>
-<a href="/Home/Login" class="btn btn-secondary">Влез</a>
+<link rel="stylesheet" href="~/css/HomeIndex.css" asp-append-version="true" />
+
+<h1 class="h">Добре дошли в CodeXpert!</h1>
+<p class="p">Платформа за състезателно програмиране</p>
+<div class="buttons">
+    <button href="/Home/Login" class="btn btn-primary">Аз съм ученик</button>
+    <button href="/Home/Login" class="btn btn-secondary">Аз съм учител</button>
+</div>

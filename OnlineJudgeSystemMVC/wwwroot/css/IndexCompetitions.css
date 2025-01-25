@@ -2,13 +2,19 @@
     text-align:center;
     padding: 2% 0 0 0;
 }
-.container {
-    border-radius: 0;
-    box-shadow: 0 0 0;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
 a{
     text-decoration:none;
 }
+#container-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
+    gap: 5%;
+    margin:5%;
+}
+.button-table{
+    aspect-ratio: 5/2;
+}
+.container-item{
+    flex:1;
+}
+
