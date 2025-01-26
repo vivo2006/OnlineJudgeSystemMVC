@@ -24,7 +24,14 @@
                                         </a>
                                     </li>`;
                     yearsList.append(yearItem);
+
+
                 });
+                const yearItemLast = `
+                                    <li class="list-group-item">
+                        <a href="/YearCompetitions/Create/${competitionId}">+</a>
+                    </li>`;
+                yearsList.append(yearItemLast);
             },
             error: function (xhr, status, error) {
                 console.error('Error fetching years:', error);

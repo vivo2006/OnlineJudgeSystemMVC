@@ -61,13 +61,13 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string taskAnnotation, IFormFile pdfFile)
+        public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string problemNotation, IFormFile pdfFile)
         {
             Problem problem = new Problem();
             problem.Name = name;
             problem.TimeLimit = timeLimit;
             problem.MemoryLimit = memoryLimit;
-            problem.TaskAnnotation = taskAnnotation;
+            problem.ProblemNotation = problemNotation;
             problem.CompetitionId = groupId;
 
             GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
@@ -82,12 +82,12 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
 
             // Define the full path for the uploaded file
-            string filePath = Path.Combine(uploadDirectory, taskAnnotation + ".pdf");
+            string filePath = Path.Combine(uploadDirectory, problemNotation + ".pdf");
             string port = HttpContext.Request.Host.Port.ToString() ?? "80"; // Replace with your actual port
             string localhost = $"https://localhost:{port}";
 
             // Construct the new URL
-            string newUrl = $"{localhost}/Problems/{comp.CompetitionAnnotation}/{competition.Year.ToString()}/{taskAnnotation}.pdf";
+            string newUrl = $"{localhost}/Problems/{comp.CompetitionAnnotation}/{competition.Year.ToString()}/{problemNotation}.pdf";
             problem.URL = newUrl;
 
 

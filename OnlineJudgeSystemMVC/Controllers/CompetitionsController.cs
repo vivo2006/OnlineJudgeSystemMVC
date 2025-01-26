@@ -30,6 +30,10 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View(await manager.ReadAllAsync());
         }
+        public async Task<IActionResult> AdministratorIndex()
+        {
+            return View(await manager.ReadAllAsync());
+        }
 
         [Route("api/competitions/{id}/years")]
         [HttpGet]
@@ -130,13 +134,12 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Created,LastModified")] Competition competition)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CompetitionAnnotation")] Competition competition)
         {
             if (id != competition.Id)
             {
                 return BadRequest();
             }
-            competition.LastModified = DateTime.Now;
             if (ModelState.IsValid)
             {
                 try

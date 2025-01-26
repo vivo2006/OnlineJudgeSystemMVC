@@ -14,6 +14,7 @@ namespace OnlineJudgeSystemMVC.Controllers
     public class YearCompetitionsController : Controller
     {
         private readonly YearCompetitionsManager manager;
+        private readonly GroupCompetitionsManager groupCompetitionsManager;
 
         public YearCompetitionsController(YearCompetitionsManager manager)
         {
@@ -24,6 +25,34 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await manager.ReadAllAsync());
+        }
+
+        // GET: YearCompetitions/Create
+        public IActionResult Create(int id)
+        {
+            ViewBag.CompetitionId = id;
+            return View();
+        }
+
+        // POST: YearCompetitions/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Year,CompetitionId")] YearCompetition yearCompetition)
+        {
+            /*for(int i = 0; i < 5; i ++) TODO
+            {
+                var groupCompetition = new GroupCompetition(((char)(i + 'A')).ToString(), yearCompetition.Id);
+                await groupCompetitionsManager.CreateAsync(groupCompetition);
+                yearCompetition.GroupCompetitions.Add(groupCompetition);
+            }*/
+            if (ModelState.IsValid)
+            {
+                await manager.CreateAsync(yearCompetition);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(yearCompetition);
         }
         [Route("/Competitions/{competitionId}/{id}/index")]
         // GET: GroupCompetitions from YearCompetition

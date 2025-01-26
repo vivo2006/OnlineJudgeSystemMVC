@@ -1,0 +1,70 @@
+﻿@model IEnumerable<BusinessLayer.Competition>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<link rel="stylesheet" href="~/css/IndexCompetitions.css" asp-append-version=true />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+<div class="d-flex flex-row text-center justify-content-center mt-5 mb-5">
+        <a><h1 class="align-content-center text-center">Състезания</h1></a>
+    <a class="nav-link text-dark text-center p-0" asp-area="" asp-controller="Competitions" asp-action="Create"><h1 class="align-content-center text-center">&emsp;+</h1></a>
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Име
+            </th>
+            <th>
+                Действия
+            </th>
+    </thead>
+    <tbody>
+        @foreach (var competition in Model)
+        {
+            <tr>
+                <td>
+                    <a class="btn-open-modal button-table"
+                            data-id="@competition.Id"
+                            data-name="@competition.Name"
+                            data-bs-toggle="modal"
+                            data-bs-target="#yearsModal">
+                        @competition.Name (@competition.CompetitionAnnotation)
+                    </a>
+                </td>
+                <td>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Edit" asp-route-id="@competition.Id">✏️</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Delete" asp-route-id="@competition.Id">🗑️</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="yearsModal" tabindex="-1" aria-labelledby="yearsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="yearsModalLabel">Години</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="yearsList" class="list-group">
+                    <!-- Years will be loaded dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/FillTable.js?2">
+
+</script>
+
+

@@ -5,47 +5,50 @@
 }
 
 
-<h1>Create</h1>
+<h1>Добави задача</h1>
 
-<h4>Problem</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Име</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="GroupId">Group ID</label>
+                <label for="GroupId">ID на груповото състезание</label>
                 <input type="text" id="GroupId" name="GroupId" class="form-control" value="@ViewBag.GroupId" readonly />
             </div>
             <div class="form-group">
-                <label asp-for="TimeLimit" class="control-label"></label>
+                <label asp-for="TimeLimit" class="control-label">Лимит за време</label>
                 <input asp-for="TimeLimit" class="form-control" />
                 <span asp-validation-for="TimeLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MemoryLimit" class="control-label"></label>
+                <label asp-for="MemoryLimit" class="control-label">Лимит за памет</label>
                 <input asp-for="MemoryLimit" class="form-control" />
                 <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TaskAnnotation" class="control-label"></label>
-                <input asp-for="TaskAnnotation" class="form-control" />
-                <span asp-validation-for="TaskAnnotation" class="text-danger"></span>
+                <label asp-for="ProblemNotation" class="control-label"></label>
+                <input asp-for="ProblemNotation" class="form-control" />
+                <span asp-validation-for="ProblemNotation" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label for="pdfFile">Upload PDF</label>
+                <label for="pdfFile">Условие на задачата</label>
                 <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" required />
             </div>
             
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Създай" class="btn btn-primary" />
             </div>
+        </form>
+        <form asp-controller="TestCase" asp-action="UploadFolder" asp-route-groupId="@ViewBag.GroupId" method="post" enctype="multipart/form-data">
+            <input type="file" name="files" webkitdirectory multiple />
+            <button type="submit">Upload</button>
         </form>
     </div>
 </div>

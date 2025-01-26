@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250123224847_Initial")]
+    [Migration("20250126184933_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -113,7 +113,7 @@ namespace DataLayer.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("TaskAnnotation")
+                    b.Property<string>("ProblemNotation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -110,7 +110,7 @@ namespace DataLayer.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("TaskAnnotation")
+                    b.Property<string>("ProblemNotation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -9,7 +9,6 @@ a.navbar-brand {
 }
 .container {
     display: flex;
-    flex-direction: column;
     justify-content: start;
     align-items: center;
     text-align: center;

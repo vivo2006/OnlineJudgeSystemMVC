@@ -234,7 +234,7 @@ namespace DataLayer.Migrations
                     TimeLimit = table.Column<double>(type: "float", nullable: false),
                     MemoryLimit = table.Column<int>(type: "int", nullable: false),
                     URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TaskAnnotation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProblemNotation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompetitionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
