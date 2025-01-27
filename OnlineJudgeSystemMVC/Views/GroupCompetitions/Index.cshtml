@@ -5,24 +5,36 @@
     ViewData["Title"] = "IndexFromYearCompetition";
 }
 
-<h1>Competitions</h1>
+<h1>@ViewBag.Competition - @ViewBag.Year</h1>
 
-<div class="container">
-    @foreach (var group in Model)
-    {
-        <div class="group-competition">
-            <h3>@group.Group</h3>
-            <ul>
-                @foreach (var task in group.Problems)
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Група</th>
+                    <th>Задачи</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var group in Model)
                 {
-                    <li>
-                        <a asp-controller="Problems" asp-action="Details" asp-route-id="@task.Id">@task.Name</a>
-                    </li>
+                    <tr>
+                        <td>@group.Group</td>
+                        <td>
+                            <ul class="list-unstyled">
+                                @foreach (var problem in group.Problems)
+                                {
+                                    <li><a asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id>@problem.Name</a></li>
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Create" asp-route-id=@group.Id>+</a>
+                        </td>
+                    </tr>
                 }
-                <li>
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Create" asp-route-GroupId="@group.Id">+</a>
-                </li>
-            </ul>
-        </div>
-    }
-</div>
+            </tbody>
+        </table>
+    </div>
+

@@ -25,6 +25,11 @@ builder.Services.AddScoped<YearCompetitionsManager, YearCompetitionsManager>();
 builder.Services.AddScoped<IDb<YearCompetition, int>, YearCompetitionContext>();
 builder.Services.AddScoped<YearCompetitionContext, YearCompetitionContext>();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 52428800; // 50 MB
+});
+
 
 
 var app = builder.Build();
@@ -49,3 +54,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+

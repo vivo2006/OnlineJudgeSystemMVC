@@ -30,6 +30,9 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(yearId, true);
             List<GroupCompetition> groupCompetitions = (List<GroupCompetition>)yearCompetition.GroupCompetitions;
+            Competition competition = await competitionsManager.ReadAsync(competitionId);
+            ViewBag.Competition = competition.Name;
+            ViewBag.Year = yearCompetition.Year;
             return View(groupCompetitions);
         }
 

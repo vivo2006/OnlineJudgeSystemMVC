@@ -22,7 +22,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             this.competitionsManager = competitionsManager;
         }
 
-        /*[HttpPost] TODO
+        [HttpPost] 
         public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
         {
             if (files == null || files.Length == 0)
@@ -78,6 +78,6 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
 
             return Ok($"{files.Length} files uploaded successfully.");
-        }*/
+        }
     }
 }

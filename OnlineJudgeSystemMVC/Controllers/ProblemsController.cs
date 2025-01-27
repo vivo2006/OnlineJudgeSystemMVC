@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BusinessLayer;
 using DataLayer;
 using ServiceLayer;
+using Microsoft.Extensions.Hosting;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -16,14 +17,17 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly ProblemsManager manager;
         private readonly GroupCompetitionsManager groupCompetitionsManager;
         private readonly YearCompetitionsManager yearCompetitionsManager;
-        private readonly CompetitionsManager competitionsManager ;
+        private readonly CompetitionsManager competitionsManager;
+        private readonly IWebHostEnvironment environment;
 
-        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager)
+
+        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager, IWebHostEnvironment environment)
         {
             this.manager = manager;
             this.groupCompetitionsManager = groupCompetitionsManager;
             this.yearCompetitionsManager = yearCompetitionsManager;
             this.competitionsManager = competitionsManager;
+            this.environment = environment;
         }
 
         // GET: Problems
@@ -50,9 +54,17 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Problems/Create
-        public IActionResult CreateAsync(int GroupId)
+        public async Task<IActionResult> Create(int id)
         {
-            ViewBag.GroupId = GroupId;
+            ViewBag.GroupId = id;
+            GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(id, true);
+            YearCompetition yearCompetition = groupCompetition.YearCompetition;
+            Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId);
+            ViewBag.Year = yearCompetition.Year;
+            ViewBag.Competition = competition.Name;
+            ViewBag.Group = groupCompetition.Group;
+            ViewBag.CompetitionId = competition.Id;
+            ViewBag.YearId = yearCompetition.Id;
             return View();
         }
 
@@ -61,7 +73,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string problemNotation, IFormFile pdfFile)
+        public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string problemNotation, IFormFile pdfFile, IFormFile[] testCases)
         {
             Problem problem = new Problem();
             problem.Name = name;
@@ -71,9 +83,9 @@ namespace OnlineJudgeSystemMVC.Controllers
             problem.CompetitionId = groupId;
 
             GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
-            YearCompetition competition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
-            Competition comp = await competitionsManager.ReadAsync(competition.CompetitionId, true);
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", comp.CompetitionAnnotation, competition.Year.ToString());
+            YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
+            Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
+            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", competition.CompetitionAnnotation, yearCompetition.Year.ToString());
 
             // Check if the directory exists, and create it if it doesn't
             if (!Directory.Exists(uploadDirectory))
@@ -87,7 +99,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             string localhost = $"https://localhost:{port}";
 
             // Construct the new URL
-            string newUrl = $"{localhost}/Problems/{comp.CompetitionAnnotation}/{competition.Year.ToString()}/{problemNotation}.pdf";
+            string newUrl = $"{localhost}/Problems/{competition.CompetitionAnnotation}/{yearCompetition.Year.ToString()}/{problemNotation}.pdf";
             problem.URL = newUrl;
 
 
@@ -98,12 +110,73 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
             if (ModelState.IsValid)
             {
-                await manager.CreateAsync(problem);
-                return RedirectToAction(nameof(Index));
-            }
-            
+                await manager.CreateAsync(problem);            
+                await UploadFolder(testCases, problem);
 
-            return View(problem);
+            }
+            return Redirect($"/GroupCompetitions/Index/?competitionId={competition.Id}&yearId={yearCompetition.Id}");
+        }
+        public async Task<IActionResult> UploadFolder(IFormFile[] files, Problem problem)
+        {
+            if (files == null || files.Length == 0)
+            {
+                throw new Exception("No files uploaded.");
+            }
+
+            int groupId = problem.CompetitionId;
+
+            // Fetch necessary entities
+            GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
+            YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
+            Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
+
+            // Define folder paths
+            var uploadFolder = Path.Combine(environment.ContentRootPath, "TestCases", competition.CompetitionAnnotation, yearCompetition.Year.ToString(), problem.ProblemNotation);
+            var inputFolderPath = Path.Combine(uploadFolder, "Input");
+            var outputFolderPath = Path.Combine(uploadFolder, "Output");
+
+            // Create directories if they don't exist
+            if (!Directory.Exists(inputFolderPath))
+            {
+                Directory.CreateDirectory(inputFolderPath);
+            }
+            if (!Directory.Exists(outputFolderPath))
+            {
+                Directory.CreateDirectory(outputFolderPath);
+            }
+
+            // Save files
+            foreach (var file in files)
+            {
+                // Ensure the file name is correct
+                var fileName = Path.GetFileName(file.FileName);
+                var fileExtension = Path.GetExtension(fileName).ToLower();
+
+                if (fileExtension == ".in" && file.Length > 0)
+                {
+                    var inputFilePath = Path.Combine(inputFolderPath, fileName); // Save in Input folder
+                    using (var stream = new FileStream(inputFilePath, FileMode.Create))
+                    {
+                         file.CopyTo(stream);
+                    }
+                }
+                else if (fileExtension == ".sol" && file.Length > 0)
+                {
+                    var outputFilePath = Path.Combine(outputFolderPath, fileName); // Save in Output folder
+                    using (var stream = new FileStream(outputFilePath, FileMode.Create))
+                    {
+                         file.CopyTo(stream);
+                    }
+                }
+                else
+                {
+                    // Skip unsupported files
+                    continue;
+                }
+            }
+
+            // Redirect to another page
+            return Redirect($"/GroupCompetitions/Index/?competitionId={competition.Id}&yearId={yearCompetition.Id}");
         }
 
         // GET: Problems/Edit/5
