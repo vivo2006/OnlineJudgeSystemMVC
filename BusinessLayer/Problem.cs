@@ -15,8 +15,6 @@ namespace BusinessLayer
         [Required(ErrorMessage = "Name is required.")] 
         [MaxLength(200, ErrorMessage = "Problem name cannot exceed 200 characters.")]
         public string Name { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime LastModified { get; set; }
         [Required]
         public double TimeLimit {  get; set; }
         [Required]
@@ -34,12 +32,10 @@ namespace BusinessLayer
         {
             Submissions = new List<Submission>();
         }
-        public Problem(int id, string name, DateTime created, DateTime lastModified, string uRL, int competitionId, List<Submission> submissions, double timeLimit, int memoryLimit)
+        public Problem(int id, string name, string uRL, int competitionId, List<Submission> submissions, double timeLimit, int memoryLimit)
         {
             Id = id;
             Name = name;
-            Created = created;
-            LastModified = lastModified;
             URL = uRL;
             CompetitionId = competitionId;
             Submissions = submissions;

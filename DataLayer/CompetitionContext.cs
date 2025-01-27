@@ -20,8 +20,6 @@ namespace DataLayer
         {
             try
             {
-                item.Created = DateTime.Now;
-                item.LastModified = DateTime.Now;
                 _context.Competitions.Add(item);
                 await _context.SaveChangesAsync();
             }
@@ -106,8 +104,6 @@ namespace DataLayer
             {
                 Competition competitionFromDb = await ReadAsync(item.Id, navigationalProperties, false);
                 _context.Entry(competitionFromDb).CurrentValues.SetValues(item);
-                competitionFromDb.LastModified = DateTime.Now;
-                _context.Entry(competitionFromDb).Property(e => e.Created).IsModified = false;
                 if (navigationalProperties)
                 {
                     competitionFromDb.YearCompetitions = item.YearCompetitions;

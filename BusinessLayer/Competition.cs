@@ -19,21 +19,17 @@ namespace BusinessLayer
         public int FirstYear { get; set; }
         [Required]
         public int LastYear {  get; set; }
-        public DateTime Created { get; set; }
-        public DateTime LastModified { get; set; }
         [Required]
         public string CompetitionAnnotation {  get; set; }
         public Competition()
         {
-
+            YearCompetitions = new List<YearCompetition>();
         }
-        public Competition(int id, string name, ICollection<YearCompetition> yearCompetitions, int groupNumber, DateTime created, DateTime lastModified, int firstYear, int lastYear)
+        public Competition(int id, string name, ICollection<YearCompetition> yearCompetitions, int firstYear, int lastYear)
         {
             Id = id;
             Name = name;
             YearCompetitions = yearCompetitions;
-            Created = created;
-            LastModified = lastModified;
             FirstYear = firstYear;
             LastYear = lastYear;
         }

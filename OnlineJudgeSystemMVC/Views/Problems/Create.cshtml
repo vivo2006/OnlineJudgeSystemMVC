@@ -8,7 +8,7 @@
 <h1>Добави задача</h1>
 
 <hr />
-<div class="row">
+<div class="d-flex justify-content-center">
     <div class="col-md-4">
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -45,10 +45,6 @@
             <div class="form-group">
                 <input type="submit" value="Създай" class="btn btn-primary" />
             </div>
-        </form>
-        <form asp-controller="TestCase" asp-action="UploadFolder" asp-route-groupId="@ViewBag.GroupId" method="post" enctype="multipart/form-data">
-            <input type="file" name="files" webkitdirectory multiple />
-            <button type="submit">Upload</button>
         </form>
     </div>
 </div>

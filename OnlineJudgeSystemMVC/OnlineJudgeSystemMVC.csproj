@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestCases\" />
     <Folder Include="wwwroot\Problems\" />
   </ItemGroup>
 

@@ -119,7 +119,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group", problem.CompetitionId);
+            //ViewData["CompetitionId"] = new SelectList(await groupCompetitionsManager.ReadAllAsync(), "Id", "Group", problem.CompetitionId);
+            
             return View(problem);
         }
 
@@ -134,7 +135,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 return BadRequest();
             }
-            problem.LastModified = DateTime.Now;
+
             if (ModelState.IsValid)
             {
                 try
@@ -154,7 +155,6 @@ namespace OnlineJudgeSystemMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CompetitionId"] = new SelectList(_context.GroupCompetitions, "Id", "Group", problem.CompetitionId);
             return View(problem);
         }
 

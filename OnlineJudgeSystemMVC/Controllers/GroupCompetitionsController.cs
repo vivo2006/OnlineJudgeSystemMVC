@@ -15,17 +15,22 @@ namespace OnlineJudgeSystemMVC.Controllers
     {
         private readonly GroupCompetitionsManager manager;
         private readonly CompetitionsManager competitionsManager;
+        private readonly YearCompetitionsManager yearCompetitionsManager;
 
-        public GroupCompetitionsController(GroupCompetitionsManager manager, CompetitionsManager competitionsManager)
+        public GroupCompetitionsController(GroupCompetitionsManager manager, CompetitionsManager competitionsManager, YearCompetitionsManager yearCompetitionsManager)
         {
             this.manager = manager;
             this.competitionsManager = competitionsManager;
+            this.yearCompetitionsManager = yearCompetitionsManager;
         }
 
-        // GET: GroupCompetitions
-        public async Task<IActionResult> Index()
-        { 
-            return View(await manager.ReadAllAsync());
+        // GET: GroupCompetitions/Index/?competitionId=5&yearId=5
+        // GET: GroupCompetitions from YearCompetition
+        public async Task<IActionResult> Index(int competitionId, int yearId)
+        {
+            YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(yearId, true);
+            List<GroupCompetition> groupCompetitions = (List<GroupCompetition>)yearCompetition.GroupCompetitions;
+            return View(groupCompetitions);
         }
 
         // GET: GroupCompetitions/Details/5

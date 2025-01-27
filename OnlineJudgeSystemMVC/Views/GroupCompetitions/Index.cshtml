@@ -1,41 +1,28 @@
-﻿@model IEnumerable<BusinessLayer.GroupCompetition>
+﻿@model ICollection<BusinessLayer.GroupCompetition>
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "IndexFromYearCompetition";
 }
 
-<h1>Index</h1>
+<h1>Competitions</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Group)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.YearCompetition)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.YearCompetition.Year)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container">
+    @foreach (var group in Model)
+    {
+        <div class="group-competition">
+            <h3>@group.Group</h3>
+            <ul>
+                @foreach (var task in group.Problems)
+                {
+                    <li>
+                        <a asp-controller="Problems" asp-action="Details" asp-route-id="@task.Id">@task.Name</a>
+                    </li>
+                }
+                <li>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Create" asp-route-GroupId="@group.Id">+</a>
+                </li>
+            </ul>
+        </div>
+    }
+</div>

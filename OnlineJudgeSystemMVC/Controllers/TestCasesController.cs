@@ -22,38 +22,55 @@ namespace OnlineJudgeSystemMVC.Controllers
             this.competitionsManager = competitionsManager;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadFolder(IFormFile[] files, int groupId, int problemId)
+        /*[HttpPost] TODO
+        public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
         {
             if (files == null || files.Length == 0)
             {
                 return BadRequest("No files uploaded.");
             }
+            
+            Problem problem = await manager.ReadAsync(id, true);
+            int groupId = problem.CompetitionId;
 
             GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
             YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
             Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
-            Problem problem = await manager.ReadAsync(problemId, true);
 
             var uploadFolder = Path.Combine(_environment.ContentRootPath, "TestCases", competition.CompetitionAnnotation, yearCompetition.Year.ToString(), problem.ProblemNotation);
+            var inputFolderPath = Path.Combine(uploadFolder, "Input","tests");
+            var outputFolderPath = Path.Combine(uploadFolder, "Output", "tests");
 
-            if (!Directory.Exists(uploadFolder))
+            if (!Directory.Exists(inputFolderPath))
             {
-                Directory.CreateDirectory(uploadFolder);
+                Directory.CreateDirectory(inputFolderPath);
             }
+            bool flag = !Directory.Exists(outputFolderPath);
+            if (flag)
+            {
+                Directory.CreateDirectory(outputFolderPath);
+            }
+
 
             foreach (var file in files)
             {
-                if (file.Length > 0)
+                //string fileName = file.FileName.Substring(file.FileName.IndexOf('.') + 1);
+                var fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+                if (fileExtension == ".in" && file.Length > 0)
                 {
-                    var filePath = Path.Combine(uploadFolder, file.FileName);
+                    var inputFilePath = Path.Combine(Path.Combine(uploadFolder, "Input"), file.FileName);
 
-                    if (System.IO.File.Exists(filePath))
+                    using (var stream = new FileStream(Path.Combine(uploadFolder, "Input"), FileMode.Create))
                     {
-                        return BadRequest($"File {file.FileName} already exists.");
+                        await file.CopyToAsync(stream);
                     }
+                }
+                else if (fileExtension == ".out" && file.Length > 0)
+                {
+                    var outputFilePath = Path.Combine(Path.Combine(uploadFolder, "Output"), file.FileName);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    using (var stream = new FileStream(Path.Combine(uploadFolder, "Output"), FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
                     }
@@ -61,6 +78,6 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
 
             return Ok($"{files.Length} files uploaded successfully.");
-        }
+        }*/
     }
 }
