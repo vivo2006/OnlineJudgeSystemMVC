@@ -63,7 +63,7 @@ namespace DataLayer.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FirstYear = table.Column<int>(type: "int", nullable: false),
                     LastYear = table.Column<int>(type: "int", nullable: false),
-                    CompetitionAnnotation = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Notation = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -246,13 +246,13 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Points = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Error = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Time = table.Column<double>(type: "float", nullable: false),
                     Memory = table.Column<int>(type: "int", nullable: false),
-                    ProblemId = table.Column<int>(type: "int", nullable: false)
+                    ProblemId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -261,12 +261,35 @@ namespace DataLayer.Migrations
                         name: "FK_Submissions_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Submissions_Problems_ProblemId",
                         column: x => x.ProblemId,
                         principalTable: "Problems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TestCaseResults",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubmissionId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Memory = table.Column<double>(type: "float", nullable: false),
+                    Output = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Time = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestCaseResults", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestCaseResults_Submissions_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Submissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -331,6 +354,11 @@ namespace DataLayer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TestCaseResults_UserId",
+                table: "TestCaseResults",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_YearCompetitions_CompetitionId",
                 table: "YearCompetitions",
                 column: "CompetitionId");
@@ -355,10 +383,13 @@ namespace DataLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Submissions");
+                name: "TestCaseResults");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Submissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -37,7 +37,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
             Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
 
-            var uploadFolder = Path.Combine(_environment.ContentRootPath, "TestCases", competition.CompetitionAnnotation, yearCompetition.Year.ToString(), problem.ProblemNotation);
+            var uploadFolder = Path.Combine(_environment.ContentRootPath, "TestCases", competition.Notation, yearCompetition.Year.ToString(), problem.ProblemNotation);
             var inputFolderPath = Path.Combine(uploadFolder, "Input","tests");
             var outputFolderPath = Path.Combine(uploadFolder, "Output", "tests");
 

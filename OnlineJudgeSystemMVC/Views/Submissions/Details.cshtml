@@ -1,0 +1,31 @@
+﻿@model IEnumerable<BusinessLayer.TestCaseResult>
+
+@{
+    ViewData["Title"] = "Test Results";
+}
+
+<h1>Test Results for Problem</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Output</th>
+            <th>Status</th>
+            <th>Time (ms)</th>
+            <th>Memory (MB)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td>@item.Output</td>
+                <td>@item.State</td>
+                <td>@item.Time</td>
+                <td>@item.Memory</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/" class="btn btn-primary">Back to Problems</a>

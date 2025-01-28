@@ -5,6 +5,8 @@ using ServiceLayer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(Connection.conString));
@@ -24,6 +26,10 @@ builder.Services.AddScoped<GroupCompetitionContext, GroupCompetitionContext>();
 builder.Services.AddScoped<YearCompetitionsManager, YearCompetitionsManager>();
 builder.Services.AddScoped<IDb<YearCompetition, int>, YearCompetitionContext>();
 builder.Services.AddScoped<YearCompetitionContext, YearCompetitionContext>();
+
+builder.Services.AddScoped<SubmissionsManager, SubmissionsManager>();
+builder.Services.AddScoped<IDb<Submission, int>, SubmissionContext>();
+builder.Services.AddScoped<SubmissionContext, SubmissionContext>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

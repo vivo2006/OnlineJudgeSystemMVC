@@ -37,7 +37,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Problems/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string CompetitionNotation, int Year)
         {
             if (id == null)
             {
@@ -49,6 +49,9 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.CompetitionNotation = CompetitionNotation;
+            ViewBag.Year = Year;
 
             return View(problem);
         }
@@ -85,7 +88,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
             YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
             Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", competition.CompetitionAnnotation, yearCompetition.Year.ToString());
+            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", competition.Notation, yearCompetition.Year.ToString());
 
             // Check if the directory exists, and create it if it doesn't
             if (!Directory.Exists(uploadDirectory))
@@ -99,9 +102,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             string localhost = $"https://localhost:{port}";
 
             // Construct the new URL
-            string newUrl = $"{localhost}/Problems/{competition.CompetitionAnnotation}/{yearCompetition.Year.ToString()}/{problemNotation}.pdf";
+            string newUrl = $"{localhost}/Problems/{competition.Notation}/{yearCompetition.Year.ToString()}/{problemNotation}.pdf";
             problem.URL = newUrl;
-
 
             // Save the PDF file to the specified path
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -131,7 +133,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
 
             // Define folder paths
-            var uploadFolder = Path.Combine(environment.ContentRootPath, "TestCases", competition.CompetitionAnnotation, yearCompetition.Year.ToString(), problem.ProblemNotation);
+            var uploadFolder = Path.Combine(environment.ContentRootPath, "TestCases", competition.Notation, yearCompetition.Year.ToString(), problem.ProblemNotation);
             var inputFolderPath = Path.Combine(uploadFolder, "Input");
             var outputFolderPath = Path.Combine(uploadFolder, "Output");
 

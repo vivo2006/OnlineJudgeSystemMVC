@@ -40,5 +40,6 @@ namespace DataLayer
         public DbSet<YearCompetition> YearCompetitions { get; set; }
         public DbSet<Problem> Problems { get; set; }
         public DbSet<Submission> Submissions { get; set; }
+        public DbSet<TestCaseResult> TestCaseResults { get; set; }
     }
 }

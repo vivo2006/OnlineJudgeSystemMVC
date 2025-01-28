@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250127195613_Initial")]
+    [Migration("20250128211213_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -33,10 +33,6 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompetitionAnnotation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("FirstYear")
                         .HasColumnType("int");
 
@@ -47,6 +43,10 @@ namespace DataLayer.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -136,11 +136,10 @@ namespace DataLayer.Migrations
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
+                    b.Property<double>("Time")
+                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -150,6 +149,42 @@ namespace DataLayer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Submissions");
+                });
+
+            modelBuilder.Entity("BusinessLayer.TestCaseResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Memory")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Output")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubmissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TestCaseResults");
                 });
 
             modelBuilder.Entity("BusinessLayer.User", b =>
@@ -416,15 +451,22 @@ namespace DataLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLayer.User", "User")
+                    b.HasOne("BusinessLayer.User", null)
                         .WithMany("Submissions")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Problem");
+                });
+
+            modelBuilder.Entity("BusinessLayer.TestCaseResult", b =>
+                {
+                    b.HasOne("BusinessLayer.Submission", "Submission")
+                        .WithMany("TestCaseResults")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Problem");
-
-                    b.Navigation("User");
+                    b.Navigation("Submission");
                 });
 
             modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
@@ -502,6 +544,11 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("BusinessLayer.Problem", b =>
                 {
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("BusinessLayer.Submission", b =>
+                {
+                    b.Navigation("TestCaseResults");
                 });
 
             modelBuilder.Entity("BusinessLayer.User", b =>

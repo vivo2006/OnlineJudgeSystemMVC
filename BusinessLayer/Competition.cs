@@ -20,7 +20,7 @@ namespace BusinessLayer
         [Required]
         public int LastYear {  get; set; }
         [Required]
-        public string CompetitionAnnotation {  get; set; }
+        public string Notation {  get; set; }
         public Competition()
         {
             YearCompetitions = new List<YearCompetition>();

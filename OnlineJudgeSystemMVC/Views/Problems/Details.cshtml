@@ -21,11 +21,18 @@
 
     <!-- Buttons -->
     <div class="mb-4">
-        <a href=@Model.URL class="btn btn-primary" target="_blank">Отвори</a> 
-        <button class="btn btn-secondary">Изпрати</button>
+        <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>
+        <form method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id asp-route-ProblemNotation=@Model.ProblemNotation asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>
+            <input type="hidden" name="ProblemId" value="@Model.Id" />
+            <textarea name="Code" class="form-control border-danger mb-4" rows="10" placeholder="Постави кода тук..."></textarea>
+            <select name="LanguageId" class="form-select mb-4">
+                <option value="54">C++</option>
+                <option value="62">Java</option>
+                <option value="71">Python</option>
+                <option value="63">JavaScript</option>
+            </select>
+            <button type="submit" class="btn btn-success">Изпрати</button>
+        </form>
     </div>
 </div>
 
-
-<!-- Code Field -->
-<textarea class="form-control border-danger" rows="10" placeholder="Постави кода тук..."></textarea>

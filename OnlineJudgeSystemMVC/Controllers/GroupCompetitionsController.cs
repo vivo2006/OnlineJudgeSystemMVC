@@ -33,6 +33,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             Competition competition = await competitionsManager.ReadAsync(competitionId);
             ViewBag.Competition = competition.Name;
             ViewBag.Year = yearCompetition.Year;
+            ViewBag.CompetitionNotation = competition.Notation;
             return View(groupCompetitions);
         }
 

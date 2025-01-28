@@ -61,7 +61,7 @@ namespace DataLayer
                 IQueryable<Submission> query = _context.Submissions;
                 if (navigationalProperties)
                 {
-                    query = query.Include(submission => submission.User);
+                    //query = query.Include(submission => submission.User);
                     query = query.Include(submission => submission.Problem);
                 }
 
@@ -84,7 +84,7 @@ namespace DataLayer
                 IQueryable<Submission> query = _context.Submissions;
                 if (navigationalProperties)
                 {
-                    query = query.Include(submission => submission.User);
+                    //query = query.Include(submission => submission.User);
                     query = query.Include(submission => submission.Problem);
                 }
 
@@ -112,7 +112,7 @@ namespace DataLayer
                 if (navigationalProperties)
                 {
                     submissionFromDb.ProblemId = item.ProblemId;
-                    submissionFromDb.UserId = item.UserId;
+                    //submissionFromDb.UserId = item.UserId;
                 }
                 await _context.SaveChangesAsync();
             }

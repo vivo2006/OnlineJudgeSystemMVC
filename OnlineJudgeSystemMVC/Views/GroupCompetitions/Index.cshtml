@@ -25,7 +25,7 @@
                             <ul class="list-unstyled">
                                 @foreach (var problem in group.Problems)
                                 {
-                                    <li><a asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id>@problem.Name</a></li>
+                                <li><a asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>@problem.Name</a></li>
                                 }
                             </ul>
                         </td>

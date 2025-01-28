@@ -81,7 +81,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,CompetitionAnnotation")]Competition competition)
+        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,Notation")]Competition competition)
         {
             
             if (ModelState.IsValid)
@@ -134,7 +134,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CompetitionAnnotation")] Competition competition)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Notation")] Competition competition)
         {
             if (id != competition.Id)
             {

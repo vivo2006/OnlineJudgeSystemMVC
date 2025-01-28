@@ -12,33 +12,35 @@ namespace BusinessLayer
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage ="Foreign key is required.")]
+        /*[Required(ErrorMessage ="Foreign key is required.")]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public User User { get; set; }*/
         public int? Points { get; set; }
         public DateTime Created { get; set; }
         public string? Error { get; set; }
-        [Required(ErrorMessage = "Time is required.")]
-        public DateTime Time { get; set; }
-        [Required(ErrorMessage = "Memory is required.")]
+        public double Time { get; set; }
         public int Memory { get; set; }
         [Required(ErrorMessage = "Foreign key is required.")]
         public int ProblemId {  get; set; }
         [ForeignKey("ProblemId")]
         public Problem Problem { get; set; }
+        public ICollection<TestCaseResult> TestCaseResults { get; set; } 
         public Submission() 
         {
-
+            TestCaseResults = new List<TestCaseResult>();
         }
-        public Submission(int id, string userId, int points, string? error, DateTime time, int memory, int problemId)
+        public Submission(string userId, int points, string? error, double time, int memory, int problemId)
         {
-            Id = id;
-            UserId = userId;
+            /*UserId = userId;*/
             Points = points;
             Error = error;
             Time = time;
             Memory = memory;
+            ProblemId = problemId;
+        }
+        public Submission(int problemId)
+        {
             ProblemId = problemId;
         }
     }
