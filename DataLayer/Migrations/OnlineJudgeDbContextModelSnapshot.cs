@@ -156,11 +156,10 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Memory")
+                    b.Property<double?>("Memory")
                         .HasColumnType("float");
 
                     b.Property<string>("Output")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
@@ -171,15 +170,11 @@ namespace DataLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Time")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SubmissionId");
 
                     b.ToTable("TestCaseResults");
                 });
@@ -459,7 +454,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("BusinessLayer.Submission", "Submission")
                         .WithMany("TestCaseResults")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

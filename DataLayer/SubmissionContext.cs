@@ -63,6 +63,8 @@ namespace DataLayer
                 {
                     //query = query.Include(submission => submission.User);
                     query = query.Include(submission => submission.Problem);
+                    query = query.Include(submission => submission.TestCaseResults);
+
                 }
 
                 if (isReadOnly)
@@ -86,6 +88,7 @@ namespace DataLayer
                 {
                     //query = query.Include(submission => submission.User);
                     query = query.Include(submission => submission.Problem);
+                    query = query.Include(submission => submission.TestCaseResults);
                 }
 
                 if (isReadOnly)
@@ -112,6 +115,7 @@ namespace DataLayer
                 if (navigationalProperties)
                 {
                     submissionFromDb.ProblemId = item.ProblemId;
+                    submissionFromDb.TestCaseResults = item.TestCaseResults;
                     //submissionFromDb.UserId = item.UserId;
                 }
                 await _context.SaveChangesAsync();

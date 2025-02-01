@@ -31,6 +31,10 @@ builder.Services.AddScoped<SubmissionsManager, SubmissionsManager>();
 builder.Services.AddScoped<IDb<Submission, int>, SubmissionContext>();
 builder.Services.AddScoped<SubmissionContext, SubmissionContext>();
 
+builder.Services.AddScoped<TestCaseResultsManager, TestCaseResultsManager>();
+builder.Services.AddScoped<IDb<TestCaseResult, int>, TestCaseResultContext>();
+builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 52428800; // 50 MB

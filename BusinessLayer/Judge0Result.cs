@@ -8,9 +8,9 @@ namespace BusinessLayer
 {
     public class Judge0Result
     {
-        public string stdout { get; set; }
-        public string time { get; set; }
-        public float memory { get; set; }
+        public string? stdout { get; set; }
+        public string? time { get; set; }
+        public float? memory { get; set; }
         public Status status { get; set; }
     }
 }

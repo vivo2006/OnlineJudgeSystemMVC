@@ -14,12 +14,12 @@ namespace BusinessLayer
         public int Id { get; set; }
         [Required(ErrorMessage = "Foreign key is required.")]
         public int SubmissionId { get; set; }
-        [ForeignKey("UserId")]
+        [ForeignKey("SubmissionId")]
         public Submission Submission { get; set; }
         public string State { get; set; }
-        public double Memory { get; set; }
-        public string Output { get; set; }
-        public string Time { get; set; }
+        public double? Memory { get; set; }
+        public string? Output { get; set; }
+        public string? Time { get; set; }
         public TestCaseResult()
         {
 

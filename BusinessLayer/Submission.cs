@@ -39,9 +39,10 @@ namespace BusinessLayer
             Memory = memory;
             ProblemId = problemId;
         }
-        public Submission(int problemId)
+        public Submission(int problemId, DateTime created)
         {
             ProblemId = problemId;
+            Created = created;
         }
     }
 }

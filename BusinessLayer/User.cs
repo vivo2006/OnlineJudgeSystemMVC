@@ -17,20 +17,17 @@ namespace BusinessLayer
         public int Age { get; set; }
         [Required(ErrorMessage = "City is required.")]
         public string City { get; set; }
-        public int? Points { get; set; }
-
         public ICollection<Submission> Submissions { get; set; }
         public User()
         {
             Submissions = new List<Submission>();
         }
-        public User(string name, int age, string city, int points, List<Submission> submissions)
+        public User(string name, int age, string city, List<Submission> submissions)
         {
             Id = Guid.NewGuid().ToString();
             Name = name;
             Age = age;
             City = city;
-            Points = points;
             Submissions = submissions;
         }
     }

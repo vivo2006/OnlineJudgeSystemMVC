@@ -1,29 +1,37 @@
-﻿@model IEnumerable<BusinessLayer.TestCaseResult>
+﻿@model BusinessLayer.Submission
 
 @{
     ViewData["Title"] = "Test Results";
+    int testNumber = 1;
 }
 
-<h1>Test Results for Problem</h1>
+<h1>Резултати от тестването</h1>
 
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Output</th>
-            <th>Status</th>
-            <th>Time (ms)</th>
-            <th>Memory (MB)</th>
+            <th>Тест</th>
+            <th>Статус</th>
+            <th>Време (ms)</th>
+            <th>Памет (MB)</th>
+            <th>Изход</th>
+
         </tr>
     </thead>
     <tbody>
-        @foreach(var item in Model)
+        @foreach(var item in Model.TestCaseResults)
         {
             <tr>
-                <td>@item.Output</td>
+                <td>@testNumber</td>
                 <td>@item.State</td>
                 <td>@item.Time</td>
                 <td>@item.Memory</td>
+                <td>
+                    <a class="text-dark" asp-action="OutputDetails" asp-route-id=@item.Id>→</a>
+                </td>
+
             </tr>
+            testNumber++;
         }
     </tbody>
 </table>

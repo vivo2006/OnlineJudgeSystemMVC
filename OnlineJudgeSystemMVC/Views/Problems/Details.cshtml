@@ -4,34 +4,39 @@
 }
 <link rel="stylesheet" href="~/css/ProblemDetails.css" asp-append-version="true" />
 
-<div id="container-row">
-    <h1 class="mb-4">@Model.ProblemNotation. @Model.Name</h1>
+<div class="d-flex flex-column">
+    <div class="d-flex flex-row justify-content-between">
 
-    <!-- Time and Memory Limit -->
-    <div class="d-flex align-items-center mb-4">
-        <div class="me-4">
-            <span class="fs-5 me-2">⏳</span>
-            <span>@Model.TimeLimit sec</span>
-        </div>
+        <!-- Time and Memory Limit -->
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="me-4">@Model.ProblemNotation. @Model.Name</h1>
+            <div class="me-4">
+                <span class="fs-5">⏳</span>
+                <span>@Model.TimeLimit sec</span>
+            </div>
+            <div class="me-2">
+                <span class="fs-5">💾</span>
+                <span>@Model.MemoryLimit mb</span>
+            </div>
+        </div>    
         <div>
-            <span class="fs-5 me-2">💾</span>
-            <span>@Model.MemoryLimit mb</span>
+            <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>
+            <button type="submit" form="code-submit" class="btn btn-secondary">Изпрати</button>
         </div>
+        
     </div>
 
+    <select form="code-submit" name="LanguageId" class="form-select mb-4">
+        <option value="54">C++</option>
+        <option value="62">Java</option>
+        <option value="71">Python</option>
+        <option value="63">JavaScript</option>
+    </select>
     <!-- Buttons -->
     <div class="mb-4">
-        <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>
-        <form method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id asp-route-ProblemNotation=@Model.ProblemNotation asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>
+        <form id="code-submit" method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id asp-route-ProblemNotation=@Model.ProblemNotation asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>
             <input type="hidden" name="ProblemId" value="@Model.Id" />
-            <textarea name="Code" class="form-control border-danger mb-4" rows="10" placeholder="Постави кода тук..."></textarea>
-            <select name="LanguageId" class="form-select mb-4">
-                <option value="54">C++</option>
-                <option value="62">Java</option>
-                <option value="71">Python</option>
-                <option value="63">JavaScript</option>
-            </select>
-            <button type="submit" class="btn btn-success">Изпрати</button>
+            <textarea name="Code" class="form-control border-danger mb-4" rows="10" placeholder="Постави кода тук..." required></textarea>
         </form>
     </div>
 </div>

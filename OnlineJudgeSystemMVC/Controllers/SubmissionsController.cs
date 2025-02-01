@@ -11,6 +11,9 @@ using ServiceLayer;
 using System.Text;
 using System.Text.Json;
 using Azure;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -18,20 +21,22 @@ namespace OnlineJudgeSystemMVC.Controllers
     {
         private readonly SubmissionsManager manager;
         private readonly ProblemsManager problemsManager;
+        private readonly TestCaseResultContext testCaseResultManager;
         private readonly IHttpClientFactory httpClientFactory;
 
 
-        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory)
+        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager)
         {
             this.manager = manager;
             this.problemsManager = problemsManager;
             this.httpClientFactory = httpClientFactory;
+            this.testCaseResultManager = testCaseResultManager;
         }
 
         // GET: Submissions
         public async Task<IActionResult> Index()
         {
-            return View(await manager.ReadAllAsync());
+            return View(await manager.ReadAllAsync(true));
         }
 
         // GET: Submissions/Details/5
@@ -42,7 +47,7 @@ namespace OnlineJudgeSystemMVC.Controllers
                 return BadRequest();
             }
 
-            var submission = await manager.ReadAsync((int)id);
+            var submission = await manager.ReadAsync((int)id, true);
             if (submission == null)
             {
                 return NotFound();
@@ -58,6 +63,85 @@ namespace OnlineJudgeSystemMVC.Controllers
             return View();
         }
 
+        public Tuple<string[], string[]> GetTestFiles(string competitionNotation, int year, string problemNotation)
+        {
+            // Construct the path to the test cases directory
+            var testCasesInputPath = Path.Combine(Directory.GetCurrentDirectory(), "TestCases", competitionNotation, year.ToString(), problemNotation, "Input");
+            var testCasesOutputPath = Path.Combine(Directory.GetCurrentDirectory(), "TestCases", competitionNotation, year.ToString(), problemNotation, "Output");
+
+            if (!Directory.Exists(testCasesInputPath) || !Directory.Exists(testCasesOutputPath))
+            {
+                throw new Exception("Test cases not found.");
+            }
+
+            // Read all test case files in the directory
+            var inputTestFiles = Directory.GetFiles(testCasesInputPath);
+            var outputTestFiles = Directory.GetFiles(testCasesOutputPath);
+
+            return new Tuple<string[], string[]>(inputTestFiles, outputTestFiles);
+        }
+        public async Task<string> CreatePostQuery(string[] inputTestFiles, string[] outputTestFiles, int languageId, string sourceCode, double timeLimit, double memoryLimit)
+        {
+            BatchSubmissions batchRequest = new BatchSubmissions();
+            for (int i = 0; i < inputTestFiles.Length; i++)
+            {
+                string inputContent = await System.IO.File.ReadAllTextAsync(inputTestFiles[i]);   // Read input file
+                string outputContent = await System.IO.File.ReadAllTextAsync(outputTestFiles[i]); // Read expected output file
+
+                batchRequest.submissions.Add(new PostRequest
+                {
+                    language_id = languageId,
+                    source_code = sourceCode,
+                    stdin = inputContent,
+                    expected_output = outputContent,
+                    cpu_time_limit = timeLimit,
+                    memory_limit = memoryLimit
+                });
+            }
+            // Convert to JSON
+            var jsonSubmissionData = JsonConvert.SerializeObject(batchRequest, Formatting.Indented);
+            System.Diagnostics.Debug.WriteLine(jsonSubmissionData);
+            return jsonSubmissionData;
+        }
+
+        public async Task<List<PostResponse>> PostRequest(string jsonRequest, HttpClient client)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=false&wait=false"),
+                Headers =
+                    {
+                        { "x-rapidapi-key", "fe05a54966msh74f99cf84607244p1d78dfjsn7624b874c93f" },
+                        { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
+                    },
+                Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json"),
+            };
+            var jsonResponse = await client.SendAsync(request);
+            var jsonContent = await jsonResponse.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<PostResponse>>(jsonContent);
+        }
+
+        public async Task<BatchSubmissionResponse> GetRequest(List<PostResponse> tokens, HttpClient client)
+        {
+            List<string> tokenValues = tokens.Select(r => r.token).ToList();
+            string tokenString = string.Join(",", tokenValues);
+            var getRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"https://judge0-ce.p.rapidapi.com/submissions/batch?tokens={tokenString}&base64_encoded=false&fields=stdout,status,time,memory"),
+                Headers =
+                {
+                    { "x-rapidapi-key", "fe05a54966msh74f99cf84607244p1d78dfjsn7624b874c93f" },
+                    { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
+                },
+            };
+            var jsonResponse = await client.SendAsync(getRequest);
+            var jsonContent = await jsonResponse.Content.ReadAsStringAsync();
+            // Deserialize the response
+            return JsonSerializer.Deserialize<BatchSubmissionResponse>(jsonContent);
+        }
+
         // POST: Submissions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -66,92 +150,45 @@ namespace OnlineJudgeSystemMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation)
         {
-            // Construct the path to the test cases directory
-            var testCasesInputPath = Path.Combine(Directory.GetCurrentDirectory(), "TestCases", CompetitionNotation, Year.ToString(),ProblemNotation, "Input");
-            var testCasesOutputPath = Path.Combine(Directory.GetCurrentDirectory(), "TestCases", CompetitionNotation, Year.ToString(), ProblemNotation, "Output");
+            Tuple<string[], string[]> testFiles = GetTestFiles(CompetitionNotation, Year, ProblemNotation);   
+            var inputTestFiles = testFiles.Item1;
+            var outputTestFiles = testFiles.Item2;
 
-            if (!Directory.Exists(testCasesInputPath))
-            {
-                return NotFound("Test cases not found.");
-            }
-
-            // Read all test case files in the directory
-            var inputTestFiles = Directory.GetFiles(testCasesInputPath);
-            var outputTestFiles = Directory.GetFiles(testCasesOutputPath);
             var problem = await problemsManager.ReadAsync(ProblemId, true);
-
-            Submission submission = new Submission(ProblemId);
-            submission.Created = DateTime.Now;
+            Submission submission = new Submission(ProblemId, DateTime.Now);
             await manager.CreateAsync(submission);
 
-            for (int i = 0; i < inputTestFiles.Length; i ++)
+            string jsonRequest = await CreatePostQuery(inputTestFiles, outputTestFiles, LanguageId, Code, problem.TimeLimit, problem.MemoryLimit * 666);
+            
+            var client = httpClientFactory.CreateClient();
+
+            List<PostResponse> tokens = (await PostRequest(jsonRequest, client));
+            await Task.Delay(10000);
+
+            BatchSubmissionResponse results = await GetRequest(tokens, client);
+            
+            submission.TestCaseResults = new List<TestCaseResult>();
+            foreach(var result in results.Submissions)
             {
-                // Read the input for the current test case
-                var testInput = await System.IO.File.ReadAllTextAsync(inputTestFiles[i]);
-                var testOutput = await System.IO.File.ReadAllTextAsync(outputTestFiles[i]);
-
-                // Prepare the submission data for Judge0
-                var submissionData = new
-                {
-                    source_code = Code,
-                    language_id = LanguageId,
-                    stdin = testInput,
-                    expected_output = testOutput,
-                    cpu_time_limit = problem.TimeLimit,
-                    memory_limit = problem.MemoryLimit * 1024
-                };
-
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=false"),
-                    Headers =
-                    {
-                        { "x-rapidapi-key", "7a54853191msh7f87c61bdfeb479p145b68jsna8f13c73dbc8" },
-                        { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
-                    },
-                    Content = new StringContent(JsonSerializer.Serialize(submissionData), Encoding.UTF8, "application/json")
-                };                               
-                var client = httpClientFactory.CreateClient();
-                var tokenResponse = await client.SendAsync(request);
-                var body = await tokenResponse.Content.ReadAsStringAsync();
-                if (!tokenResponse.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"Error: {tokenResponse.StatusCode}");
-                    Console.WriteLine($"Response Body: {body}");
-                }
-
-
-                // Send the request to Judge0 API
-                string token = (JsonSerializer.Deserialize<PostResponse>(await tokenResponse.Content.ReadAsStringAsync())).token;
-                var getRequest = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri($"https://judge0-ce.p.rapidapi.com/submissions/{token}?base64_encoded=false&fields=stdout,status,time,memory"),
-                    Headers =
-                    {
-                        { "x-rapidapi-key", "7a54853191msh7f87c61bdfeb479p145b68jsna8f13c73dbc8" },
-                        { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
-                    },
-                };
-                var getSubmission = await client.SendAsync(getRequest);
-                var bodySub = getSubmission.Content.ReadAsStringAsync();
-                // Deserialize the response
-                var result = JsonSerializer.Deserialize<Judge0Result>(await getSubmission.Content.ReadAsStringAsync());
-                
-
                 // Add the result to the results list
-                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.status.description, result.memory, result.stdout, result.time);
-                submission.TestCaseResults = new List<TestCaseResult>();
+                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.status.description, (double?)result.memory ?? 0.0, result.stdout ?? "", result.time ?? "0.0");
                 submission.TestCaseResults.Add(testCaseResult);
+                await testCaseResultManager.CreateAsync(testCaseResult);
+
             }
             submission.Points = submission.TestCaseResults.Count(r => r.State == "Accepted");
             submission.Time = 1;
             submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
-            submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(Math.Ceiling(r.Memory / 1024.0)));
-            await manager.UpdateAsync(submission);
+            submission.Memory = 102444;
+            await manager.UpdateAsync(submission, true);
             // Pass the results to the Results view
-            return RedirectToAction("Details", submission.TestCaseResults);
+            return View("Details", submission);
+        }
+
+        public async Task<IActionResult> OutputDetails(int id)
+        {
+            TestCaseResult testCaseResult = await testCaseResultManager.ReadAsync(id);
+            return View("OutputDetails", testCaseResult.Output);
         }
 
         // GET: Submissions/Edit/5
