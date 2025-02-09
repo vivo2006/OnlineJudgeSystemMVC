@@ -33,15 +33,8 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Профил</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark d-lg-none" asp-area="" asp-controller="Home" asp-action="Index">Влез</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark d-lg-none" asp-area="" asp-controller="Home" asp-action="Index">Регистрация</a>
-                        </li>
                     </ul>
-                    <button class="btn btn-primary d-none d-lg-block">Влез</button>
-                    <button class="btn btn-secondary d-none d-lg-block">Регистрация</button>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

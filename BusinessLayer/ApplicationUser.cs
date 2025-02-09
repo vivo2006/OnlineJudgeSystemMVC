@@ -8,21 +8,18 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
-    public class User : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
-        [Required(ErrorMessage = "Name is required.")]
         [MaxLength(50, ErrorMessage = "Password cannot be more than 50 symbols.")]
-        public string Name { get; set; }
-        [Required(ErrorMessage = "Age is required.")]
+        public string? Name { get; set; }
         public int Age { get; set; }
-        [Required(ErrorMessage = "City is required.")]
-        public string City { get; set; }
+        public string? City { get; set; }
         public ICollection<Submission> Submissions { get; set; }
-        public User()
+        public ApplicationUser()
         {
             Submissions = new List<Submission>();
         }
-        public User(string name, int age, string city, List<Submission> submissions)
+        public ApplicationUser(string name, int age, string city, List<Submission> submissions)
         {
             Id = Guid.NewGuid().ToString();
             Name = name;

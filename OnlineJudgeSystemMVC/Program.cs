@@ -2,14 +2,18 @@ using BusinessLayer;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+//var connectionString = builder.Configuration.GetConnectionString("OnlineJudgeDbContextConnection") ?? throw new InvalidOperationException("Connection string 'OnlineJudgeDbContextConnection' not found.");
 
 builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(Connection.conString));
+
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<OnlineJudgeDbContext>();
 builder.Services.AddScoped<ProblemsManager, ProblemsManager>();
 builder.Services.AddScoped<IDb<Problem, int>, ProblemContext>();
 builder.Services.AddScoped<ProblemContext, ProblemContext>();
@@ -35,6 +39,7 @@ builder.Services.AddScoped<TestCaseResultsManager, TestCaseResultsManager>();
 builder.Services.AddScoped<IDb<TestCaseResult, int>, TestCaseResultContext>();
 builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
 
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 52428800; // 50 MB
@@ -58,6 +63,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllers();
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",
