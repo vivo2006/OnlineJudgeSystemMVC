@@ -12,21 +12,36 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-            <a id="manage" class="btn btn-primary d-lg-block" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
+        <a id="manage" class="nav-link text-dark d-block d-lg-none align-middle" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
     </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout" type="submit" class="btn btn-secondary d-lg-block">Излез</button>
+                <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Излез</button>
+        </form>
+    </li>
+    <li class="nav-item">
+            <a id="manage" class="btn btn-primary d-lg-block align-middle" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
+    </li>
+    <li class="nav-item">
+        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Излез</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-            <a class="btn btn-primary d-lg-block" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+        <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
     </li>
     <li class="nav-item">
-            <a class="btn btn-secondary d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+        <a class="nav-link text-dark d-block d-lg-none" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
     </li>
+    <li class="nav-item">
+        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+    </li>
+    <li class="nav-item">
+            <a class="btn btn-secondary d-none d-lg-block" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+    </li>
+    
 }
 </ul>

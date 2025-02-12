@@ -3,6 +3,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("OnlineJudgeDbContextConnection") ?? throw new InvalidOperationException("Connection string 'OnlineJudgeDbContextConnection' not found.");
@@ -14,6 +15,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(Connection.conString));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<OnlineJudgeDbContext>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true; 
+});
+
 builder.Services.AddScoped<ProblemsManager, ProblemsManager>();
 builder.Services.AddScoped<IDb<Problem, int>, ProblemContext>();
 builder.Services.AddScoped<ProblemContext, ProblemContext>();
@@ -38,6 +44,11 @@ builder.Services.AddScoped<SubmissionContext, SubmissionContext>();
 builder.Services.AddScoped<TestCaseResultsManager, TestCaseResultsManager>();
 builder.Services.AddScoped<IDb<TestCaseResult, int>, TestCaseResultContext>();
 builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+
 
 
 builder.WebHost.ConfigureKestrel(options =>
