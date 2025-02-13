@@ -1,5 +1,6 @@
 ﻿.h {
-    font-size: 340%;
+    font-size: 310%;
+    word-wrap: break-word;
     font-family: Verdana;
 }
 .p{

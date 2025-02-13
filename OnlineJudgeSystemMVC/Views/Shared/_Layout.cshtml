@@ -1,16 +1,22 @@
-﻿<!DOCTYPE html>
+﻿@using BusinessLayer
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OnlineJudgeSystemMVC</title>
+    <title>@ViewData["Title"]</title>
 
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/OnlineJudgeSystemMVC.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="d-flex">
     <header>
         <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light bg-white border-bottom box-shadow height-inherit">
             <div class="container-fluid height-inherit">
@@ -33,21 +39,55 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Профил</a>
                         </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a id="manage" class="nav-link text-dark d-block d-lg-none align-middle" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
+                            </li>
+                            <li class="nav-item">
+                                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                    <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Излез</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark d-block d-lg-none" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+                            </li>
+                        }
                     </ul>
-                    <partial name="_LoginPartial" />
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a id="manage" class="btn btn-primary d-lg-block align-middle" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
+                        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Излез</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+                        <a class="btn btn-secondary d-none d-lg-block" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+                    }
                 </div>
             </div>
         </nav>
     </header>
+    <div class="blank-space-up"></div>
     <div class="container">
         <main role="main" class="main">
             @RenderBody()
         </main>
     </div>
+    <div class="blank-space-down"></div>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-     @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

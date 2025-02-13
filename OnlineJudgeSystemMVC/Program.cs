@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using ServiceLayer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("OnlineJudgeDbContextConnection") ?? throw new InvalidOperationException("Connection string 'OnlineJudgeDbContextConnection' not found.");
 //var connectionString = builder.Configuration.GetConnectionString("OnlineJudgeDbContextConnection") ?? throw new InvalidOperationException("Connection string 'OnlineJudgeDbContextConnection' not found.");
 
 builder.Services.AddHttpClient();
@@ -48,7 +50,15 @@ builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(30); // Persistent cookie expiration
+    options.LoginPath = "/Identity/Account/Login"; // Login path
+    options.LogoutPath = "/Identity/Account/Logout"; // Logout path
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Access denied path
+    options.SlidingExpiration = true; // Reset the expiration time on each request
+});
 
 
 builder.WebHost.ConfigureKestrel(options =>
@@ -59,6 +69,8 @@ builder.WebHost.ConfigureKestrel(options =>
 
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -74,6 +86,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+//app.UseAuthentication();
+
+app.UseHttpsRedirection();
+
 
 app.MapControllers();
 app.MapRazorPages();
