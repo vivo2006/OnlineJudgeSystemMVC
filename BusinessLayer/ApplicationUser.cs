@@ -10,22 +10,21 @@ namespace BusinessLayer
 {
     public class ApplicationUser : IdentityUser
     {
-        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 symbols.")]
-        public string? Name { get; set; }
-        public int Age { get; set; }
-        public string? City { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public ApplicationUser()
         {
             Submissions = new List<Submission>();
         }
-        public ApplicationUser(string name, int age, string city, List<Submission> submissions)
+        public ApplicationUser(string username, string email, string firstName, string lastName)
         {
             Id = Guid.NewGuid().ToString();
-            Name = name;
-            Age = age;
-            City = city;
-            Submissions = submissions;
+            UserName = username;
+            Email = email;
+            FirstName = firstName;
+            LastName = lastName;
+            Submissions = new List<Submission>();
         }
     }
 }
