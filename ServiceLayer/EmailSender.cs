@@ -29,7 +29,7 @@ namespace ServiceLayer
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(_emailSettings.SmtpUsername),
+                    From = new MailAddress(_emailSettings.SmtpUsername, "Екипът на CodeXpert"),
                     Subject = subject,
                     Body = htmlMessage,
                     IsBodyHtml = true

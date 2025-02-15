@@ -120,14 +120,14 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                 var existingUserByEmail = await _userManager.FindByEmailAsync(Input.Email);
                 if (existingUserByEmail != null)
                 {
-                    ModelState.AddModelError("Email", "This email is already registered.");
+                    ModelState.AddModelError("Input.Email", "Tози имейл е вече регистриран.");
                     return Page();
                 }
 
                 var existingUserByUsername = await _userManager.FindByNameAsync(Input.UserName);
                 if (existingUserByUsername != null)
                 {
-                    ModelState.AddModelError("UserName", "This username is already taken.");
+                    ModelState.AddModelError("Input.UserName", "Това потребителско име е заето.");
                     return Page();
                 }
 
@@ -150,7 +150,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Потвърждение на регистрация в CodeXpert", $"Потвърдете регистрацията си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

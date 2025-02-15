@@ -9,17 +9,34 @@ a.navbar-brand {
 }
 
 .blank-space-up{
-    margin-top:60px;
-  height: 12vh;
+    margin-top:73.6px;
 }
 .blank-space-down {
     height: 12vh;
+    margin-bottom: 6.4px;
 }
 .container {
     display: flex;
     justify-content: start;
     align-items: center;
     text-align: center;
+}
+
+footer {
+    text-align: center;
+    justify-content:center;
+    display:flex;
+    vertical-align:middle;
+    margin-left:5%;
+    margin-right:5%;
+    border-top: 1px solid #e5e5e5;
+}
+footer p {
+    color:dimgray;
+    vertical-align:middle;
+    margin-top:3.5%;
+    margin-bottom:3.5%;
+    font-size:66%;    
 }
 
 header{

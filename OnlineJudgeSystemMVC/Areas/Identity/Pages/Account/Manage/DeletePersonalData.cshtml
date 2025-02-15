@@ -1,7 +1,7 @@
 ﻿@page
 @model DeletePersonalDataModel
 @{
-    ViewData["Title"] = "Изтрий данните си";
+    ViewData["Title"] = "Изтриване на акаунт";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 }
 
@@ -18,7 +18,7 @@
         {
             <div class="form-floating mb-3">
                 <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Въведи паролата си." />
-                <label asp-for="Input.Password" class="form-label"></label>
+                <label asp-for="Input.Password" class="form-label">Парола</label>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
         }
