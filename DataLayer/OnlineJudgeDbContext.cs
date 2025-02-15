@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using BusinessLayer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.AspNetCore.Identity;
 
 namespace DataLayer
 {
-    public class OnlineJudgeDbContext : IdentityDbContext<ApplicationUser>
+    public class OnlineJudgeDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public OnlineJudgeDbContext() : base()
         {

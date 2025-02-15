@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BusinessLayer;
 using DataLayer;
 using ServiceLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -30,6 +31,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View(await manager.ReadAllAsync());
         }
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> AdministratorIndex()
         {
             return View(await manager.ReadAllAsync());
@@ -69,13 +71,14 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             return View(competition);
         }
+        [Authorize(Roles = "Admin")]
 
         // GET: Competitions/Create
         public IActionResult Create()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: Competitions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -108,10 +111,11 @@ namespace OnlineJudgeSystemMVC.Controllers
                 }
                 competition.YearCompetitions = yearCompetitions;
                 await manager.UpdateAsync(competition, true);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AdministratorIndex));
             }
             return View(competition);
         }
+        [Authorize(Roles = "Admin")]
 
         // GET: Competitions/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -128,7 +132,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
             return View(competition);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: Competitions/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -157,11 +161,11 @@ namespace OnlineJudgeSystemMVC.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AdministratorIndex));
             }
             return View(competition);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Competitions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -178,7 +182,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             return View(competition);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: Competitions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -190,7 +194,7 @@ namespace OnlineJudgeSystemMVC.Controllers
                 await manager.DeleteAsync(id);
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdministratorIndex));
         }
 
         private bool CompetitionExists(int id)

@@ -3,6 +3,10 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@{
+    bool a;
+    string s;
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,9 +34,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="AdministratorIndex">Състезания</a>
-                        </li>
+                        @if (User.IsInRole(Role.Admin.ToString()))
+                        {
+                            a = User.IsInRole(Role.Admin.ToString());
+                            a = User.IsInRole(Role.Admin.ToString());
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="AdministratorIndex">Състезания</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Index">Състезания</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Класиране</a>
                         </li>
