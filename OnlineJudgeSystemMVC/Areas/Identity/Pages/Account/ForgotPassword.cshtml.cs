@@ -73,8 +73,8 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Анулиране на парола",
+                    $"На този имейл беше изпратена заявка за анулиране на паролата на акаунта в платформата за състезателно програмиране CodeXpert. Променете паролата си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявявали това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
