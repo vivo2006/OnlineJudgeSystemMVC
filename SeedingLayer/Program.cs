@@ -55,16 +55,16 @@ namespace SeedingLayer
                 );
 
                 // Add roles if they don't exist
-                var adminRoleExists = await roleManager.RoleExistsAsync(Role.ADMIN.ToString());
+                var adminRoleExists = await roleManager.RoleExistsAsync(Role.Admin.ToString());
                 if (!adminRoleExists)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(Role.ADMIN.ToString()));
+                    await roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
                 }
 
-                var userRoleExists = await roleManager.RoleExistsAsync(Role.USER.ToString());
+                var userRoleExists = await roleManager.RoleExistsAsync(Role.User.ToString());
                 if (!userRoleExists)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(Role.USER.ToString()));
+                    await roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
                 }
 
                 Console.WriteLine("Roles Added");
@@ -78,7 +78,7 @@ namespace SeedingLayer
 
                 // Create admin user
                 IdentityContext identityContext = new IdentityContext(dbContext, userManager, roleManager);
-                Tuple<IdentityResult, ApplicationUser> result = await identityContext.CreateUserAsync("admin", "Admin1234_", "vivo2006@abv.bg", "Велислав", "Борисов", Role.ADMIN);
+                Tuple<IdentityResult, ApplicationUser> result = await identityContext.CreateUserAsync("admin", "Admin1234_", "vivo2006@abv.bg", "Велислав", "Борисов", Role.Admin);
 
                 if (result.Item1.Succeeded)
                 {

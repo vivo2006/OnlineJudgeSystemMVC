@@ -38,7 +38,7 @@ namespace DataLayer
             ApplicationUser adminIdentityUser = await context.Users.FirstAsync();
             if (adminIdentityUser != null)
             {
-                await userManager.AddToRoleAsync(adminIdentityUser, Role.ADMIN.ToString());
+                await userManager.AddToRoleAsync(adminIdentityUser, Role.Admin.ToString());
                 await userManager.AddPasswordAsync(adminIdentityUser, password);
                 await userManager.SetEmailAsync(adminIdentityUser, email);
             }
@@ -51,7 +51,7 @@ namespace DataLayer
             try
             {
                 ApplicationUser user = new ApplicationUser(username, email, firstName, lastName);
-                if(role == Role.ADMIN)
+                if(role == Role.Admin)
                 {
                     user.EmailConfirmed = true;
                 }

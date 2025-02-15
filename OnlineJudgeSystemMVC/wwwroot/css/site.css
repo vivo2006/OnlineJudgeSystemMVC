@@ -53,6 +53,10 @@ header {
     padding-left: 2%;
     padding-right: 2%;
 }
+#forgot-password{
+    color: #ED2A4F;
+    text-decoration: none;
+}
 .container {
     margin-left: 5%;
     margin-right: 5%;
