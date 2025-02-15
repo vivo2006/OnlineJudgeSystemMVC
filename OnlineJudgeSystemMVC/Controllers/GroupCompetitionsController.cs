@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BusinessLayer;
 using DataLayer;
 using ServiceLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -53,6 +54,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             return View(groupCompetition);
         }
+        [Authorize(Roles = "Admin")]
 
         // GET: GroupCompetitions/Create
         public async Task<IActionResult> Create()
@@ -65,6 +67,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Group,CompetitionId")] GroupCompetition groupCompetition)
         {
@@ -76,7 +79,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             //ViewData["CompetitionId"] = new SelectList(await competitionsManager.ReadAllAsync(), "Id", "Name", groupCompetition.CompetitionId);
             return View(groupCompetition);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: GroupCompetitions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -93,7 +96,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             //ViewData["CompetitionId"] = new SelectList(await competitionsManager.ReadAllAsync(), "Id", "Name", groupCompetition.CompetitionId);
             return View(groupCompetition);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: GroupCompetitions/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -128,7 +131,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             //ViewData["CompetitionId"] = new SelectList(await competitionsManager.ReadAllAsync(), "Id", "Name", groupCompetition.CompetitionId);
             return View(groupCompetition);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: GroupCompetitions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -148,6 +151,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
         // POST: GroupCompetitions/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -244,22 +244,24 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Points = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Points = table.Column<double>(type: "float", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Error = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<double>(type: "float", nullable: false),
                     Memory = table.Column<int>(type: "int", nullable: false),
                     ProblemId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Submissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Submissions_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_Submissions_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Submissions_Problems_ProblemId",
                         column: x => x.ProblemId,
@@ -276,7 +278,7 @@ namespace DataLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SubmissionId = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Memory = table.Column<double>(type: "float", nullable: true),
+                    Memory = table.Column<int>(type: "int", nullable: false),
                     Output = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -341,14 +343,14 @@ namespace DataLayer.Migrations
                 column: "CompetitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Submissions_ApplicationUserId",
-                table: "Submissions",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_ProblemId",
                 table: "Submissions",
                 column: "ProblemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Submissions_UserId",
+                table: "Submissions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TestCaseResults_SubmissionId",

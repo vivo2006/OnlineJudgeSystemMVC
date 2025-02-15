@@ -103,6 +103,29 @@ namespace DataLayer
                 throw;
             }
         }
+        public async Task<ICollection<Submission>> ReadByIdAsync(string key, bool navigationalProperties = false, bool isReadOnly = true)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (navigationalProperties)
+                {
+                    query = query.Include(submission => submission.Problem).ThenInclude(problem => problem.Competition).ThenInclude(competition => competition.YearCompetition).ThenInclude(competition => competition.Competition);
+                    query = query.Include(submission => submission.TestCaseResults);
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.Where(submission => submission.UserId == key).ToListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         public async Task UpdateAsync(Submission item, bool navigationalProperties = false)
         {

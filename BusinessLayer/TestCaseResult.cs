@@ -17,14 +17,14 @@ namespace BusinessLayer
         [ForeignKey("SubmissionId")]
         public Submission Submission { get; set; }
         public string State { get; set; }
-        public double? Memory { get; set; }
+        public int Memory { get; set; }
         public string? Output { get; set; }
         public string? Time { get; set; }
         public TestCaseResult()
         {
 
         }
-        public TestCaseResult(int submissionId, string state, double memory, string output, string time)
+        public TestCaseResult(int submissionId, string state, int memory, string output, string time)
         {
             SubmissionId = submissionId;
             State = state;

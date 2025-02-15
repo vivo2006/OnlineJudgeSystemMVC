@@ -12,11 +12,10 @@ namespace BusinessLayer
     {
         [Key]
         public int Id { get; set; }
-        /*[Required(ErrorMessage ="Foreign key is required.")]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public User User { get; set; }*/
-        public int? Points { get; set; }
+        public ApplicationUser User { get; set; }
+        public double? Points { get; set; }
         public DateTime Created { get; set; }
         public string? Error { get; set; }
         public double Time { get; set; }
@@ -25,6 +24,7 @@ namespace BusinessLayer
         public int ProblemId {  get; set; }
         [ForeignKey("ProblemId")]
         public Problem Problem { get; set; }
+        public string Code { get; set; }
         public ICollection<TestCaseResult> TestCaseResults { get; set; } 
         public Submission() 
         {
@@ -38,11 +38,14 @@ namespace BusinessLayer
             Time = time;
             Memory = memory;
             ProblemId = problemId;
+            TestCaseResults = new List<TestCaseResult>();
         }
-        public Submission(int problemId, DateTime created)
+        public Submission(int problemId, DateTime created, string userId)
         {
             ProblemId = problemId;
             Created = created;
+            UserId = userId;
+            Code = "";
         }
     }
 }

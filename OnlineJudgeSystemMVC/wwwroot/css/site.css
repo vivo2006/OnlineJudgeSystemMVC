@@ -57,14 +57,26 @@ header {
     color: #ED2A4F;
     text-decoration: none;
 }
+
+
+.left-side {
+        flex: 0 35%;
+}
+.right-side {
+        flex:0 65%;
+}
+
+.nav-pills{
+    width:250px;
+}
 .container {
     margin-left: 5%;
     margin-right: 5%;
-    width:90%;
+    width: 90%;
     flex: 1;
-    justify-content:center;
-    align-items:center;
-    vertical-align:middle;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
     max-width: 90%;
     padding: 5%;
     background: #fff;

@@ -14,6 +14,8 @@ using Azure;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using System.Security.Claims;
+using System.Globalization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -83,7 +85,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<string> CreatePostQuery(string[] inputTestFiles, string[] outputTestFiles, int languageId, string sourceCode, double timeLimit, double memoryLimit)
         {
             BatchSubmissions batchRequest = new BatchSubmissions();
-            for (int i = 0; i < inputTestFiles.Length; i++)
+            int boundary = Math.Min(inputTestFiles.Length, 20);
+            for (int i = 0; i < boundary; i++)
             {
                 string inputContent = await System.IO.File.ReadAllTextAsync(inputTestFiles[i]);   // Read input file
                 string outputContent = await System.IO.File.ReadAllTextAsync(outputTestFiles[i]); // Read expected output file
@@ -155,7 +158,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             var outputTestFiles = testFiles.Item2;
 
             var problem = await problemsManager.ReadAsync(ProblemId, true);
-            Submission submission = new Submission(ProblemId, DateTime.Now);
+            Submission submission = new Submission(ProblemId, DateTime.Now, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
             await manager.CreateAsync(submission);
 
             string jsonRequest = await CreatePostQuery(inputTestFiles, outputTestFiles, LanguageId, Code, problem.TimeLimit, problem.MemoryLimit * 666);
@@ -168,18 +172,20 @@ namespace OnlineJudgeSystemMVC.Controllers
             BatchSubmissionResponse results = await GetRequest(tokens, client);
             
             submission.TestCaseResults = new List<TestCaseResult>();
-            foreach(var result in results.Submissions)
+            var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
+            foreach (var result in results.Submissions)
             {
                 // Add the result to the results list
-                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.status.description, (double?)result.memory ?? 0.0, result.stdout ?? "", result.time ?? "0.0");
+                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.status.description, (int)Math.Round((decimal)((result.memory  ?? 0) / 1024.0)), result.stdout ?? "", result.time ?? "0.0");
                 submission.TestCaseResults.Add(testCaseResult);
                 await testCaseResultManager.CreateAsync(testCaseResult);
 
             }
-            submission.Points = submission.TestCaseResults.Count(r => r.State == "Accepted");
-            submission.Time = 1;
+            submission.Points = (submission.TestCaseResults.Count(r => r.State == "Accepted") / submission.TestCaseResults.Count()) * 100.0;
+            submission.Time = submission.TestCaseResults.Max(r => double.Parse(r.Time, numberFormatInfo));
             submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
-            submission.Memory = 102444;
+            submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(r.Memory));
+            submission.Code = Code;
             await manager.UpdateAsync(submission, true);
             // Pass the results to the Results view
             return View("Details", submission);

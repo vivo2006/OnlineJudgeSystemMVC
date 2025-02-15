@@ -52,7 +52,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Класиране</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Профил</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Форум</a>
                         </li>
                         @if (SignInManager.IsSignedIn(User))
                         {
@@ -61,14 +61,14 @@
                             </li>
                             <li class="nav-item">
                                 <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                    <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Излез</button>
+                                    <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Изход</button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+                                <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Вход</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark d-block d-lg-none" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
@@ -79,12 +79,12 @@
                     {
                         <a id="manage" class="btn btn-primary d-lg-block align-middle" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Профил</a>
                         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                            <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Излез</button>
+                            <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Изход</button>
                         </form>
                     }
                     else
                     {
-                        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+                        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Вход</a>
                         <a class="btn btn-secondary d-none d-lg-block" id="register" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
                     }
                 </div>

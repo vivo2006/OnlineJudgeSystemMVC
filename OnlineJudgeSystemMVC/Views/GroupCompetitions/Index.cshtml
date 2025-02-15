@@ -1,4 +1,5 @@
 ﻿@model ICollection<BusinessLayer.GroupCompetition>
+@using BusinessLayer;
 
 
 @{
@@ -13,7 +14,10 @@
                 <tr>
                     <th>Група</th>
                     <th>Задачи</th>
+                @if (User.IsInRole(Role.Admin.ToString()))
+                {
                     <th>Действия</th>
+                }
                 </tr>
             </thead>
             <tbody>
@@ -29,10 +33,13 @@
                                 }
                             </ul>
                         </td>
+                    @if (User.IsInRole(Role.Admin.ToString()))
+                    {
                         <td>
                             <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Create" asp-route-id=@group.Id>+</a>
                         </td>
-                    </tr>
+                    }
+                </tr>
                 }
             </tbody>
         </table>

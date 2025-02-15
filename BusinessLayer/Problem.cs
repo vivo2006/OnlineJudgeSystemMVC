@@ -19,8 +19,8 @@ namespace BusinessLayer
         public double TimeLimit {  get; set; }
         [Required]
         public int MemoryLimit { get; set; }
-        [Required(ErrorMessage = "URL is required.")]
-        [Url(ErrorMessage = "Invalid URL format.")]
+        [Required(ErrorMessage = "URL е задължителен.")]
+        [Url(ErrorMessage = "Невалиден URL формат.")]
         public string URL { get; set; }
         [Required]
         public string ProblemNotation { get; set; }

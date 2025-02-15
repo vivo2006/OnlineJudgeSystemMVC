@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("OnlineJudgeDbContextConnection") ?? throw new InvalidOperationException("Connection string 'OnlineJudgeDbContextConnection' not found.");
 
 builder.Services.AddHttpClient();
 

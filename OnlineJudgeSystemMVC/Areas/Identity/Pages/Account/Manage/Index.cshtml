@@ -5,19 +5,28 @@
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<partial name="_StatusMessage" for="StatusMessage" />
-<div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
-            </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary ms-0">Запази</button>
-        </form>
-    </div>
-</div>
+<table class="table table-bordered" style="width:80%;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Състезание</th>
+            <th>Задача</th>
+            <th>Точки</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Submissions)
+        {
+            <tr>
+                <td><a class="text-dark" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>@item.Id</a></td>
+                <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
+                <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
+                <td>@item.Points</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

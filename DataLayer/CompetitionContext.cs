@@ -98,6 +98,11 @@ namespace DataLayer
             }
         }
 
+        public Task<ICollection<Competition>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateAsync(Competition item, bool navigationalProperties = false)
         {
             try

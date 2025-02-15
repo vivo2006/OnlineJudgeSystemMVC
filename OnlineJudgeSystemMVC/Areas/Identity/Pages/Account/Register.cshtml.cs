@@ -151,6 +151,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Потвърждение на регистрация в CodeXpert", $"Потвърдете регистрацията си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.");
+                    $"На този имейл беше изпратена заявка за създаване на акаунт в платформата за състезателно програмиране CodeXpert. Довършете регистрацията си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявявали това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

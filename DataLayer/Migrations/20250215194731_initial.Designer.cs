@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250215182236_Initial")]
-    partial class Initial
+    [Migration("20250215194731_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,8 +192,9 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -204,8 +205,8 @@ namespace DataLayer.Migrations
                     b.Property<int>("Memory")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Points")
-                        .HasColumnType("int");
+                    b.Property<double?>("Points")
+                        .HasColumnType("float");
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");
@@ -213,11 +214,15 @@ namespace DataLayer.Migrations
                     b.Property<double>("Time")
                         .HasColumnType("float");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("ProblemId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Submissions");
                 });
@@ -230,8 +235,8 @@ namespace DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double?>("Memory")
-                        .HasColumnType("float");
+                    b.Property<int>("Memory")
+                        .HasColumnType("int");
 
                     b.Property<string>("Output")
                         .HasColumnType("nvarchar(max)");
@@ -435,17 +440,21 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("BusinessLayer.Submission", b =>
                 {
-                    b.HasOne("BusinessLayer.ApplicationUser", null)
-                        .WithMany("Submissions")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("BusinessLayer.Problem", "Problem")
                         .WithMany("Submissions")
                         .HasForeignKey("ProblemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BusinessLayer.ApplicationUser", "User")
+                        .WithMany("Submissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Problem");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BusinessLayer.TestCaseResult", b =>
