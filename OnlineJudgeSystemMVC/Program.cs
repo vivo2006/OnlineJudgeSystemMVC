@@ -5,6 +5,7 @@ using ServiceLayer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using OnlineJudgeSystemMVC.Areas.Identity.Pages.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,9 @@ builder.Services.AddScoped<SubmissionContext, SubmissionContext>();
 builder.Services.AddScoped<TestCaseResultsManager, TestCaseResultsManager>();
 builder.Services.AddScoped<IDb<TestCaseResult, int>, TestCaseResultContext>();
 builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
+
+builder.Services.AddScoped<IdentityManager, IdentityManager>();
+builder.Services.AddScoped<IdentityContext, IdentityContext>(); ;
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();

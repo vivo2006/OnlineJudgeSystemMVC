@@ -1,0 +1,38 @@
+﻿@page
+@model LeaderboardModel
+@{
+    ViewData["Title"] = "Класиране";
+}
+
+<h1>Класиране</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Място</th>
+            <th>Име</th>
+            <th>Точки</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Leaderboard != null && Model.Leaderboard.Any())
+        {
+            int rank = 1;
+            foreach (var user in Model.Leaderboard)
+            {
+                <tr>
+                    <td>@rank</td>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td>@user.Points</td>
+                </tr>
+                rank++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">Няма активни потребители.</td>
+            </tr>
+        }
+    </tbody>
+</table>

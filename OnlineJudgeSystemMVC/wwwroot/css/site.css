@@ -159,3 +159,8 @@ h1 {
     .list-group-item{
 
     }
+.dropdown-item.active, .dropdown-item:active {
+    color: white;
+    text-decoration: none;
+    background-color: #ED2A4F;
+}

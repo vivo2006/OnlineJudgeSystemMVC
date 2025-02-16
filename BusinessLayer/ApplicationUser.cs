@@ -13,6 +13,7 @@ namespace BusinessLayer
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public ICollection<Submission> Submissions { get; set; }
+        public int Points { get; set; }
         public ApplicationUser()
         {
             Submissions = new List<Submission>();

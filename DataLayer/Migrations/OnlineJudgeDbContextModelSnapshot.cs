@@ -70,6 +70,9 @@ namespace DataLayer.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -202,8 +205,8 @@ namespace DataLayer.Migrations
                     b.Property<int>("Memory")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Points")
-                        .HasColumnType("float");
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");

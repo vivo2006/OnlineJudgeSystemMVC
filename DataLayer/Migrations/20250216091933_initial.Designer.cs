@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250215194731_initial")]
+    [Migration("20250216091933_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -72,6 +72,9 @@ namespace DataLayer.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -205,8 +208,8 @@ namespace DataLayer.Migrations
                     b.Property<int>("Memory")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Points")
-                        .HasColumnType("float");
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");

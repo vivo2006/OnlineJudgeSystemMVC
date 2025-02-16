@@ -15,7 +15,7 @@ namespace BusinessLayer
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
-        public double? Points { get; set; }
+        public int Points { get; set; }
         public DateTime Created { get; set; }
         public string? Error { get; set; }
         public double Time { get; set; }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ServiceLayer;
 
 namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
 {
@@ -30,13 +32,15 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IdentityManager _identityManager;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IdentityManager identityManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _identityManager = identityManager;
         }
 
         /// <summary>
@@ -83,6 +88,15 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "UserName")]
             public string UserName { get; set; }
+            [Required]
+            [Display(Name ="FirstName")]
+            [MaxLength(50, ErrorMessage ="Името не може да бъде повече от 50 символа")]
+            public string FirstName { get; set; }
+            [Required]
+            [Display(Name ="LastName")]
+            [MaxLength(50, ErrorMessage = "Фамилията не може да бъде повече от 50 символа")]
+
+            public string LastName { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -131,11 +145,12 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                var user = CreateUser();
-
-                await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
+                var identityResult = await _identityManager.CreateUserAsync(Input.UserName, Input.Password, Input.Email, Input.FirstName, Input.LastName, Role.User);
+                var user = identityResult.Item2;
+                var result = identityResult.Item1;
+                /*await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var result = await _userManager.CreateAsync(user, Input.Password);*/
 
                 if (result.Succeeded)
                 {
@@ -150,8 +165,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Потвърждение на регистрация в CodeXpert", $"Потвърдете регистрацията си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.");
-                    $"На този имейл беше изпратена заявка за създаване на акаунт в платформата за състезателно програмиране CodeXpert. Довършете регистрацията си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявявали това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
+                    await _emailSender.SendEmailAsync(Input.Email, "Потвърждение на регистрация в CodeXpert", $"На този имейл беше заявена регистрация в платформата за състезателно програмиране CodeXpert. За да завършите създаването на акаунта си в CodeXpert, <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявили това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

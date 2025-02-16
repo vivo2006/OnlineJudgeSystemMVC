@@ -16,6 +16,8 @@ using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Security.Claims;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -25,14 +27,15 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly ProblemsManager problemsManager;
         private readonly TestCaseResultContext testCaseResultManager;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-
-        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager)
+        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager, UserManager<ApplicationUser> userManager)
         {
             this.manager = manager;
             this.problemsManager = problemsManager;
             this.httpClientFactory = httpClientFactory;
             this.testCaseResultManager = testCaseResultManager;
+            _userManager = userManager;
         }
 
         // GET: Submissions
@@ -158,7 +161,9 @@ namespace OnlineJudgeSystemMVC.Controllers
             var outputTestFiles = testFiles.Item2;
 
             var problem = await problemsManager.ReadAsync(ProblemId, true);
-            Submission submission = new Submission(ProblemId, DateTime.Now, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            Submission submission = new Submission(ProblemId, DateTime.Now, userId);
 
             await manager.CreateAsync(submission);
 
@@ -181,11 +186,24 @@ namespace OnlineJudgeSystemMVC.Controllers
                 await testCaseResultManager.CreateAsync(testCaseResult);
 
             }
-            submission.Points = (submission.TestCaseResults.Count(r => r.State == "Accepted") / submission.TestCaseResults.Count()) * 100.0;
+            submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * (decimal)100.0);
             submission.Time = submission.TestCaseResults.Max(r => double.Parse(r.Time, numberFormatInfo));
             submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
             submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(r.Memory));
             submission.Code = Code;
+            var userSubmissions = await manager.ReadByIdAsync(userId, true);
+            Submission bestSubmission = userSubmissions.Where(s => s.ProblemId == ProblemId).OrderByDescending(s => s.Points).FirstOrDefault();
+
+            if (bestSubmission != null)
+            {
+                // Only update if the new solution has more points
+                if (submission.Points > bestSubmission.Points)
+                {
+                    user.Points += (submission.Points - bestSubmission.Points);
+                }
+            }
+            else user.Points += submission.Points;
+            await _userManager.UpdateAsync(user);
             await manager.UpdateAsync(submission, true);
             // Pass the results to the Results view
             return View("Details", submission);
