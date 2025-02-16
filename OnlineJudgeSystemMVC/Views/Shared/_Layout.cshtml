@@ -57,20 +57,21 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle d-block d-lg-none" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="d-flex justify-content-center flex-column">
+                                    <a href="#" class="nav-link text-dark d-block d-lg-none align-middle text-center" id="profileToggle" data-bs-toggle="collapse" data-bs-target="#profileList" aria-expanded="false" aria-controls="profileList">
                                         Профил
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item d-block d-lg-none" asp-area="Identity" asp-page="/Account/Manage/Index" id="profile">Събмити</a>
-                                        <a class="dropdown-item d-block d-lg-none" asp-area="Identity" asp-page="/Account/Manage/ChangePassword" id="change-password">Промяна на паролата</a>
-                                        <a class="dropdown-item d-block d-lg-none" asp-area="Identity" asp-page="/Account/Manage/PersonalData" id="personal-data">Данни</a>
+                                    </a>
+                                    <div class="collapse justify-content-center" id="profileList">
+                                        <a class="nav-link d-block d-lg-none align-middle text-center" asp-area="Identity" asp-page="/Account/Manage/Index" id="profile" style="font-size:100%;color:#ED2A4F;">Събмити</a>
+                                        <a class="nav-link d-block d-lg-none align-middle text-center" asp-area="Identity" asp-page="/Account/Manage/ChangePassword" id="change-password" style="font-size:100%;color:#ED2A4F;">Промяна на паролата</a>
+                                        <a class="nav-link d-block d-lg-none align-middle text-center" asp-area="Identity" asp-page="/Account/Manage/PersonalData" id="personal-data" style="font-size:100%;color:#ED2A4F;">Данни</a>
                                     </div>
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                    <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Изход</button>
+                                <a href="#" id="logout" class="nav-link text-dark d-block d-lg-none align-middle" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">Изход</a>
+
+                                <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" style="display: none;">
                                 </form>
                             </li>
                         }
@@ -87,7 +88,7 @@
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle d-none d-lg-block" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-primary dropdown-toggle d-none d-lg-block me-3" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Профил
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -97,7 +98,7 @@
                             </div>
                         </div>
                         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                            <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Изход</button>
+                            <button id="logout" type="submit" class="btn btn-secondary d-none d-lg-block align-middle">Изход</button>
                         </form>
                     }
                     else

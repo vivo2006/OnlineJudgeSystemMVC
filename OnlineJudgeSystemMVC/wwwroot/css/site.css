@@ -145,6 +145,7 @@ h1 {
     width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
+    word-break: break-word;
 }
 
     .table th, .table td {
@@ -155,6 +156,7 @@ h1 {
     .table th {
         background-color: #007bff;
         color: #fff;
+        word-wrap:break-word;
     }
     .list-group-item{
 
