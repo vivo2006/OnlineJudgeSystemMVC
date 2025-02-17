@@ -128,7 +128,6 @@ namespace OnlineJudgeSystemMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CompetitionId"] = new SelectList(await competitionsManager.ReadAllAsync(), "Id", "Name", groupCompetition.CompetitionId);
             return View(groupCompetition);
         }
         [Authorize(Roles = "Admin")]

@@ -1,16 +1,15 @@
 ﻿@model BusinessLayer.Problem
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирай задача";
 }
 
-<h1>Edit</h1>
+<h1>Редактирай</h1>
 
-<h4>Problem</h4>
 <hr />
-<div class="row">
+<div class="d-flex justify-content-center">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data"> 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -18,10 +17,7 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label for="GroupId"></label>
-                <input type="hidden" id="GroupId" name="GroupId" class="form-control" value="@ViewBag.GroupId" />
-            </div>
+            <input type="hidden" asp-for="URL" />
             <div class="form-group">
                 <label asp-for="TimeLimit" class="control-label">Лимит за време (сек.)</label>
                 <input asp-for="TimeLimit" class="form-control" />
@@ -32,14 +28,11 @@
                 <input asp-for="MemoryLimit" class="form-control" />
                 <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ProblemNotation" class="control-label">Нотация</label>
-                <input asp-for="ProblemNotation" class="form-control" />
-                <span asp-validation-for="ProblemNotation" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="ProblemNotation" />
+             <input type="hidden" asp-for="CompetitionId" />
             <div class="form-group">
                 <label for="pdfFile">Условие на задачата</label>
-                <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" required />
+                <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" />
             </div>
             <div>
                 <label for="testCases">Тестове на задачата</label>
@@ -50,10 +43,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

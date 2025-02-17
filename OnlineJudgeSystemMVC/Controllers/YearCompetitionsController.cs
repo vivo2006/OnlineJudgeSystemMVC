@@ -154,7 +154,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             await manager.DeleteAsync(id);
             YearCompetition yearCompetition = await manager.ReadAsync(id, true);
             Competition competition = yearCompetition.Competition;
-            manager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString());
+            manager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
             manager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());
             return RedirectToAction(nameof(Index));
         }

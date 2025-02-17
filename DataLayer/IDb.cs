@@ -20,16 +20,31 @@ namespace DataLayer
         {
             try
             {
-                string competitionPath = Path.Combine(prefix, deleteType, competitionNotation, year, problemNotation);
-
-                if (Directory.Exists(competitionPath))
-                {
-                    Directory.Delete(competitionPath, true);
+                string competitionPath = Path.Combine(prefix, deleteType, competitionNotation, year, problemNotation + (deleteType == "Problems" ? ".pdf" : ""));
+                if (deleteType == "Problems")
+                { 
+                    if (File.Exists(competitionPath))
+                    {
+                        File.Delete(competitionPath);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Path not found");
+                    }
                 }
                 else
                 {
-                    throw new ArgumentException("Directory not found");
+                    bool a = Directory.Exists(competitionPath);
+                    if (Directory.Exists(competitionPath))
+                    {
+                        Directory.Delete(competitionPath, true);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Directory not found");
+                    }
                 }
+                
             }
             catch (Exception ex)
             {

@@ -22,16 +22,29 @@
                     <tr>
                         <td>@group.Group</td>
                         <td>
-                            <ul class="list-unstyled">
+                            <ul class="list-unstyled mb-0">
                                 @foreach (var problem in group.Problems)
                                 {
                                     <li>
-                                        <a asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>@problem.Name</a>
-                                        @if (User.IsInRole(Role.Admin.ToString()))
-                                        {
-                                            <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Edit" asp-route-id=@problem.Id asp-route-groupId=@group.Id>✏️</a>
-                                            <a class="nav-link text-dark" asp-area="" asp-controller="Problems" asp-action="Delete" asp-route-id=@problem.Id>🗑️</a>
-                                        }
+                                        <div class="d-flex flex-row justify-content-center align-middle m-auto">
+                                            <a class="text-decoration-none text-dark align-middle mt-auto mb-auto" asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>@problem.Name</a>
+                                            @if (User.IsInRole(Role.Admin.ToString()))
+                                            {
+                                                <a class="nav-link text-dark ms-3" asp-area="" asp-controller="Problems" asp-action="Edit" asp-route-id=@problem.Id asp-route-groupId=@group.Id>✏️</a>
+                                                <a class="nav-link text-dark ms-2" asp-area="" asp-controller="Problems" asp-action="Delete" asp-route-id=@problem.Id>🗑️</a>
+                                                <a class="ms-2 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@problem.Id>
+                                                    <img class="mt-auto mb-auto" src="~/icon/icon.png" alt="Submissions history" width="25" height="25">
+                                                </a>
+                                            }
+                                            @if (User.IsInRole(Role.User.ToString()))
+                                            {
+                                            <a class="ms-3 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@problem.Id>
+                                                    <img src="~/icon/icon.png" alt="Submissions history" width="25">
+                                                </a>
+                                            }
+                                            
+
+                                        </div>
                                     </li>
                                 }
                                 <li>

@@ -18,6 +18,7 @@ using System.Security.Claims;
 using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -39,9 +40,12 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Submissions
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int problemId)
         {
-            return View(await manager.ReadAllAsync(true));
+            Problem problem = await problemsManager.ReadAsync(problemId, true);
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.Problem = problem.Name;
+            return View(await manager.ReadByIdAndProblemAsync(user.Id, problemId));
         }
 
         // GET: Submissions/Details/5
@@ -154,6 +158,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [HttpPost]
+
         public async Task<IActionResult> Create(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation)
         {
             Tuple<string[], string[]> testFiles = GetTestFiles(CompetitionNotation, Year, ProblemNotation);   
@@ -216,6 +221,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Submissions/Edit/5
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -236,6 +243,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Points,Created,Error,Time,Memory,ProblemId")] Submission submission)
         {
             if (id != submission.Id)
@@ -266,6 +275,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Submissions/Delete/5
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -285,6 +296,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // POST: Submissions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await manager.DeleteAsync(id);

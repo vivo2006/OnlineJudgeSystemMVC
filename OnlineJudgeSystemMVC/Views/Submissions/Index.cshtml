@@ -1,65 +1,30 @@
 ﻿@model IEnumerable<BusinessLayer.Submission>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Събмити";
 }
 
-<h1>Index</h1>
+<h1>Събмити на задача @ViewBag.Problem</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-bordered" style="width:100%;">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Points)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Error)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Memory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Problem)
-            </th>
-            <th></th>
+            <th>ID</th>
+            <th>Състезание</th>
+            <th>Задача</th>
+            <th>Точки</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Points)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Error)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Memory)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Problem.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><a class="text-dark" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>@item.Id</a></td>
+                <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
+                <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
+                <td>@item.Points</td>
+
+            </tr>
+        }
     </tbody>
 </table>

@@ -36,9 +36,9 @@ namespace ServiceLayer
             await context.DeleteAsync(key);
         }
 
-        public void DeleteDirectory(string deleteType, string competitionNotation, string year = "", string problemNotation = "")
+        public void DeleteDirectory(string deleteType, string competitionNotation, string year = "", string problemNotation = "", string prefix = "")
         {
-            context.DeleteDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), deleteType, competitionNotation, year, problemNotation);
+            context.DeleteDirectory(prefix, deleteType, competitionNotation, year, problemNotation);
         }
 
     }

@@ -148,5 +148,29 @@ namespace DataLayer
             }
             return null;
         }
+
+        public async Task<ICollection<Submission>> ReadByIdAndProblemAsync(string key, int problemId, bool useNavigationalProperties, bool isReadOnly)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (useNavigationalProperties)
+                {
+                    query = query.Include(submission => submission.Problem).ThenInclude(problem => problem.Competition).ThenInclude(competition => competition.YearCompetition).ThenInclude(competition => competition.Competition);
+                    query = query.Include(submission => submission.TestCaseResults);
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.Where(submission => submission.UserId == key && submission.ProblemId == problemId).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
     }
 }

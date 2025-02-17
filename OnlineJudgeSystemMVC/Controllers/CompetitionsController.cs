@@ -192,7 +192,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             if (competition != null)
             {
                 await manager.DeleteAsync(id);
-                manager.DeleteDirectory("Problems", competition.Notation);
+                manager.DeleteDirectory("Problems", competition.Notation, prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
                 manager.DeleteDirectory("TestCases", competition.Notation);
             }
 

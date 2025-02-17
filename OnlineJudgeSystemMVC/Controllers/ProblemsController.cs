@@ -84,26 +84,9 @@ namespace OnlineJudgeSystemMVC.Controllers
             Problem problem = new Problem(name, timeLimit, memoryLimit, problemNotation, groupId);
             await LoadCompetitions(groupId);
             
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", globalCompetition.Notation, globalYearCompetition.Year.ToString());
-
-            if (!Directory.Exists(uploadDirectory))
-            {
-                Directory.CreateDirectory(uploadDirectory);
-            }
-
-            string filePath = Path.Combine(uploadDirectory, problemNotation + ".pdf");
-            string port = HttpContext.Request.Host.Port.ToString() ?? "80"; 
-            string localhost = $"https://localhost:{port}";
-
-            string newUrl = $"{localhost}/Problems/{globalCompetition.Notation}/{globalYearCompetition.Year.ToString()}/{problemNotation}.pdf";
-            problem.URL = newUrl;
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await pdfFile.CopyToAsync(stream);
-            }
             if (ModelState.IsValid)
             {
+                await UploadTask(pdfFile, problem);
                 await manager.CreateAsync(problem);            
                 await UploadFolder(testCases, problem);
 
@@ -189,13 +172,26 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,GroupId,TimeLimit,MemoryLimit,ProblemNotation")] Problem problem, IFormFile pdfFile, IFormFile[] testCases)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,URL,TimeLimit,MemoryLimit,CompetitionId,ProblemNotation")] Problem problem, IFormFile? pdfFile, IFormFile[]? testCases)
         {
+            await LoadCompetitions(problem.CompetitionId);
+            ModelState.Remove("Competition");
             if (ModelState.IsValid)
             {
                 try
                 {
                     await manager.UpdateAsync(problem);
+                    if (pdfFile != null)
+                    {
+                        await LoadCompetitions(problem.CompetitionId);
+                        manager.DeleteDirectory("Problems", globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation, prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+                        await UploadTask(pdfFile, problem);
+                    }
+                    if (testCases != null && testCases.Length > 0)
+                    {
+                        manager.DeleteDirectory("TestCases", globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation);
+                        await UploadFolder(testCases, problem);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -239,12 +235,15 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var problem = await manager.ReadAsync(id);
+            await LoadCompetitions(problem.CompetitionId);
             if (problem != null)
             {
+                manager.DeleteDirectory("Problems", globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation, prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+                manager.DeleteDirectory("TestCases", globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation);
                 await manager.DeleteAsync(id);
             }
 
-            return RedirectToAction(nameof(Index));
+            return Redirect($"/GroupCompetitions/Index/?competitionId={globalCompetition.Id}&yearId={globalYearCompetition.Id}");
         }
 
         private bool ProblemExists(int id)
@@ -268,6 +267,27 @@ namespace OnlineJudgeSystemMVC.Controllers
             globalGroupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
             globalYearCompetition = await yearCompetitionsManager.ReadAsync(globalGroupCompetition.YearCompetitionId, true);
             globalCompetition = await competitionsManager.ReadAsync(globalYearCompetition.CompetitionId, true);
+        }
+        private async Task UploadTask(IFormFile pdfFile, Problem problem)
+        {
+            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", globalCompetition.Notation, globalYearCompetition.Year.ToString());
+
+            if (!Directory.Exists(uploadDirectory))
+            {
+                Directory.CreateDirectory(uploadDirectory);
+            }
+
+            string filePath = Path.Combine(uploadDirectory, problem.ProblemNotation + ".pdf");
+            string port = HttpContext.Request.Host.Port.ToString() ?? "80";
+            string localhost = $"https://localhost:{port}";
+
+            string newUrl = $"{localhost}/Problems/{globalCompetition.Notation}/{globalYearCompetition.Year.ToString()}/{problem.ProblemNotation}.pdf";
+            problem.URL = newUrl;
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await pdfFile.CopyToAsync(stream);
+            }
         }
     }
 }

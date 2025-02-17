@@ -34,6 +34,10 @@ namespace ServiceLayer
         {
             return await context.ReadByIdAsync(key, useNavigationalProperties, isReadOnly);
         }
+        public async Task<ICollection<Submission>> ReadByIdAndProblemAsync(string key, int problemId, bool useNavigationalProperties = false, bool isReadOnly = true)
+        {
+            return await context.ReadByIdAndProblemAsync(key, problemId, useNavigationalProperties, isReadOnly);
+        }
 
         public async Task UpdateAsync(Submission submission, bool useNavigationalProperties = false)
         {
