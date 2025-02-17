@@ -96,12 +96,12 @@ namespace OnlineJudgeSystemMVC.Controllers
 
                 batchRequest.submissions.Add(new PostRequest
                 {
-                    language_id = languageId,
-                    source_code = sourceCode,
-                    stdin = inputContent,
-                    expected_output = outputContent,
-                    cpu_time_limit = timeLimit,
-                    memory_limit = memoryLimit
+                    LanguageId = languageId,
+                    SourceCode = sourceCode,
+                    Stdin = inputContent,
+                    ExpectedOutput = outputContent,
+                    CpuTimeLimit = timeLimit,
+                    MemoryLimit = memoryLimit
                 });
             }
             // Convert to JSON
@@ -130,7 +130,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
         public async Task<BatchSubmissionResponse> GetRequest(List<PostResponse> tokens, HttpClient client)
         {
-            List<string> tokenValues = tokens.Select(r => r.token).ToList();
+            List<string> tokenValues = tokens.Select(r => r.Token).ToList();
             string tokenString = string.Join(",", tokenValues);
             var getRequest = new HttpRequestMessage
             {

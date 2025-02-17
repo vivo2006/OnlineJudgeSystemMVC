@@ -80,19 +80,19 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage ="Имейлът е задължителен.")]
             [EmailAddress(ErrorMessage ="Въведете правилен имейл.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "Потребителското име е задължително.")]
             [Display(Name = "UserName")]
             public string UserName { get; set; }
-            [Required]
+            [Required(ErrorMessage = "Името е задължително.")]
             [Display(Name ="FirstName")]
             [MaxLength(50, ErrorMessage ="Името не може да бъде повече от 50 символа")]
             public string FirstName { get; set; }
-            [Required]
+            [Required(ErrorMessage = "Фамилията е задължителна.")]
             [Display(Name ="LastName")]
             [MaxLength(50, ErrorMessage = "Фамилията не може да бъде повече от 50 символа")]
 
@@ -102,7 +102,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Паролата е задължителна.")]
             [StringLength(50, ErrorMessage = "Паролата трябва да е поне {2} и най-много {1} символа.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]

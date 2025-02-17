@@ -15,13 +15,13 @@ namespace BusinessLayer
         [MaxLength(100, ErrorMessage = "Името не може да надхвърля 100 символа.")]
         public string Name { get; set; }
         public ICollection<YearCompetition>? YearCompetitions { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Началната година е задължителна")]
         [Range(2000, 2030, ErrorMessage ="Годината трябва да е между 2000 и 2030.")]
         public int FirstYear { get; set; }
+        [Required(ErrorMessage = "Крайната година е задължителна")]
         [Range(2000, 2030, ErrorMessage = "Годината трябва да е между 2000 и 2030.")]
-        [Required]
         public int LastYear {  get; set; }
-        [Required]
+        [Required(ErrorMessage ="Нотацията на състезанието е задължителна.")]
         public string Notation {  get; set; }
         public Competition()
         {

@@ -12,17 +12,19 @@ namespace BusinessLayer
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage = "Name is required.")] 
-        [MaxLength(200, ErrorMessage = "Problem name cannot exceed 200 characters.")]
+        [Required(ErrorMessage = "Името е задължително.")] 
+        [MaxLength(200, ErrorMessage = "Името не може да надхвърля 200 символа.")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Времевото ограничение е задължително.")]
+        [Range(0.1, 10, ErrorMessage ="Времевото ограничение трябва да приема стойности между 0.1 и 10 сек.")]
         public double TimeLimit {  get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ограничението за паметта е задължително.")]
+        [Range(0.1, 10, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
         public int MemoryLimit { get; set; }
         [Required(ErrorMessage = "URL е задължителен.")]
         [Url(ErrorMessage = "Невалиден URL формат.")]
         public string URL { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Нотацията на задачата е задължителна.")]
         public string ProblemNotation { get; set; }
         public int CompetitionId {  get; set; }
         [ForeignKey("CompetitionId")]

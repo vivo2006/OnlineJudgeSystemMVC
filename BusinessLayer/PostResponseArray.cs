@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
     public class PostResponseArray
     {
-        public List<PostResponse> tokens { get; set; }
+        [JsonPropertyName("tokens")]
+        public List<PostResponse> Tokens { get; set; }
     }
 }

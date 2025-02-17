@@ -11,12 +11,15 @@
         <p>
             <strong>Изтриването на акаунта е необратимо.</strong>
         </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post">
-            <button class="btn btn-primary ms-0" type="submit">Изтегли</button>
-        </form>
-        <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger ms-0">Изтрий</a>
-        </p>
+        <div class="d-flex flex-row justify-content-center">
+            <form id="download-data" asp-page="DownloadPersonalData" method="post">
+                <button class="btn btn-primary ms-0" type="submit">Изтегли</button>
+            </form>
+            <p>
+                <a id="delete" asp-page="DeletePersonalData" class="btn btn-secondary ms-0">Изтрий</a>
+            </p>
+        </div>
+        
     </div>
 </div>
 

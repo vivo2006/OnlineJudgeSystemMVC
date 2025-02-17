@@ -9,6 +9,7 @@ namespace BusinessLayer
 {
     public class PostResponse
     {
-        public string token { get; set; }
+        [JsonPropertyName("token")]
+        public string Token { get; set; }
     }
 }

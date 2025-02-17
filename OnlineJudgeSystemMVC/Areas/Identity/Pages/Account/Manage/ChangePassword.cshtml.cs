@@ -53,7 +53,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage ="Текущата парола е задължителна.")]
             [DataType(DataType.Password)]
             [Display(Name = "Текуща парола")]
             public string OldPassword { get; set; }
@@ -62,7 +62,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage ="Новата парола е задължителна.")]
             [StringLength(50, ErrorMessage = "Паролата трябва да е между {2} и {1} символа.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Нова парола")]
