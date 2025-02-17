@@ -19,7 +19,7 @@ namespace BusinessLayer
         [Range(0.1, 10, ErrorMessage ="Времевото ограничение трябва да приема стойности между 0.1 и 10 сек.")]
         public double TimeLimit {  get; set; }
         [Required(ErrorMessage = "Ограничението за паметта е задължително.")]
-        [Range(0.1, 10, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
+        [Range(1, 500, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
         public int MemoryLimit { get; set; }
         [Required(ErrorMessage = "URL е задължителен.")]
         [Url(ErrorMessage = "Невалиден URL формат.")]
@@ -34,15 +34,22 @@ namespace BusinessLayer
         {
             Submissions = new List<Submission>();
         }
-        public Problem(int id, string name, string uRL, int competitionId, List<Submission> submissions, double timeLimit, int memoryLimit)
+        public Problem(string name, string uRL, int competitionId, List<Submission> submissions, double timeLimit, int memoryLimit)
         {
-            Id = id;
             Name = name;
             URL = uRL;
             CompetitionId = competitionId;
             Submissions = submissions;
             TimeLimit = timeLimit;
             MemoryLimit = memoryLimit;
+        }
+        public Problem(string name, double timeLimit, int memoryLimit, string problemNotation, int competitionId)
+        {
+            Name = name;
+            TimeLimit = timeLimit;
+            MemoryLimit = memoryLimit;
+            ProblemNotation = problemNotation;
+            CompetitionId = competitionId;
         }
     }
 }

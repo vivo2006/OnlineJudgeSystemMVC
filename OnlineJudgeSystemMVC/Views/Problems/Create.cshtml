@@ -18,7 +18,7 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="GroupId">ID на груповото състезание</label>
+                <label for="GroupId"></label>
                 <input type="hidden" id="GroupId" name="GroupId" class="form-control" value="@ViewBag.GroupId" />
             </div>
             <div class="form-group">
@@ -36,7 +36,7 @@
                 <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProblemNotation" class="control-label"></label>
+                <label asp-for="ProblemNotation" class="control-label">Нотация</label>
                 <input asp-for="ProblemNotation" class="form-control" />
                 <span asp-validation-for="ProblemNotation" class="text-danger"></span>
             </div>
@@ -52,9 +52,6 @@
             <div class="d-flex flex-row justify-content-center mt-3">
                 <div class="form-group">
                     <input type="submit" value="Създай" class="btn btn-primary" />
-                </div>
-                <div>
-                    <a href="/GroupCompetitions/Index/?competitionId=@ViewBag.CompetitionId&yearId=@ViewBag.YearId"  class="btn btn-secondary">Назад</a>
                 </div>
             </div>
     </form>

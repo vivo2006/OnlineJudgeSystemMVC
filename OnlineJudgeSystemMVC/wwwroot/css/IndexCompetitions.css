@@ -13,7 +13,7 @@ a:hover {
 #container-table {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Center boxes symmetrically */
+    justify-content: space-between; /* Center boxes symmetrically */
     gap: 10%; /* Space between boxes */
     width: 100%; /* Adjust as needed */
     padding: 10px;
