@@ -11,14 +11,22 @@ a:hover {
     color: #000000;
 }
 #container-table {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
-    gap: 5%;
-    margin:5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center boxes symmetrically */
+    gap: 10%; /* Space between boxes */
+    width: 100%; /* Adjust as needed */
+    padding: 10px;
 }
-.button-table{
-    aspect-ratio: 5/2;
+
+#box {
+    width: 250px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .container-item{
     flex:1;
 }

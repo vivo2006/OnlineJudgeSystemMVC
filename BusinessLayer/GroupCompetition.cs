@@ -12,11 +12,11 @@ namespace BusinessLayer
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage = "Group name is required.")] 
-        [MaxLength(100, ErrorMessage = "Group name cannot exceed 100 characters.")]
+        [Required(ErrorMessage = "Името е задължително.")] 
+        [MaxLength(100, ErrorMessage = "Името не може да надхвърля 100 символа.")]
         public string Group { get; set; }
         public List<Problem>? Problems { get; set; }
-        [Required(ErrorMessage = "Foreign key is required.")]
+        [Required]
         public int YearCompetitionId {  get; set; }
         [ForeignKey("YearCompetitionId")]
         public YearCompetition YearCompetition { get; set; }

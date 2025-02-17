@@ -140,6 +140,9 @@ h1 {
     align-items:center;
     vertical-align:middle;
 }
+pre{
+    font-size: 200%;
+}
 
 .table {
     width: 100%;

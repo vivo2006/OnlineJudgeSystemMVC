@@ -152,6 +152,10 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await manager.DeleteAsync(id);
+            YearCompetition yearCompetition = await manager.ReadAsync(id, true);
+            Competition competition = yearCompetition.Competition;
+            manager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString());
+            manager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());
             return RedirectToAction(nameof(Index));
         }
 

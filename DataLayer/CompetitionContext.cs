@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -96,11 +97,6 @@ namespace DataLayer
 
                 throw;
             }
-        }
-
-        public Task<ICollection<Competition>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task UpdateAsync(Competition item, bool navigationalProperties = false)

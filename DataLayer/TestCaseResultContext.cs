@@ -98,11 +98,6 @@ namespace DataLayer
             }
         }
 
-        public Task<ICollection<TestCaseResult>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task UpdateAsync(TestCaseResult item, bool navigationalProperties = false)
         {
             try

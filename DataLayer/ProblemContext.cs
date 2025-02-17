@@ -100,11 +100,6 @@ namespace DataLayer
             }
         }
 
-        public Task<ICollection<Problem>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task UpdateAsync(Problem item, bool navigationalProperties = false)
         {
             try

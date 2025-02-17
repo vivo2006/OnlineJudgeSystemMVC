@@ -100,10 +100,6 @@ namespace DataLayer
             }
         }
 
-        public Task<ICollection<GroupCompetition>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task UpdateAsync(GroupCompetition item, bool NavigationalProperties = false)
         {

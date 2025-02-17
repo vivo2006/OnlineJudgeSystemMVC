@@ -10,7 +10,9 @@ namespace BusinessLayer
 {
     public class ApplicationUser : IdentityUser
     {
+        [MaxLength(25, ErrorMessage ="Името не може да е повече от 25 символа")]
         public string? FirstName { get; set; }
+        [MaxLength(25, ErrorMessage = "Името не може да е повече от 25 символа")]
         public string? LastName { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public int Points { get; set; }

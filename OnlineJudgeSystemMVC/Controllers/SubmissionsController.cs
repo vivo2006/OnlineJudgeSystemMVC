@@ -181,7 +181,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             foreach (var result in results.Submissions)
             {
                 // Add the result to the results list
-                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.status.description, (int)Math.Round((decimal)((result.memory  ?? 0) / 1024.0)), result.stdout ?? "", result.time ?? "0.0");
+                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.Status.description, (int)Math.Round((decimal)((result.Memory  ?? 0) / 1024.0)), result.Stdout ?? "", result.Time ?? "0.0");
                 submission.TestCaseResults.Add(testCaseResult);
                 await testCaseResultManager.CreateAsync(testCaseResult);
 

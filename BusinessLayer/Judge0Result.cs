@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
     public class Judge0Result
     {
-        public string? stdout { get; set; }
-        public string? time { get; set; }
-        public float? memory { get; set; }
-        public Status status { get; set; }
+        [JsonPropertyName("stdout")]
+        public string? Stdout { get; set; }
+        [JsonPropertyName("time")]
+        public string? Time { get; set; }
+        [JsonPropertyName("memory")]
+        public float? Memory { get; set; }
+        [JsonPropertyName("status")]
+        public Status Status { get; set; }
     }
 }

@@ -192,6 +192,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             if (competition != null)
             {
                 await manager.DeleteAsync(id);
+                manager.DeleteDirectory("Problems", competition.Notation);
+                manager.DeleteDirectory("TestCases", competition.Notation);
             }
 
             return RedirectToAction(nameof(AdministratorIndex));

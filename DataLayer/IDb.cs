@@ -1,6 +1,8 @@
 ﻿using BusinessLayer;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,25 @@ namespace DataLayer
         Task<ICollection<T>> ReadAllAsync(bool navigationalProperties = false, bool isReadOnly = true);
         Task UpdateAsync(T item, bool navigationalProperties = false);
         Task DeleteAsync(K key);
-        Task<ICollection<T>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly);
+        public void DeleteDirectory(string prefix, string deleteType, string competitionNotation, string year, string problemNotation)
+        {
+            try
+            {
+                string competitionPath = Path.Combine(prefix, deleteType, competitionNotation, year, problemNotation);
+
+                if (Directory.Exists(competitionPath))
+                {
+                    Directory.Delete(competitionPath, true);
+                }
+                else
+                {
+                    throw new ArgumentException("Directory not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting directory: {ex.Message}");
+            }
+        }
     }
 }

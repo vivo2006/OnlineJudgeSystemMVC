@@ -11,12 +11,14 @@ namespace BusinessLayer
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage = "Name is required.")] 
-        [MaxLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
+        [Required(ErrorMessage = "Името е задължително.")] 
+        [MaxLength(100, ErrorMessage = "Името не може да надхвърля 100 символа.")]
         public string Name { get; set; }
         public ICollection<YearCompetition>? YearCompetitions { get; set; }
         [Required]
+        [Range(2000, 2030, ErrorMessage ="Годината трябва да е между 2000 и 2030.")]
         public int FirstYear { get; set; }
+        [Range(2000, 2030, ErrorMessage = "Годината трябва да е между 2000 и 2030.")]
         [Required]
         public int LastYear {  get; set; }
         [Required]

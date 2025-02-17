@@ -10,9 +10,9 @@ namespace ServiceLayer
 {
     public class SubmissionsManager
     {
-        private readonly IDb<Submission, int> context;
+        private readonly SubmissionContext context;
 
-        public SubmissionsManager(IDb<Submission, int> submissionContext)
+        public SubmissionsManager(SubmissionContext submissionContext)
         {
             context = submissionContext;
         }
