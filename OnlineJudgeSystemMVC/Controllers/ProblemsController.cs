@@ -143,6 +143,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
         public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string problemNotation, IFormFile pdfFile, IFormFile[] testCases)
         {
+            if ((await manager.ReadAllAsync()).Any(problem => problem.ProblemNotation == problemNotation)) ModelState.AddModelError("", "Нотацията трябва да е уникална.");
             Problem problem = new Problem(name, timeLimit, memoryLimit, problemNotation, groupId);
             await LoadCompetitions(groupId);
             

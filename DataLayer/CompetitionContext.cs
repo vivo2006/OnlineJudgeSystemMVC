@@ -21,6 +21,7 @@ namespace DataLayer
         {
             try
             {
+
                 _context.Competitions.Add(item);
                 await _context.SaveChangesAsync();
             }

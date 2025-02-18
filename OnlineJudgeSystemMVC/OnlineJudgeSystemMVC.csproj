@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Validation\" />
     <Folder Include="TestCases\" />
     <Folder Include="wwwroot\Problems\" />
   </ItemGroup>

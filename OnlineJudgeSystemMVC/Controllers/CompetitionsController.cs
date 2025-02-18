@@ -86,7 +86,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,Notation")]Competition competition)
         {
-            
+            if ((await manager.ReadAllAsync()).Any(c => c.Notation == competition.Notation)) ModelState.AddModelError("", "Нотацията трябва да е уникална.");
+            if (competition.FirstYear > competition.LastYear) ModelState.AddModelError("", "Началната година трябва да е по-малка от крайната.");
             if (ModelState.IsValid)
             {
                 await manager.CreateAsync(competition);
