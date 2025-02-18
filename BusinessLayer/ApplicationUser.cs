@@ -16,6 +16,10 @@ namespace BusinessLayer
         public string? LastName { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public int Points { get; set; }
+        public int? LastChallengeTaskId { get; set; }
+        public DateTime? LastChallengeDate { get; set; }
+        public double? BestTime { get; set; }
+        public int? BestMemory { get; set; }
         public ApplicationUser()
         {
             Submissions = new List<Submission>();

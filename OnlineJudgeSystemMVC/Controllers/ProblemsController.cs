@@ -11,6 +11,7 @@ using ServiceLayer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -21,6 +22,9 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly YearCompetitionsManager yearCompetitionsManager;
         private readonly CompetitionsManager competitionsManager;
         private readonly IWebHostEnvironment environment;
+        private readonly IdentityManager identityManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SubmissionsManager submissionsManager;
 
         GroupCompetition globalGroupCompetition;
         YearCompetition globalYearCompetition;
@@ -28,19 +32,70 @@ namespace OnlineJudgeSystemMVC.Controllers
 
 
 
-        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager, IWebHostEnvironment environment)
+        public ProblemsController(ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager, IWebHostEnvironment environment, IdentityManager identityManager, UserManager<ApplicationUser> userManager, SubmissionsManager submissionsManager)
         {
             this.manager = manager;
             this.groupCompetitionsManager = groupCompetitionsManager;
             this.yearCompetitionsManager = yearCompetitionsManager;
             this.competitionsManager = competitionsManager;
             this.environment = environment;
+            this.identityManager = identityManager;
+            _userManager = userManager;
+            this.submissionsManager = submissionsManager;
         }
 
         // GET: Problems
         public async Task<IActionResult> Index()
         {
             return View(await manager.ReadAllAsync(true));
+        }
+        [Authorize(Roles ="Admin,User")]
+        public async Task<IActionResult> ChallengeMe()
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await identityManager.ReadUserAsync(userId, true);
+
+            if (user.LastChallengeDate.HasValue && user.LastChallengeDate.Value.Date == DateTime.UtcNow.Date)
+            {
+                Problem problem = await manager.ReadAsync((int)user.LastChallengeTaskId);
+
+                await LoadCompetitions(problem.CompetitionId);
+
+                ViewBag.CompetitionNotation = globalCompetition.Notation;
+                ViewBag.Year = globalYearCompetition.Year;
+                ViewBag.ChallengeId = user.LastChallengeTaskId;
+
+                return View("Details", problem);
+            }
+
+            var solvedTaskIds = (await submissionsManager.ReadAllAsync(true)).Where(s => s.UserId == user.Id && s.Points >= 100).Select(s => s.ProblemId).Distinct().ToList();
+
+            if (!solvedTaskIds.Any())
+            {
+                return Redirect("/Competitions");
+            }
+
+            var random = new Random();
+            int randomIndex = random.Next(solvedTaskIds.Count);
+            int randomTaskId = solvedTaskIds[randomIndex];
+
+            user.LastChallengeDate = DateTime.UtcNow;
+            user.LastChallengeTaskId = randomTaskId;
+
+            Problem randomTask = await manager.ReadAsync(randomTaskId, true);
+
+            user.BestTime = user.Submissions.Where(s => s.ProblemId == randomTaskId).Min(s => s.Time);
+            user.BestMemory = user.Submissions.Where(s => s.ProblemId == randomTaskId).Min(s => s.Memory);
+
+            await LoadCompetitions(randomTask.CompetitionId);
+
+            ViewBag.CompetitionNotation = globalCompetition.Notation;
+            ViewBag.Year = globalYearCompetition.Year;
+            ViewBag.ChallengeId = user.LastChallengeTaskId;
+
+            await identityManager.UpdateUserAsync(user);
+
+            return View("Details", randomTask);
         }
 
         // GET: Problems/Details/5
@@ -56,9 +111,16 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 return NotFound();
             }
-
+            
             ViewBag.CompetitionNotation = CompetitionNotation;
             ViewBag.Year = Year;
+
+            var userId = _userManager.GetUserId(User);
+            if (userId != null)
+            {
+                ApplicationUser user = await identityManager.ReadUserAsync(userId, true);
+                ViewBag.ChallengeId = user.LastChallengeTaskId;
+            }
 
             return View(problem);
         }

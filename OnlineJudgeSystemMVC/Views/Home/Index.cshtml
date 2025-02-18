@@ -7,6 +7,13 @@
 <h1 class="h overflow-auto">Добре дошли в CodeXpert!</h1>
 <p class="p">Платформа за състезателно програмиране</p>
 <div class="buttons">
-    <button href="/Home/Login" class="btn btn-primary">Аз съм ученик</button>
-    <button href="/Home/Login" class="btn btn-secondary">Аз съм учител</button>
+    <a asp-controller="Problems" asp-action="ChallengeMe" class="btn btn-primary">Предизвикай ме</a>
+    <a asp-controller="Home" asp-action="About" class="btn btn-secondary">За нас</a>
 </div>
+
+@if (TempData["NoSolvedTasks"] != null)
+{
+    <script>
+        alert("@TempData["NoSolvedTasks"]");
+    </script>
+}

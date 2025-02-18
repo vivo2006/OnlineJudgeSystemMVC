@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250217194407_initial")]
+    [Migration("20250218140832_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -33,6 +33,12 @@ namespace DataLayer.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BestMemory")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("BestTime")
+                        .HasColumnType("float");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -47,6 +53,12 @@ namespace DataLayer.Migrations
                     b.Property<string>("FirstName")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<DateTime?>("LastChallengeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastChallengeTaskId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(25)

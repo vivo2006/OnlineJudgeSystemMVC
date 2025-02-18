@@ -1,6 +1,6 @@
 ﻿@model BusinessLayer.Problem
 @{
-    ViewData["Title"] = "Problem Page";
+    ViewData["Title"] = "Задача";
 }
 <link rel="stylesheet" href="~/css/ProblemDetails.css" asp-append-version="true" />
 
@@ -31,13 +31,19 @@
         <option value="62">Java</option>
         <option value="71">Python</option>
         <option value="63">JavaScript</option>
+        <option value="16">C#</option>
     </select>
     <!-- Buttons -->
     <div class="mb-4">
         <form id="code-submit" method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id asp-route-ProblemNotation=@Model.ProblemNotation asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>
             <input type="hidden" name="ProblemId" value="@Model.Id" />
-            <textarea name="Code" class="form-control border-danger mb-4" rows="10" placeholder="Постави кода тук..." required></textarea>
+            <textarea name="Code" class="form-control border-danger mb-1" rows="10" placeholder="Постави кода тук..." required></textarea>
         </form>
     </div>
+    @if(Model.Id == ViewBag.ChallengeId)
+    {
+        <hr>
+        <p>За всяко вярно решение, което подобрява използваното време или използваната памет, ще получавате по 10 точки допълнително.</p>
+    }
 </div>
 

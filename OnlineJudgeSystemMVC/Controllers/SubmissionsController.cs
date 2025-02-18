@@ -28,7 +28,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly ProblemsManager problemsManager;
         private readonly TestCaseResultContext testCaseResultManager;
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager, UserManager<ApplicationUser> userManager)
         {
@@ -36,18 +36,19 @@ namespace OnlineJudgeSystemMVC.Controllers
             this.problemsManager = problemsManager;
             this.httpClientFactory = httpClientFactory;
             this.testCaseResultManager = testCaseResultManager;
-            _userManager = userManager;
+            this.userManager = userManager;
         }
 
         // GET: Submissions
+        [Authorize(Roles ="Admin,User")]
         public async Task<IActionResult> Index(int problemId)
         {
             Problem problem = await problemsManager.ReadAsync(problemId, true);
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             ViewBag.Problem = problem.Name;
             return View(await manager.ReadByIdAndProblemAsync(user.Id, problemId));
         }
-
+        [Authorize(Roles = "Admin,User")]
         // GET: Submissions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -64,6 +65,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             return View(submission);
         }
+        [Authorize(Roles = "Admin,User")]
 
         // GET: Submissions/Create
         public IActionResult Create(int problemId)
@@ -71,6 +73,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             ViewBag.ProblemId = problemId;
             return View();
         }
+        [Authorize(Roles = "Admin,User")]
 
         public Tuple<string[], string[]> GetTestFiles(string competitionNotation, int year, string problemNotation)
         {
@@ -89,6 +92,8 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             return new Tuple<string[], string[]>(inputTestFiles, outputTestFiles);
         }
+        [Authorize(Roles = "Admin,User")]
+
         public async Task<string> CreatePostQuery(string[] inputTestFiles, string[] outputTestFiles, int languageId, string sourceCode, double timeLimit, double memoryLimit)
         {
             BatchSubmissions batchRequest = new BatchSubmissions();
@@ -100,12 +105,12 @@ namespace OnlineJudgeSystemMVC.Controllers
 
                 batchRequest.submissions.Add(new PostRequest
                 {
-                    LanguageId = languageId,
-                    SourceCode = sourceCode,
-                    Stdin = inputContent,
-                    ExpectedOutput = outputContent,
-                    CpuTimeLimit = timeLimit,
-                    MemoryLimit = memoryLimit
+                    language_id = languageId,
+                    source_code = sourceCode,
+                    stdin = inputContent,
+                    expected_output = outputContent,
+                    cpu_time_limit = timeLimit,
+                    memory_limit = memoryLimit
                 });
             }
             // Convert to JSON
@@ -113,6 +118,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             System.Diagnostics.Debug.WriteLine(jsonSubmissionData);
             return jsonSubmissionData;
         }
+        [Authorize(Roles = "Admin,User")]
 
         public async Task<List<PostResponse>> PostRequest(string jsonRequest, HttpClient client)
         {
@@ -131,6 +137,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             var jsonContent = await jsonResponse.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<PostResponse>>(jsonContent);
         }
+        [Authorize(Roles = "Admin,User")]
 
         public async Task<BatchSubmissionResponse> GetRequest(List<PostResponse> tokens, HttpClient client)
         {
@@ -158,6 +165,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+
 
         public async Task<IActionResult> Create(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation)
         {
@@ -167,7 +176,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             var problem = await problemsManager.ReadAsync(ProblemId, true);
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
             Submission submission = new Submission(ProblemId, DateTime.Now, userId);
 
             await manager.CreateAsync(submission);
@@ -191,34 +200,47 @@ namespace OnlineJudgeSystemMVC.Controllers
                 await testCaseResultManager.CreateAsync(testCaseResult);
 
             }
-            submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * (decimal)100.0);
             submission.Time = submission.TestCaseResults.Max(r => double.Parse(r.Time, numberFormatInfo));
-            submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
             submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(r.Memory));
+
+            if(user.BestTime == 0)
+            {
+                user.BestTime = submission.Time;
+                user.BestMemory = submission.Memory;
+                user.Points += 10;
+            }
+            if (ProblemId == user.LastChallengeTaskId && (submission.Time < user.BestTime || submission.Memory < user.BestTime))
+            {
+                user.Points += 10;
+            }
+
+            submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
+            submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * (decimal)100.0);
             submission.Code = Code;
             var userSubmissions = await manager.ReadByIdAsync(userId, true);
             Submission bestSubmission = userSubmissions.Where(s => s.ProblemId == ProblemId).OrderByDescending(s => s.Points).FirstOrDefault();
 
             if (bestSubmission != null)
             {
-                // Only update if the new solution has more points
                 if (submission.Points > bestSubmission.Points)
                 {
                     user.Points += (submission.Points - bestSubmission.Points);
                 }
             }
             else user.Points += submission.Points;
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
             await manager.UpdateAsync(submission, true);
             // Pass the results to the Results view
             return View("Details", submission);
         }
+        [Authorize(Roles = "Admin,User")]
 
         public async Task<IActionResult> OutputDetails(int id)
         {
             TestCaseResult testCaseResult = await testCaseResultManager.ReadAsync(id);
             return View("OutputDetails", testCaseResult.Output);
         }
+        [Authorize(Roles = "Admin,User")]
 
         // GET: Submissions/Edit/5
         [Authorize(Roles = "Admin")]

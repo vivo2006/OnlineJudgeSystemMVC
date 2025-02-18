@@ -10,16 +10,16 @@ namespace BusinessLayer
     public class PostRequest
     {
         [JsonPropertyName("language_id")]
-        public int LanguageId { get; set; }
+        public int language_id { get; set; }
         [JsonPropertyName("source_code")]
-        public string SourceCode { get; set; }
+        public string source_code { get; set; }
         [JsonPropertyName("stdin")]
-        public string Stdin { get; set; }
+        public string stdin { get; set; }
         [JsonPropertyName("expected_output")]
-        public string ExpectedOutput { get; set; }
+        public string expected_output { get; set; }
         [JsonPropertyName("cpu_time_limit")]
-        public double CpuTimeLimit { get; set; }
+        public double cpu_time_limit { get; set; }
         [JsonPropertyName("memory_limit")]
-        public double MemoryLimit { get; set; }
+        public double memory_limit { get; set; }
     }
 }
