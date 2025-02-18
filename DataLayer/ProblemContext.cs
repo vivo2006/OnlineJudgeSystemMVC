@@ -84,7 +84,7 @@ namespace DataLayer
                 if (navigationalProperties)
                 {
                     query = query.Include(problem => problem.Submissions);
-                    query = query.Include(problem => problem.Competition);
+                    query = query.Include(problem => problem.Competition).ThenInclude(competition => competition.YearCompetition);
                 }
 
                 if (isReadOnly)

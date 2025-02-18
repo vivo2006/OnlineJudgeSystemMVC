@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(OnlineJudgeDbContext))]
-    [Migration("20250218140832_initial")]
+    [Migration("20250218155433_initial")]
     partial class initial
     {
         /// <inheritdoc />

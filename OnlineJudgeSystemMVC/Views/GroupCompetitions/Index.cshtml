@@ -32,9 +32,6 @@
                                             {
                                                 <a class="nav-link text-dark ms-3" asp-area="" asp-controller="Problems" asp-action="Edit" asp-route-id=@problem.Id asp-route-groupId=@group.Id>✏️</a>
                                                 <a class="nav-link text-dark ms-2" asp-area="" asp-controller="Problems" asp-action="Delete" asp-route-id=@problem.Id>🗑️</a>
-                                                <a class="ms-2 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@problem.Id>
-                                                    <img class="mt-auto mb-auto" src="~/icon/icon.png" alt="Submissions history" width="25" height="25">
-                                                </a>
                                             }
                                             @if (User.IsInRole(Role.User.ToString()))
                                             {

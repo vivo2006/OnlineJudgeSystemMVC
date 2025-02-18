@@ -18,6 +18,9 @@
                 <span class="fs-5">💾</span>
                 <span>@Model.MemoryLimit mb</span>
             </div>
+            <a class="ms-2 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@Model.Id>
+                <img class="mt-auto mb-auto" src="~/icon/icon.png" alt="Submissions history" width="25" height="25">
+            </a>
         </div>    
         <div>
             <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>

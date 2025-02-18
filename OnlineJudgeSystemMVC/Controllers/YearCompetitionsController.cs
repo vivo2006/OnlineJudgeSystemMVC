@@ -25,7 +25,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: YearCompetitions
-        public async Task<IActionResult> Index()
+        public  IActionResult Index()
         {
             return Redirect("/Competitions/Index");
         }
@@ -45,12 +45,15 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Year,CompetitionId")] YearCompetition yearCompetition)
         {
-            if((await manager.ReadAllAsync()).Any(c => c.Year == yearCompetition.Year)) ModelState.AddModelError("", "Годината трябва да е уникална.");
+            ViewBag.CompetitionId = yearCompetition.CompetitionId;
+            ViewBag.Competition = (await competitionsManager.ReadAsync(yearCompetition.CompetitionId)).Name;
+            if ((await manager.ReadAllAsync()).Any(c => c.Year == yearCompetition.Year)) ModelState.AddModelError("", "Годината трябва да е уникална.");
             if (ModelState.IsValid)
-            {
-                await manager.CreateAsync(yearCompetition);
+            {                
                 Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
+                await manager.CreateAsync(yearCompetition);
                 competition.YearCompetitions.Add(yearCompetition);
+                await competitionsManager.UpdateAsync(competition);
                 for (int i = 0; i < 5; i++)
                 {
                     var groupCompetition = new GroupCompetition(((char)(i + 'A')).ToString(), yearCompetition.Id);
@@ -152,8 +155,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            YearCompetition yearCompetition = await manager.ReadAsync(id, true);            
             await manager.DeleteAsync(id);
-            YearCompetition yearCompetition = await manager.ReadAsync(id, true);
             Competition competition = yearCompetition.Competition;
             manager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
             manager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());

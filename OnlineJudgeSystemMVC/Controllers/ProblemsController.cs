@@ -143,7 +143,13 @@ namespace OnlineJudgeSystemMVC.Controllers
 
         public async Task<IActionResult> Create(string name, int groupId, double timeLimit, int memoryLimit, string problemNotation, IFormFile pdfFile, IFormFile[] testCases)
         {
-            if ((await manager.ReadAllAsync()).Any(problem => problem.ProblemNotation == problemNotation)) ModelState.AddModelError("", "Нотацията трябва да е уникална.");
+            await LoadViewBag(groupId);
+            GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
+            List<Problem> problems = (await manager.ReadAllAsync(true)).Where(p => p.Competition.YearCompetitionId == groupCompetition.YearCompetitionId).ToList();
+            if (problems.Any(p => p.ProblemNotation == problemNotation))
+            {
+                ModelState.AddModelError("", "Нотацията трябва да е уникална.");
+            }
             Problem problem = new Problem(name, timeLimit, memoryLimit, problemNotation, groupId);
             await LoadCompetitions(groupId);
             
@@ -152,9 +158,9 @@ namespace OnlineJudgeSystemMVC.Controllers
                 await UploadTask(pdfFile, problem);
                 await manager.CreateAsync(problem);            
                 await UploadFolder(testCases, problem);
-
+                return Redirect($"/GroupCompetitions/Index/?competitionId={globalCompetition.Id}&yearId={globalYearCompetition.Id}");
             }
-            return Redirect($"/GroupCompetitions/Index/?competitionId={globalCompetition.Id}&yearId={globalYearCompetition.Id}");
+            return /*Redirect($"/GroupCompetitions/Index/?competitionId={globalCompetition.Id}&yearId={globalYearCompetition.Id}")*/View();
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UploadFolder(IFormFile[] files, Problem problem)
