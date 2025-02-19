@@ -10,7 +10,9 @@ using BusinessLayer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer;
+using X.PagedList.Extensions;
 
 namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
 {
@@ -29,36 +31,21 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
             _submissionsManager = submissionsManager;
         }
-        public List<Submission> Submissions { get; set; }
+        public X.PagedList.IPagedList<Submission> Submissions { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-            Submissions = (List<Submission>)await _submissionsManager.ReadByIdAsync(user.Id, true);
+
+            int pageSize = 10; // Number of rows per page
+            int pageNumber = (id ?? 1); // Default to first page if none specified
+
+            Submissions = (await _submissionsManager.ReadByIdAsync(user.Id, true)).ToPagedList(pageNumber, pageSize);
             return Page();
         }
-
-        /*public async Task<IActionResult> OnPostAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Профилът ви беше актуализиран.";
-            return RedirectToPage();
-        }*/
     }
 }

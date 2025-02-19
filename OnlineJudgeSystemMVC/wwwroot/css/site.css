@@ -140,6 +140,21 @@ h1 {
     align-items:center;
     vertical-align:middle;
 }
+
+.page-link{
+    color: #ED2A4F;
+
+}
+.page-link:focus {
+    color: #ED2A4F;
+}
+.page-link:hover{
+    color: #ED2A4F;
+}
+.page-item.active .page-link {
+    background-color: #ED2A4F;
+    border-color: #ED2A4F;
+}
 pre{
     font-size: 200%;
 }
@@ -151,7 +166,6 @@ pre{
     overflow-y:scroll;
     word-break: break-word;
 }
-
     .table th, .table td {
         border: 1px solid #ddd;
         padding: 10px;
@@ -161,6 +175,7 @@ pre{
         background-color: #007bff;
         color: #fff;
         word-wrap:break-word;
+        vertical-align:middle;
     }
     .list-group-item{
 

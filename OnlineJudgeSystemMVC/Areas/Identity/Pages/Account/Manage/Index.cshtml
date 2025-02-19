@@ -4,8 +4,9 @@
     ViewData["Title"] = "Събмити";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
+@using X.PagedList.Mvc.Core
 
-<table class="table table-bordered" style="width:100%;">
+<table class="table table-bordered mb-4" style="width:100%;">
     <thead>
         <tr>
             <th>ID</th>
@@ -27,6 +28,16 @@
         }
     </tbody>
 </table>
+
+<ul class="pagination d-flex justify-content-center mt-5">
+    @for (int i = 1; i <= Model.Submissions.PageCount; i++)
+    {
+        <li class="page-item @(Model.Submissions.PageNumber == i ? "active" : "")">
+            <a class="page-link" asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-id=@i>@i</a>
+        </li>
+    }
+</ul>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
