@@ -1,5 +1,6 @@
-﻿@model ICollection<BusinessLayer.GroupCompetition>
+﻿@model ICollection<GroupCompetition>
 @using BusinessLayer;
+@using BusinessLayer.Entities;
 
 
 @{
@@ -27,7 +28,7 @@
                                 {
                                     <li>
                                         <div class="d-flex flex-row justify-content-center align-middle m-auto">
-                                            <a class="text-decoration-none text-dark align-middle mt-auto mb-auto" asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>@problem.Name</a>
+                                            <a class="text-decoration-none text-dark align-middle mt-auto mb-2" asp-area="" asp-controller="Problems" asp-action="Details" asp-route-id=@problem.Id asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>@problem.Name</a>
                                             @if (User.IsInRole(Role.Admin.ToString()))
                                             {
                                                 <a class="nav-link text-dark ms-3" asp-area="" asp-controller="Problems" asp-action="Edit" asp-route-id=@problem.Id asp-route-groupId=@group.Id>✏️</a>

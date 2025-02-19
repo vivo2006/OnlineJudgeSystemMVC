@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessLayer;
 using DataLayer;
-using ServiceLayer;
 using Microsoft.AspNetCore.Authorization;
+using ServiceLayer.EntityServices;
+using BusinessLayer.Entities;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -37,7 +37,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             ViewBag.CompetitionNotation = competition.Notation;
             return View(groupCompetitions);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: GroupCompetitions/Details/5
         public async Task<IActionResult> Details(int? id)
         {

@@ -1,6 +1,7 @@
-﻿using BusinessLayer;
+﻿using BusinessLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ServiceLayer;
+using ServiceLayer.EntityServices;
 using System.Text.RegularExpressions;
 
 namespace OnlineJudgeSystemMVC.Controllers
@@ -21,7 +22,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             this.yearCompetitionsManager = yearCompetitionsManager;
             this.competitionsManager = competitionsManager;
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost] 
         public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
         {

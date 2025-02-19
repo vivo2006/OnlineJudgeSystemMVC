@@ -1,11 +1,16 @@
-using BusinessLayer;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
-using ServiceLayer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OnlineJudgeSystemMVC.Areas.Identity.Pages.Account;
+using BusinessLayer.API;
+using BusinessLayer.Email;
+using ServiceLayer.EmailSender;
+using ServiceLayer.ErrorDescriber;
+using ServiceLayer.EntityServices;
+using DataLayer.Contexts;
+using BusinessLayer.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,16 +55,19 @@ builder.Services.AddScoped<IdentityManager, IdentityManager>();
 builder.Services.AddScoped<IdentityContext, IdentityContext>(); ;
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<APIdata>(builder.Configuration.GetSection("APIdata"));
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromDays(30); // Persistent cookie expiration
     options.LoginPath = "/Identity/Account/Login"; // Login path
     options.LogoutPath = "/Identity/Account/Logout"; // Logout path
     options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Access denied path
     options.SlidingExpiration = true; // Reset the expiration time on each request
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Make sure the cookie is only sent over HTTPS
+    options.Cookie.IsEssential = true; // Ensures cookie is used even in case of GDPR compliance
 });
 
 

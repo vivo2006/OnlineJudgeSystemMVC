@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessLayer;
 using DataLayer;
-using ServiceLayer;
+using ServiceLayer.EntityServices;
+using BusinessLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -29,7 +30,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return Redirect("/Competitions/Index");
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: YearCompetitions/Create
         public async Task<IActionResult> Create(int id)
         {
@@ -43,6 +44,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Year,CompetitionId")] YearCompetition yearCompetition)
         {
             ViewBag.CompetitionId = yearCompetition.CompetitionId;
@@ -66,6 +68,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: YearCompetitions/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -87,6 +90,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Year,CompetitionId")] YearCompetition yearCompetition)
         {
             if (id != yearCompetition.Id)
@@ -117,6 +121,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: YearCompetitions/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -134,6 +139,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: YearCompetitions/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -153,6 +159,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         // POST: YearCompetitions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             YearCompetition yearCompetition = await manager.ReadAsync(id, true);            

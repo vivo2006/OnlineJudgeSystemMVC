@@ -1,4 +1,4 @@
-﻿@model BusinessLayer.Problem
+﻿@model Problem
 @{
     ViewData["Title"] = "Задача";
 }
@@ -9,22 +9,22 @@
 
         <!-- Time and Memory Limit -->
         <div class="d-flex align-items-center mb-4">
-            <h1 class="me-4">@Model.ProblemNotation. @Model.Name</h1>
-            <div class="me-4">
+            <h1 class="me-4" id="icons">
+                @Model.ProblemNotation. 
+                <a class="text-decoration-none" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@Model.Id style="color:#ED2A4F">@Model.Name</a>
+            </h1>
+            <div class="me-4" id="icons">
                 <span class="fs-5">⏳</span>
-                <span>@Model.TimeLimit sec</span>
+                <span>@Model.TimeLimit сек.</span>
             </div>
-            <div class="me-2">
+            <div class="me-2" id="icons">
                 <span class="fs-5">💾</span>
-                <span>@Model.MemoryLimit mb</span>
+                <span>@Model.MemoryLimit МБ</span>
             </div>
-            <a class="ms-2 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@Model.Id>
-                <img class="mt-auto mb-auto" src="~/icon/icon.png" alt="Submissions history" width="25" height="25">
-            </a>
         </div>    
         <div>
             <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>
-            <button type="submit" form="code-submit" class="btn btn-secondary">Изпрати</button>
+            <button type="submit" form="code-submit" class="btn btn-secondary me-0">Изпрати</button>
         </div>
         
     </div>

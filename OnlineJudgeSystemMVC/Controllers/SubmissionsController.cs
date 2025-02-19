@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessLayer;
-using DataLayer;
-using ServiceLayer;
 using System.Text;
 using System.Text.Json;
 using Azure;
@@ -19,6 +16,11 @@ using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using BusinessLayer.API;
+using ServiceLayer.EntityServices;
+using DataLayer.Contexts;
+using BusinessLayer.Entities;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -29,14 +31,17 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly TestCaseResultContext testCaseResultManager;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly APIdata _apiData;
 
-        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager, UserManager<ApplicationUser> userManager)
+
+        public SubmissionsController(SubmissionsManager manager, ProblemsManager problemsManager, IHttpClientFactory httpClientFactory, TestCaseResultContext testCaseResultManager, UserManager<ApplicationUser> userManager, IOptions<APIdata> apiData)
         {
             this.manager = manager;
             this.problemsManager = problemsManager;
             this.httpClientFactory = httpClientFactory;
             this.testCaseResultManager = testCaseResultManager;
             this.userManager = userManager;
+            _apiData = apiData.Value;
         }
 
         // GET: Submissions
@@ -128,8 +133,8 @@ namespace OnlineJudgeSystemMVC.Controllers
                 RequestUri = new Uri("https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=false&wait=false"),
                 Headers =
                     {
-                        { "x-rapidapi-key", "fe05a54966msh74f99cf84607244p1d78dfjsn7624b874c93f" },
-                        { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
+                        { "x-rapidapi-key", _apiData.Key },
+                        { "x-rapidapi-host", _apiData.Host },
                     },
                 Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json"),
             };
@@ -149,8 +154,8 @@ namespace OnlineJudgeSystemMVC.Controllers
                 RequestUri = new Uri($"https://judge0-ce.p.rapidapi.com/submissions/batch?tokens={tokenString}&base64_encoded=false&fields=stdout,status,time,memory"),
                 Headers =
                 {
-                    { "x-rapidapi-key", "fe05a54966msh74f99cf84607244p1d78dfjsn7624b874c93f" },
-                    { "x-rapidapi-host", "judge0-ce.p.rapidapi.com" },
+                    { "x-rapidapi-key", _apiData.Key },
+                    { "x-rapidapi-host", _apiData.Host },
                 },
             };
             var jsonResponse = await client.SendAsync(getRequest);

@@ -1,0 +1,176 @@
+﻿using BusinessLayer.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataLayer.Contexts
+{
+    public class SubmissionContext : IDb<Submission, int>
+    {
+        private readonly OnlineJudgeDbContext _context;
+        public SubmissionContext(OnlineJudgeDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task CreateAsync(Submission item)
+        {
+            try
+            {
+                item.Created = DateTime.Now;
+                _context.Submissions.Add(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task DeleteAsync(int key)
+        {
+            try
+            {
+                Submission submissionFromDb = await ReadAsync(key, false, false);
+
+                if (submissionFromDb != null)
+                {
+                    _context.Submissions.Remove(submissionFromDb);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new ArgumentException("Submission with this id was not found");
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<ICollection<Submission>> ReadAllAsync(bool navigationalProperties = false, bool isReadOnly = true)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (navigationalProperties)
+                {
+                    //query = query.Include(submission => submission.User);
+                    query = query.Include(submission => submission.Problem);
+                    query = query.Include(submission => submission.TestCaseResults);
+
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Submission> ReadAsync(int key, bool navigationalProperties = false, bool isReadOnly = true)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (navigationalProperties)
+                {
+                    //query = query.Include(submission => submission.User);
+                    query = query.Include(submission => submission.Problem);
+                    query = query.Include(submission => submission.TestCaseResults);
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.FirstOrDefaultAsync(submission => submission.Id == key);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task UpdateAsync(Submission item, bool navigationalProperties = false)
+        {
+            try
+            {
+                Submission submissionFromDb = await ReadAsync(item.Id, navigationalProperties, false);
+                _context.Entry(submissionFromDb).CurrentValues.SetValues(item);
+                _context.Entry(submissionFromDb).Property(submission => submission.Created).IsModified = false;
+
+                if (navigationalProperties)
+                {
+                    submissionFromDb.ProblemId = item.ProblemId;
+                    submissionFromDb.TestCaseResults = item.TestCaseResults;
+                    //submissionFromDb.UserId = item.UserId;
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<Submission>> ReadByIdAsync(string key, bool useNavigationalProperties, bool isReadOnly)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (useNavigationalProperties)
+                {
+                    query = query.Include(submission => submission.Problem).ThenInclude(problem => problem.Competition).ThenInclude(competition => competition.YearCompetition).ThenInclude(competition => competition.Competition);
+                    query = query.Include(submission => submission.TestCaseResults);
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.Where(submission => submission.UserId == key).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<ICollection<Submission>> ReadByIdAndProblemAsync(string key, int problemId, bool useNavigationalProperties, bool isReadOnly)
+        {
+            try
+            {
+                IQueryable<Submission> query = _context.Submissions;
+                if (useNavigationalProperties)
+                {
+                    query = query.Include(submission => submission.Problem).ThenInclude(problem => problem.Competition).ThenInclude(competition => competition.YearCompetition).ThenInclude(competition => competition.Competition);
+                    query = query.Include(submission => submission.TestCaseResults);
+                }
+
+                if (isReadOnly)
+                {
+                    query = query.AsNoTrackingWithIdentityResolution();
+                }
+                return await query.Where(submission => submission.UserId == key && submission.ProblemId == problemId).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+    }
+}

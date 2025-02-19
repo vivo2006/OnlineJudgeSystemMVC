@@ -14,9 +14,10 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between; /* Center boxes symmetrically */
-    gap: 10%; /* Space between boxes */
-    width: 100%; /* Adjust as needed */
-    padding: 10px;
+    gap: 8%; /* Space between boxes */
+    width: 80%; /* Adjust as needed */
+    margin-left:auto;
+    margin-right:auto;
 }
 
 #box {

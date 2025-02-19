@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessLayer;
 using DataLayer;
-using ServiceLayer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
+using ServiceLayer.EntityServices;
+using BusinessLayer.Entities;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -45,6 +45,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         }
 
         // GET: Problems
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await manager.ReadAllAsync(true));

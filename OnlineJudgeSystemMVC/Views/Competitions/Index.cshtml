@@ -1,5 +1,6 @@
-﻿@using BusinessLayer
-@model IEnumerable<BusinessLayer.Competition>
+﻿@using BusinessLayer;
+@using BusinessLayer.Entities;
+@model IEnumerable<Competition>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,7 +9,7 @@
 <link rel="stylesheet" href="~/css/IndexCompetitions.css" asp-append-version=true />
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<div class="mt-5">
+<div class="mb-3 mt-3">
     <h1>Състезания</h1>
 </div>
 

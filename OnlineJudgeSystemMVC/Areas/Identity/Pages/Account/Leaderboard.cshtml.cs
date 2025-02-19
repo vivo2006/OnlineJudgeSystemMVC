@@ -1,7 +1,8 @@
-﻿using BusinessLayer;
+﻿using BusinessLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using ServiceLayer.EntityServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,10 +10,12 @@ using System.Threading.Tasks;
 public class LeaderboardModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IdentityManager _identityManager;
 
-    public LeaderboardModel(UserManager<ApplicationUser> userManager)
+    public LeaderboardModel(UserManager<ApplicationUser> userManager, IdentityManager identityManager)
     {
         _userManager = userManager;
+        _identityManager = identityManager;
     }
 
     public List<UserRank> Leaderboard { get; set; }
@@ -27,7 +30,7 @@ public class LeaderboardModel : PageModel
     public async Task OnGetAsync()
     {
         // Get all users and sort them by points in descending order
-        var users = _userManager.Users
+        var users = (await _identityManager.ReadAllUsersAsync())
             .Select(user => new UserRank
             {
                 FirstName = user.FirstName,

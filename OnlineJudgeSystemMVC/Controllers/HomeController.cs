@@ -8,21 +8,6 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View();
         }
-
-        /*public IActionResult Leaderboard()
-        {
-            return View();
-        }
-
-        /*public IActionResult Register()
-        {
-            return View();
-        }
-
-        public IActionResult Login()
-        {
-            return View();
-        }*/
         public IActionResult About()
         {
             return View();
