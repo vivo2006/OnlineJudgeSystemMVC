@@ -1,0 +1,24 @@
+﻿@page
+@model OnlineJudgeSystemMVC.Areas.Identity.Pages.Admin.DeleteUser.DeleteUserModel
+@{
+    ViewData["Title"] = "Изтрий акаунт";
+}
+
+<h2 class="mb-5 mt-5">Сигурни ли сте, че искате да изтриете този акаунт?</h2>
+<div class="d-flex flex-column justify-content-center">
+    <hr />
+    <h5>
+        <strong>Име:</strong> @Model.PageUser.FirstName @Model.PageUser.LastName<br>
+        <strong>Потребителско име:</strong> @Model.PageUser.UserName<br>
+        <strong>Имейл:</strong> @Model.PageUser.Email<br>
+    </h5>
+    
+    <form method="post">
+        <input type="submit" value="Изтрий" class="btn btn-danger" asp-route-id="@Model.PageUser.UserName"/> 
+    </form>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

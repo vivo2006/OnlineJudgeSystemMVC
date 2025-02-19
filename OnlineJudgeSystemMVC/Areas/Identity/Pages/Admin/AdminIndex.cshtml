@@ -1,0 +1,43 @@
+﻿@page
+@model OnlineJudgeSystemMVC.Areas.Identity.Pages.Admin.AdminIndex.AdminIndexModel
+@{
+    ViewData["Title"] = "Акаунти";
+}
+<h1 class="mb-5">Акаунти</h1>
+<table class="table table-bordered mb-4" style="width:100%;">
+    <thead>
+        <tr>
+            <th>Потребителско име</th>
+            <th>Име</th>
+            <th>Имейл</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Users)
+        {
+            <tr>
+                <td>@item.UserName</td>
+                <td>@item.FirstName @item.LastName</td>
+                <td>@item.Email</td>
+                <td>
+                    <a class="text-dark text-decoration-none" asp-area="Identity" asp-page="/Admin/DeleteUser" asp-route-id="@item.UserName">🗑️</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<ul class="pagination d-flex justify-content-center mt-5">
+    @for (int i = 1; i <= Model.Users.PageCount; i++)
+    {
+        <li class="page-item @(Model.Users.PageNumber == i ? "active" : "")">
+            <a class="page-link" asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-id=@i>@i</a>
+        </li>
+    }
+</ul>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

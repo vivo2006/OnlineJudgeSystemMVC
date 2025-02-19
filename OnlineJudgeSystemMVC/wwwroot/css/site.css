@@ -158,6 +158,22 @@ h1 {
 pre{
     font-size: 200%;
 }
+@media (600px >= width >= 300px) {
+    th {
+        font-size: 3vw;
+    }
+}
+@media (1000px >= width > 600px) {
+    th {
+        font-size: 2vw;
+    }
+}
+@media (width > 1000px) {
+    th {
+        font-size: 1vw;
+    }
+}
+
 
 .table {
     width: 100%;

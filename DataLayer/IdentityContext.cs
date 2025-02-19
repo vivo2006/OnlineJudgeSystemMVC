@@ -134,7 +134,7 @@ namespace DataLayer
         {
             try
             {
-                IQueryable<ApplicationUser> query = context.Users;
+                IQueryable<ApplicationUser> query = context.Users.Where(u => u.UserName != "admin");
                 if (useNavigationalProporties)
                 {
                     query = query.Include(u => u.Submissions);
