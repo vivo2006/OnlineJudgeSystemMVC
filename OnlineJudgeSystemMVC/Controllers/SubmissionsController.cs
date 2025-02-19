@@ -46,7 +46,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             Problem problem = await problemsManager.ReadAsync(problemId, true);
             var user = await userManager.GetUserAsync(User);
             ViewBag.Problem = problem.Name;
-            return View(await manager.ReadByIdAndProblemAsync(user.Id, problemId));
+            return View(await manager.ReadByIdAndProblemAsync(user.Id, problemId, true));
         }
         [Authorize(Roles = "Admin,User")]
         // GET: Submissions/Details/5
