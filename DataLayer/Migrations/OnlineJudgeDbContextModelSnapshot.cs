@@ -22,7 +22,7 @@ namespace DataLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BusinessLayer.ApplicationUser", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -84,8 +84,9 @@ namespace DataLayer.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
+                    b.Property<string>("Points")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -110,7 +111,7 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessLayer.Competition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Competition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +139,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Competitions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.GroupCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.GroupCompetition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,7 +162,7 @@ namespace DataLayer.Migrations
                     b.ToTable("GroupCompetitions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Problem", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Problem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,7 +199,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Problems");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Submission", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Submission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,7 +242,7 @@ namespace DataLayer.Migrations
                     b.ToTable("Submissions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.TestCaseResult", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.TestCaseResult", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -272,7 +273,7 @@ namespace DataLayer.Migrations
                     b.ToTable("TestCaseResults");
                 });
 
-            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.YearCompetition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -430,9 +431,9 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessLayer.GroupCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.GroupCompetition", b =>
                 {
-                    b.HasOne("BusinessLayer.YearCompetition", "YearCompetition")
+                    b.HasOne("BusinessLayer.Entities.YearCompetition", "YearCompetition")
                         .WithMany("GroupCompetitions")
                         .HasForeignKey("YearCompetitionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -441,9 +442,9 @@ namespace DataLayer.Migrations
                     b.Navigation("YearCompetition");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Problem", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Problem", b =>
                 {
-                    b.HasOne("BusinessLayer.GroupCompetition", "Competition")
+                    b.HasOne("BusinessLayer.Entities.GroupCompetition", "Competition")
                         .WithMany("Problems")
                         .HasForeignKey("CompetitionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -452,15 +453,15 @@ namespace DataLayer.Migrations
                     b.Navigation("Competition");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Submission", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Submission", b =>
                 {
-                    b.HasOne("BusinessLayer.Problem", "Problem")
+                    b.HasOne("BusinessLayer.Entities.Problem", "Problem")
                         .WithMany("Submissions")
                         .HasForeignKey("ProblemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLayer.ApplicationUser", "User")
+                    b.HasOne("BusinessLayer.Entities.ApplicationUser", "User")
                         .WithMany("Submissions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -471,9 +472,9 @@ namespace DataLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BusinessLayer.TestCaseResult", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.TestCaseResult", b =>
                 {
-                    b.HasOne("BusinessLayer.Submission", "Submission")
+                    b.HasOne("BusinessLayer.Entities.Submission", "Submission")
                         .WithMany("TestCaseResults")
                         .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -482,9 +483,9 @@ namespace DataLayer.Migrations
                     b.Navigation("Submission");
                 });
 
-            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.YearCompetition", b =>
                 {
-                    b.HasOne("BusinessLayer.Competition", "Competition")
+                    b.HasOne("BusinessLayer.Entities.Competition", "Competition")
                         .WithMany("YearCompetitions")
                         .HasForeignKey("CompetitionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -504,7 +505,7 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BusinessLayer.ApplicationUser", null)
+                    b.HasOne("BusinessLayer.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -513,7 +514,7 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BusinessLayer.ApplicationUser", null)
+                    b.HasOne("BusinessLayer.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -528,7 +529,7 @@ namespace DataLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLayer.ApplicationUser", null)
+                    b.HasOne("BusinessLayer.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -537,39 +538,39 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BusinessLayer.ApplicationUser", null)
+                    b.HasOne("BusinessLayer.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessLayer.ApplicationUser", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Submissions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Competition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Competition", b =>
                 {
                     b.Navigation("YearCompetitions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.GroupCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.GroupCompetition", b =>
                 {
                     b.Navigation("Problems");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Problem", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Problem", b =>
                 {
                     b.Navigation("Submissions");
                 });
 
-            modelBuilder.Entity("BusinessLayer.Submission", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.Submission", b =>
                 {
                     b.Navigation("TestCaseResults");
                 });
 
-            modelBuilder.Entity("BusinessLayer.YearCompetition", b =>
+            modelBuilder.Entity("BusinessLayer.Entities.YearCompetition", b =>
                 {
                     b.Navigation("GroupCompetitions");
                 });

@@ -171,8 +171,6 @@ namespace OnlineJudgeSystemMVC.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost]
         [Authorize(Roles = "Admin,User")]
-
-
         public async Task<IActionResult> Create(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation)
         {
             Tuple<string[], string[]> testFiles = GetTestFiles(CompetitionNotation, Year, ProblemNotation);   
@@ -180,6 +178,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             var outputTestFiles = testFiles.Item2;
 
             var problem = await problemsManager.ReadAsync(ProblemId, true);
+            var groupIndex = (int)(Convert.ToChar(problem.Competition.Group) - 'A');
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = await userManager.FindByIdAsync(userId);
             Submission submission = new Submission(ProblemId, DateTime.Now, userId);
@@ -212,11 +211,11 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 user.BestTime = submission.Time;
                 user.BestMemory = submission.Memory;
-                user.Points += 10;
+                user.Points[groupIndex] += 10;
             }
             if (ProblemId == user.LastChallengeTaskId && (submission.Time < user.BestTime || submission.Memory < user.BestTime))
             {
-                user.Points += 10;
+                user.Points[groupIndex] += 10;
             }
 
             submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
@@ -229,13 +228,13 @@ namespace OnlineJudgeSystemMVC.Controllers
             {
                 if (submission.Points > bestSubmission.Points)
                 {
-                    user.Points += (submission.Points - bestSubmission.Points);
+                    user.Points[groupIndex] += (submission.Points - bestSubmission.Points);
                 }
             }
-            else user.Points += submission.Points;
+            else user.Points[groupIndex] += submission.Points;
             await userManager.UpdateAsync(user);
             await manager.UpdateAsync(submission, true);
-            // Pass the results to the Results view
+
             return View("Details", submission);
         }
         [Authorize(Roles = "Admin,User")]

@@ -24,7 +24,7 @@ public class LeaderboardModel : PageModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int Points { get; set; }
+        public int[] Points { get; set; }
     }
 
     public async Task OnGetAsync()
@@ -37,7 +37,6 @@ public class LeaderboardModel : PageModel
                 LastName = user.LastName,
                 Points = user.Points
             })
-            .OrderByDescending(user => user.Points)
             .ToList();
 
         Leaderboard = users;

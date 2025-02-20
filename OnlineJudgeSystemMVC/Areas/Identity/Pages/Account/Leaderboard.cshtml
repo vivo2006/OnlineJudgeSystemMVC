@@ -6,33 +6,108 @@
 
 <h1 class="mb-5">Класиране</h1>
 
-<table class="table table-striped mt-5">
-    <thead>
-        <tr>
-            <th>Място</th>
-            <th>Име</th>
-            <th>Точки</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Leaderboard != null && Model.Leaderboard.Any())
-        {
-            int rank = 1;
-            foreach (var user in Model.Leaderboard)
-            {
-                <tr>
-                    <td>@rank</td>
-                    <td>@user.FirstName @user.LastName</td>
-                    <td>@user.Points</td>
-                </tr>
-                rank++;
-            }
-        }
-        else
-        {
+<select id="groupFilter" class="form-select mb-3" onchange="filterLeaderboard()">
+    <option value="All">Всички</option>
+    <option value="0">Група A</option>
+    <option value="1">Група B</option>
+    <option value="2">Група C</option>
+    <option value="3">Група D</option>
+    <option value="4">Група E</option>
+</select>
+
+@if (Model.Leaderboard == null || !Model.Leaderboard.Any())
+{
+    <p>Няма активни потребители.</p>
+}
+else
+{
+    <table class="table table-striped mt-5">
+        <thead>
             <tr>
-                <td colspan="3">Няма активни потребители.</td>
+                <th>Място</th>
+                <th>Име</th>
+                <th>Точки</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Leaderboard)
+            {
+                <tr data-points="@string.Join(',', user.Points)">
+                    <td></td> <!-- Rank will be handled by JavaScript -->
+                    <td>@user.FirstName @user.LastName</td>
+                    <td class="points">@user.Points.Sum()</td> <!-- Default to sum of all points -->
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    function sortLeaderboard() {
+        var table = document.querySelector("table tbody");
+        if (!table) return; // Check if the table exists before proceeding
+
+        var rows = Array.from(table.querySelectorAll("tr"));
+
+        // Sort rows by points in descending order
+        rows.sort(function (a, b) {
+            var pointsA = parseInt(a.querySelector(".points").innerText) || 0;
+            var pointsB = parseInt(b.querySelector(".points").innerText) || 0;
+            return pointsB - pointsA;
+        });
+
+        // Apply ranks
+        var rank = 1;
+        var prevPoints = null;
+        rows.forEach(function (row, index) {
+            var points = parseInt(row.querySelector(".points").innerText) || 0;
+
+            // Share the same rank if points are equal
+            if (prevPoints !== null && points === prevPoints) {
+                row.querySelector("td:first-child").innerText = rank;
+            } else {
+                rank = index + 1;
+                row.querySelector("td:first-child").innerText = rank;
+            }
+
+            prevPoints = points;
+        });
+
+        // Reattach sorted rows to the table
+        rows.forEach(function (row) {
+            table.appendChild(row);
+        });
+    }
+
+    function filterLeaderboard() {
+        var table = document.querySelector("table tbody");
+        if (!table) return; // Check if the table exists before proceeding
+
+        var filterValue = document.getElementById("groupFilter").value;
+        var rows = table.querySelectorAll("tr");
+
+        rows.forEach(function (row) {
+            var pointsArray = row.getAttribute("data-points").split(',').map(Number); // Convert comma-separated string to an array of numbers
+            var points = 0;
+
+            if (filterValue === "All") {
+                // Sum all points if "All" is selected
+                points = pointsArray.reduce((acc, val) => acc + val, 0);
+            } else {
+                // Use the selected index for specific groups
+                points = pointsArray[filterValue];
+            }
+
+            // Update the points column
+            row.querySelector(".points").innerText = points;
+        });
+
+        // Sort the leaderboard after updating points
+        sortLeaderboard();
+    }
+
+    // Initial sort when the page loads
+    window.onload = function () {
+        filterLeaderboard();
+    };
+</script>

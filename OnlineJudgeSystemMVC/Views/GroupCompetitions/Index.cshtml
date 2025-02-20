@@ -4,7 +4,7 @@
 
 
 @{
-    ViewData["Title"] = "IndexFromYearCompetition";
+    ViewData["Title"] = $"{@ViewBag.Competition} - {@ViewBag.Year}";
 }
 
 <h1>@ViewBag.Competition - @ViewBag.Year</h1>
@@ -34,14 +34,6 @@
                                                 <a class="nav-link text-dark ms-3" asp-area="" asp-controller="Problems" asp-action="Edit" asp-route-id=@problem.Id asp-route-groupId=@group.Id>✏️</a>
                                                 <a class="nav-link text-dark ms-2" asp-area="" asp-controller="Problems" asp-action="Delete" asp-route-id=@problem.Id>🗑️</a>
                                             }
-                                            @if (User.IsInRole(Role.User.ToString()))
-                                            {
-                                            <a class="ms-3 d-flex justify-content-center" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@problem.Id>
-                                                    <img src="~/icon/icon.png" alt="Submissions history" width="25">
-                                                </a>
-                                            }
-                                            
-
                                         </div>
                                     </li>
                                 }

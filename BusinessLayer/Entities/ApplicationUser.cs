@@ -15,14 +15,15 @@ namespace BusinessLayer.Entities
         [MaxLength(25, ErrorMessage = "Името не може да е повече от 25 символа")]
         public string? LastName { get; set; }
         public ICollection<Submission> Submissions { get; set; }
-        public int Points { get; set; }
         public int? LastChallengeTaskId { get; set; }
         public DateTime? LastChallengeDate { get; set; }
         public double? BestTime { get; set; }
         public int? BestMemory { get; set; }
+        public int[] Points { get; set; }
         public ApplicationUser()
         {
             Submissions = new List<Submission>();
+            Points = new int[] { 0, 0, 0, 0, 0 };
         }
         public ApplicationUser(string username, string email, string firstName, string lastName)
         {
@@ -32,6 +33,7 @@ namespace BusinessLayer.Entities
             FirstName = firstName;
             LastName = lastName;
             Submissions = new List<Submission>();
+            Points = new int[] {0, 0, 0, 0, 0 };
         }
     }
 }
