@@ -11,6 +11,8 @@ using ServiceLayer.ErrorDescriber;
 using ServiceLayer.EntityServices;
 using DataLayer.Contexts;
 using BusinessLayer.Entities;
+using Hangfire;
+using Hangfire.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +59,24 @@ builder.Services.AddScoped<IdentityContext, IdentityContext>(); ;
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<APIdata>(builder.Configuration.GetSection("APIdata"));
 
+builder.Services.AddHangfire(config =>
+{
+    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+          .UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+          {
+              CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+              SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+              QueuePollInterval = TimeSpan.FromSeconds(15),
+              UseRecommendedIsolationLevel = true,
+              UsePageLocksOnDequeue = true,
+              DisableGlobalLocks = true 
+          });
+});
+
+builder.Services.AddHangfireServer();
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -80,7 +100,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-
+app.UseHangfireDashboard();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

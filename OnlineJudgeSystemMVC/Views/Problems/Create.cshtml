@@ -27,7 +27,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="TimeLimit" class="control-label">Лимит за време</label>
-                <input asp-for="TimeLimit" class="form-control" />
+                <input asp-for="TimeLimit" step="0.1" class="form-control" type="number"/>
                 <span asp-validation-for="TimeLimit" class="text-danger"></span>
             </div>
             <div class="form-group">

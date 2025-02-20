@@ -20,7 +20,7 @@
             <input type="hidden" asp-for="URL" />
             <div class="form-group">
                 <label asp-for="TimeLimit" class="control-label">Лимит за време (сек.)</label>
-                <input asp-for="TimeLimit" class="form-control" />
+                <input asp-for="TimeLimit" step="0.1" class="form-control" type="number"/>
                 <span asp-validation-for="TimeLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -31,12 +31,14 @@
             <input type="hidden" asp-for="ProblemNotation" />
              <input type="hidden" asp-for="CompetitionId" />
             <div class="form-group">
-                <label for="pdfFile">Условие на задачата</label>
-                <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" />
+                <label for="pdfFile">Условие</label>
+                <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" style="display:none" />
+                <label for="pdfFile" class="btn btn-secondary" id="fileLabel">Изберете PDF файл</label>
             </div>
             <div>
-                <label for="testCases">Тестове на задачата</label>
-                <input type="file" id="testCases" name="testCases" webkitdirectory multiple />
+                <label for="testCases">Тестови случаи</label>
+                <input type="file" id="testCases" name="testCases" webkitdirectory multiple style="display:none" />
+                <label for="testCases" class="btn btn-secondary" id="testCasesLabel" style="margin-left:0px;">Изберете тестови случаи</label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Запази" class="btn btn-primary" />
@@ -47,4 +49,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/fileUploads.js"></script>
 }

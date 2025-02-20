@@ -21,6 +21,7 @@ using BusinessLayer.API;
 using ServiceLayer.EntityServices;
 using DataLayer.Contexts;
 using BusinessLayer.Entities;
+using Hangfire;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -173,72 +174,71 @@ namespace OnlineJudgeSystemMVC.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation)
         {
-            Tuple<string[], string[]> testFiles = GetTestFiles(CompetitionNotation, Year, ProblemNotation);   
-            var inputTestFiles = testFiles.Item1;
-            var outputTestFiles = testFiles.Item2;
-
-            var problem = await problemsManager.ReadAsync(ProblemId, true);
-            var groupIndex = (int)(Convert.ToChar(problem.Competition.Group) - 'A');
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await userManager.FindByIdAsync(userId);
-            Submission submission = new Submission(ProblemId, DateTime.Now, userId);
 
-            await manager.CreateAsync(submission);
+            BackgroundJob.Enqueue(() => ProcessSubmission(ProblemId, Code, LanguageId, CompetitionNotation, Year, ProblemNotation, userId));
 
-            string jsonRequest = await CreatePostQuery(inputTestFiles, outputTestFiles, LanguageId, Code, problem.TimeLimit, problem.MemoryLimit * 666);
-            
-            var client = httpClientFactory.CreateClient();
-
-            List<PostResponse> tokens = (await PostRequest(jsonRequest, client));
-            await Task.Delay(10000);
-
-            BatchSubmissionResponse results = await GetRequest(tokens, client);
-            
-            submission.TestCaseResults = new List<TestCaseResult>();
-            var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
-            foreach (var result in results.Submissions)
-            {
-                // Add the result to the results list
-                TestCaseResult testCaseResult = new TestCaseResult(submission.Id, result.Status.description, (int)Math.Round((decimal)((result.Memory  ?? 0) / 1024.0)), result.Stdout ?? "", result.Time ?? "0.0");
-                submission.TestCaseResults.Add(testCaseResult);
-                await testCaseResultManager.CreateAsync(testCaseResult);
-
-            }
-            submission.Time = submission.TestCaseResults.Max(r => double.Parse(r.Time, numberFormatInfo));
-            submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(r.Memory));
-
-            if(user.BestTime == 0)
-            {
-                user.BestTime = submission.Time;
-                user.BestMemory = submission.Memory;
-                user.Points[groupIndex] += 10;
-            }
-            if (ProblemId == user.LastChallengeTaskId && (submission.Time < user.BestTime || submission.Memory < user.BestTime))
-            {
-                user.Points[groupIndex] += 10;
-            }
-
-            submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
-            submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * (decimal)100.0);
-            submission.Code = Code;
-            var userSubmissions = await manager.ReadByIdAsync(userId, true);
-            Submission bestSubmission = userSubmissions.Where(s => s.ProblemId == ProblemId).OrderByDescending(s => s.Points).FirstOrDefault();
-
-            if (bestSubmission != null)
-            {
-                if (submission.Points > bestSubmission.Points)
-                {
-                    user.Points[groupIndex] += (submission.Points - bestSubmission.Points);
-                }
-            }
-            else user.Points[groupIndex] += submission.Points;
-            await userManager.UpdateAsync(user);
-            await manager.UpdateAsync(submission, true);
-
-            return View("Details", submission);
+            return RedirectToAction("Index", new {problemId = ProblemId});
         }
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles ="Admin,User")]
+        public async Task ProcessSubmission(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation, string userId)
+        {
+            try
+            {
+                // Your submission processing logic (similar to the original method)
 
+                Tuple<string[], string[]> testFiles = GetTestFiles(CompetitionNotation, Year, ProblemNotation);
+                var inputTestFiles = testFiles.Item1;
+                var outputTestFiles = testFiles.Item2;
+
+                var problem = await problemsManager.ReadAsync(ProblemId, true);
+                var groupIndex = (int)(Convert.ToChar(problem.Competition.Group) - 'A');
+                var user = await userManager.FindByIdAsync(userId);
+                Submission submission = new Submission(ProblemId, DateTime.Now, userId);
+
+                await manager.CreateAsync(submission);
+
+                string jsonRequest = await CreatePostQuery(inputTestFiles, outputTestFiles, LanguageId, Code, problem.TimeLimit, problem.MemoryLimit * 666);
+                var client = httpClientFactory.CreateClient();
+                List<PostResponse> tokens = await PostRequest(jsonRequest, client);
+                await Task.Delay(10000); // Simulate delay
+
+                BatchSubmissionResponse results = await GetRequest(tokens, client);
+
+                // Handle test case results and update the database
+                submission.TestCaseResults = new List<TestCaseResult>();
+                var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                foreach (var result in results.Submissions)
+                {
+                    TestCaseResult testCaseResult = new TestCaseResult(
+                        submission.Id,
+                        result.Status.description,
+                        (int)Math.Round((decimal)((result.Memory ?? 0) / 1024.0)),
+                        result.Stdout ?? "",
+                        result.Time ?? "0.0"
+                    );
+                    submission.TestCaseResults.Add(testCaseResult);
+                    await testCaseResultManager.CreateAsync(testCaseResult);
+                }
+
+                // Additional user and submission updates
+                submission.Time = submission.TestCaseResults.Max(r => double.Parse(r.Time, numberFormatInfo));
+                submission.Memory = submission.TestCaseResults.Max(r => Convert.ToInt32(r.Memory));
+                submission.Error = submission.TestCaseResults.FirstOrDefault(r => r.State != "Accepted")?.State;
+                submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * (decimal)100.0);
+                submission.Code = Code;
+
+                await userManager.UpdateAsync(user);
+                await manager.UpdateAsync(submission, true);
+            }
+            catch (Exception ex)
+            {
+                // Log errors to ensure visibility
+                Console.WriteLine($"Error processing submission: {ex.Message}");
+            }
+        }
+
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> OutputDetails(int id)
         {
             TestCaseResult testCaseResult = await testCaseResultManager.ReadAsync(id);

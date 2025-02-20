@@ -19,19 +19,29 @@
         </tr>
     </thead>
     <tbody>
-        @foreach(var item in Model.TestCaseResults)
+        @if(Model.TestCaseResults.Count != 0)
+        {
+            @foreach (var item in Model.TestCaseResults)
+            {
+                <tr>
+                    <td>@testNumber</td>
+                    <td>@item.State</td>
+                    <td>@item.Time</td>
+                    <td>@item.Memory</td>
+                    <td>
+                        <a class="text-dark text-decoration-none" asp-action="OutputDetails" asp-route-id=@item.Id>→</a>
+                    </td>
+
+                </tr>
+                testNumber++;
+            }
+        }
+        else
         {
             <tr>
-                <td>@testNumber</td>
-                <td>@item.State</td>
-                <td>@item.Time</td>
-                <td>@item.Memory</td>
-                <td>
-                    <a class="text-dark text-decoration-none" asp-action="OutputDetails" asp-route-id=@item.Id>→</a>
-                </td>
-
+                <td colspan="5">Решението все още се обработва </td>
             </tr>
-            testNumber++;
         }
+
     </tbody>
 </table>
