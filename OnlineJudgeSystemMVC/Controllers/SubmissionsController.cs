@@ -64,6 +64,10 @@ namespace OnlineJudgeSystemMVC.Controllers
             }
 
             var submission = await manager.ReadAsync((int)id, true);
+            if (submission.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return View("AccessDenied");
+            }
             if (submission == null)
             {
                 return NotFound();
@@ -241,7 +245,12 @@ namespace OnlineJudgeSystemMVC.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> OutputDetails(int id)
         {
-            TestCaseResult testCaseResult = await testCaseResultManager.ReadAsync(id);
+            TestCaseResult testCaseResult = await testCaseResultManager.ReadAsync(id, true);
+            Submission submission = await manager.ReadAsync(testCaseResult.SubmissionId, true);
+            if (submission.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return View("AccessDenied");
+            }
             return View("OutputDetails", testCaseResult.Output);
         }
         [Authorize(Roles = "Admin,User")]
