@@ -90,10 +90,12 @@ namespace OnlineJudgeSystemMVC.Controllers
                 };
                 await _yearCompetitionsManager.CreateAsync(yearCompetition);
 
-                yearCompetition.GroupCompetitions = Enumerable.Range(0, 5).Select(i => new GroupCompetition(((char)('A' + i)).ToString(), yearCompetition.Id)).ToList();
-
-                foreach (var group in yearCompetition.GroupCompetitions)
-                    await _groupCompetitionsManager.CreateAsync(group);
+                
+                for(int i = 0; i < 5; i ++)
+                {
+                    yearCompetition.GroupCompetitions.Add(new GroupCompetition(((char)('A' + i)).ToString(), yearCompetition.Id));
+                }
+                await _groupCompetitionsManager.CreateAsync(yearCompetition.GroupCompetitions.First());
 
                 await _yearCompetitionsManager.UpdateAsync(yearCompetition);
                 yearCompetitions.Add(yearCompetition);
@@ -117,7 +119,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Notation")] Competition competition)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstYear,LastYear,Name,Notation")] Competition competition)
         {
             if (id != competition.Id)
                 return BadRequest();
