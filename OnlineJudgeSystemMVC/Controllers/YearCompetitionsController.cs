@@ -1,178 +1,138 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DataLayer;
 using ServiceLayer.EntityServices;
 using BusinessLayer.Entities;
-using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
     public class YearCompetitionsController : Controller
     {
-        private readonly YearCompetitionsManager manager;
-        private readonly GroupCompetitionsManager groupCompetitionsManager;
-        private readonly CompetitionsManager competitionsManager;
+        private readonly YearCompetitionsManager _yearManager;
+        private readonly GroupCompetitionsManager _groupManager;
+        private readonly CompetitionsManager _competitionManager;
 
-        public YearCompetitionsController(YearCompetitionsManager manager, GroupCompetitionsManager groupCompetitionsManager, CompetitionsManager competitionsManager)
+        public YearCompetitionsController(YearCompetitionsManager yearManager, GroupCompetitionsManager groupManager, CompetitionsManager competitionManager)
         {
-            this.manager = manager;
-            this.groupCompetitionsManager = groupCompetitionsManager;
-            this.competitionsManager = competitionsManager;
+            _yearManager = yearManager;
+            _groupManager = groupManager;
+            _competitionManager = competitionManager;
         }
 
-        // GET: YearCompetitions
-        public  IActionResult Index()
-        {
-            return Redirect("/Competitions/Index");
-        }
+        public IActionResult Index() => Redirect("/Competitions/Index");
+
         [Authorize(Roles = "Admin")]
-        // GET: YearCompetitions/Create
         public async Task<IActionResult> Create(int id)
         {
+            var competition = await _competitionManager.ReadAsync(id);
             ViewBag.CompetitionId = id;
-            ViewBag.Competition = (await competitionsManager.ReadAsync(id)).Name;
+            ViewBag.Competition = competition.Name;
             return View();
         }
 
-        // POST: YearCompetitions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Year,CompetitionId")] YearCompetition yearCompetition)
         {
             ViewBag.CompetitionId = yearCompetition.CompetitionId;
-            ViewBag.Competition = (await competitionsManager.ReadAsync(yearCompetition.CompetitionId)).Name;
-            if ((await manager.ReadAllAsync()).Any(c => c.Year == yearCompetition.Year)) ModelState.AddModelError("", "Годината трябва да е уникална.");
-            if (ModelState.IsValid)
-            {                
-                Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
-                await manager.CreateAsync(yearCompetition);
-                competition.YearCompetitions.Add(yearCompetition);
-                await competitionsManager.UpdateAsync(competition);
-                for (int i = 0; i < 5; i++)
-                {
-                    var groupCompetition = new GroupCompetition(((char)(i + 'A')).ToString(), yearCompetition.Id);
-                    await groupCompetitionsManager.CreateAsync(groupCompetition);
-                    yearCompetition.GroupCompetitions.Add(groupCompetition);
-                }
-                return RedirectToAction(nameof(Index));
+            ViewBag.Competition = (await _competitionManager.ReadAsync(yearCompetition.CompetitionId)).Name;
+
+            if ((await _yearManager.ReadAllAsync()).Any(c => c.Year == yearCompetition.Year))
+                ModelState.AddModelError("", "Годината трябва да е уникална.");
+
+            if (!ModelState.IsValid)
+                return View(yearCompetition);
+
+            var competition = await _competitionManager.ReadAsync(yearCompetition.CompetitionId, true);
+            await _yearManager.CreateAsync(yearCompetition);
+
+            competition.YearCompetitions.Add(yearCompetition);
+            await _competitionManager.UpdateAsync(competition);
+
+            for (int i = 0; i < 5; i++)
+            {
+                var group = new GroupCompetition(((char)(i + 'A')).ToString(), yearCompetition.Id);
+                await _groupManager.CreateAsync(group);
+                yearCompetition.GroupCompetitions.Add(group);
             }
-            return View(yearCompetition);
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: YearCompetitions/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return BadRequest();
-            }
+            if (id == null) return BadRequest();
 
-            var yearCompetition = await manager.ReadAsync((int)id, true);
+            var yearCompetition = await _yearManager.ReadAsync(id.Value, true);
+            if (yearCompetition == null) return NotFound();
+
             ViewBag.CompetitionName = yearCompetition.Competition.Name;
-            if (yearCompetition == null)
-            {
-                return NotFound();
-            }
             return View(yearCompetition);
         }
 
-        // POST: YearCompetitions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Year,CompetitionId")] YearCompetition yearCompetition)
         {
-            if (id != yearCompetition.Id)
+            if (id != yearCompetition.Id) return BadRequest();
+
+            if (!ModelState.IsValid)
+                return View(yearCompetition);
+
+            try
             {
-                return BadRequest();
+                await _yearManager.UpdateAsync(yearCompetition);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await YearCompetitionExists(yearCompetition.Id))
+                    return NotFound();
+                throw;
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await manager.UpdateAsync(yearCompetition);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!YearCompetitionExists(yearCompetition.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(yearCompetition);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: YearCompetitions/Details/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return BadRequest();
-            }
+            if (id == null) return BadRequest();
 
-            var yearCompetition = await manager.ReadAsync((int)id);
-            if (yearCompetition == null)
-            {
-                return NotFound();
-            }
-
-            return View(yearCompetition);
+            var yearCompetition = await _yearManager.ReadAsync(id.Value);
+            return yearCompetition == null ? NotFound() : View(yearCompetition);
         }
 
-        // GET: YearCompetitions/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return BadRequest();
-            }
+            if (id == null) return BadRequest();
 
-            var yearCompetition = await manager.ReadAsync((int)id, true);
-            if (yearCompetition == null)
-            {
-                return NotFound();
-            }
-
-            return View(yearCompetition);
+            var yearCompetition = await _yearManager.ReadAsync(id.Value, true);
+            return yearCompetition == null ? NotFound() : View(yearCompetition);
         }
 
-        // POST: YearCompetitions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            YearCompetition yearCompetition = await manager.ReadAsync(id, true);            
-            await manager.DeleteAsync(id);
-            Competition competition = yearCompetition.Competition;
-            manager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-            manager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());
+            var yearCompetition = await _yearManager.ReadAsync(id, true);
+            await _yearManager.DeleteAsync(id);
+
+            var competition = yearCompetition.Competition;
+            _yearManager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+            _yearManager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool YearCompetitionExists(int id)
-        {
-            return manager.ReadAsync(id) != null;
-        }
+        private async Task<bool> YearCompetitionExists(int id) => await _yearManager.ReadAsync(id) != null;
     }
 }

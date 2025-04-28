@@ -10,26 +10,26 @@ namespace BusinessLayer.Entities
 {
     public class Problem
     {
-        [Key]
+        [Key] 
         public int Id { get; set; }
         [Required(ErrorMessage = "Името е задължително.")]
         [MaxLength(200, ErrorMessage = "Името не може да надхвърля 200 символа.")]
-        public string Name { get; set; }
+        public string Name { get; set; } 
         [Required(ErrorMessage = "Времевото ограничение е задължително.")]
         [Range(0.1, 10, ErrorMessage = "Времевото ограничение трябва да приема стойности между 0.1 и 10 сек.")]
-        public double TimeLimit { get; set; }
+        public double TimeLimit { get; set; } 
         [Required(ErrorMessage = "Ограничението за паметта е задължително.")]
         [Range(1, 500, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
-        public int MemoryLimit { get; set; }
+        public int MemoryLimit { get; set; } 
         [Required(ErrorMessage = "URL е задължителен.")]
         [Url(ErrorMessage = "Невалиден URL формат.")]
-        public string URL { get; set; }
+        public string URL { get; set; } 
         [Required(ErrorMessage = "Нотацията на задачата е задължителна.")]
-        public string ProblemNotation { get; set; }
+        public string ProblemNotation { get; set; } 
         public int CompetitionId { get; set; }
-        [ForeignKey("CompetitionId")]
+        [ForeignKey("CompetitionId")] //Foreign key
         public GroupCompetition Competition { get; set; }
-        public ICollection<Submission> Submissions { get; set; }
+        public ICollection<Submission> Submissions { get; set; } //A problem can have many submissions (one-to-many relationship)
         public Problem()
         {
             Submissions = new List<Submission>();

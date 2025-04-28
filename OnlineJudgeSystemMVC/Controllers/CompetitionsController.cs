@@ -1,208 +1,171 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DataLayer;
 using Microsoft.AspNetCore.Authorization;
-using ServiceLayer.EntityServices;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using BusinessLayer.Entities;
+using DataLayer;
+using ServiceLayer.EntityServices;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
     public class CompetitionsController : Controller
     {
-        private readonly CompetitionsManager manager;
-        private readonly YearCompetitionsManager yearCompetitionsManager;
-        private readonly GroupCompetitionsManager groupCompetitionsManager;
-
+        private readonly CompetitionsManager _manager;
+        private readonly YearCompetitionsManager _yearCompetitionsManager;
+        private readonly GroupCompetitionsManager _groupCompetitionsManager;
 
         public CompetitionsController(CompetitionsManager manager, YearCompetitionsManager yearCompetitionsManager, GroupCompetitionsManager groupCompetitionsManager)
         {
-            this.manager = manager;
-            this.yearCompetitionsManager = yearCompetitionsManager;
-            this.groupCompetitionsManager = groupCompetitionsManager;
+            _manager = manager;
+            _yearCompetitionsManager = yearCompetitionsManager;
+            _groupCompetitionsManager = groupCompetitionsManager;
         }
 
         // GET: Competitions
         public async Task<IActionResult> Index()
-        {
-            return View(await manager.ReadAllAsync());
-        }
-        [Authorize(Roles ="Admin")]
+            => View(await _manager.ReadAllAsync());
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AdministratorIndex()
-        {
-            return View(await manager.ReadAllAsync());
-        }
+            => View(await _manager.ReadAllAsync());
 
         [Route("api/competitions/{id}/years")]
         [HttpGet]
         public async Task<IActionResult> GetYears(int id)
         {
-            Competition competition = await manager.ReadAsync(id, true);
-            List<Tuple<int, int>> yearId = competition.YearCompetitions.Select(x => new Tuple<int, int> (x.Id, x.Year)).ToList();
-            return Ok(yearId);
+            var competition = await _manager.ReadAsync(id, true);
+            if (competition == null) return NotFound();
+
+            var years = competition.YearCompetitions.Select(x => Tuple.Create(x.Id, x.Year)).ToList();
+
+            return Ok(years);
         }
+
         public async Task<IActionResult> IndexYears(int id)
         {
-            var competition = await manager.ReadAsync(id, true);
-            if (competition == null)
-            {
-                return NotFound();
-            }
-            return View(competition.YearCompetitions);
+            var competition = await _manager.ReadAsync(id, true);
+            return competition == null ? NotFound() : View(competition.YearCompetitions);
         }
+
         [Authorize(Roles = "Admin")]
-        // GET: Competitions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return BadRequest();
-            }
+            if (id == null) return BadRequest();
 
-            var competition = await manager.ReadAsync((int)id);
-            if (competition == null)
-            {
-                return NotFound();
-            }
-
-            return View(competition);
+            var competition = await _manager.ReadAsync(id.Value);
+            return competition == null ? NotFound() : View(competition);
         }
-        [Authorize(Roles = "Admin")]
 
-        // GET: Competitions/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
-        {
-            return View();
-        }
-        [Authorize(Roles = "Admin")]
-        // POST: Competitions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            => View();
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,Notation")]Competition competition)
-        {
-            if ((await manager.ReadAllAsync()).Any(c => c.Notation == competition.Notation)) ModelState.AddModelError("", "Нотацията трябва да е уникална.");
-            if (competition.FirstYear > competition.LastYear) ModelState.AddModelError("", "Началната година трябва да е по-малка от крайната.");
-            if (ModelState.IsValid)
-            {
-                await manager.CreateAsync(competition);
-                List<YearCompetition> yearCompetitions = new List<YearCompetition>();
-                for (int i = competition.FirstYear; i <= competition.LastYear; i++)
-                {
-                    YearCompetition yearCompetition = new YearCompetition();
-                    yearCompetition.Year = i;
-                    yearCompetition.CompetitionId = competition.Id;                   
-                    await yearCompetitionsManager.CreateAsync(yearCompetition);
-
-                    List<GroupCompetition> groupCompetitions = new List<GroupCompetition>();
-                    for(int j = 0; j < 5; j ++)
-                    {
-                        var groupCompetition = new GroupCompetition(((char)(j + 'A')).ToString(), yearCompetition.Id);
-                        await groupCompetitionsManager.CreateAsync(groupCompetition);
-                        groupCompetitions.Add(groupCompetition);
-                    }
-                    yearCompetition.GroupCompetitions = groupCompetitions;
-                    await yearCompetitionsManager.UpdateAsync(yearCompetition);
-                    yearCompetitions.Add(yearCompetition);
-                }
-                competition.YearCompetitions = yearCompetitions;
-                await manager.UpdateAsync(competition, true);
-                return RedirectToAction(nameof(AdministratorIndex));
-            }
-            return View(competition);
-        }
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,Notation")] Competition competition)
+        {
+            if ((await _manager.ReadAllAsync()).Any(c => c.Notation == competition.Notation))
+                ModelState.AddModelError("", "Нотацията трябва да е уникална.");
 
-        // GET: Competitions/Edit/5
+            if (competition.FirstYear > competition.LastYear)
+                ModelState.AddModelError("", "Началната година трябва да е по-малка от крайната.");
+
+            if (!ModelState.IsValid)
+                return View(competition);
+
+            await _manager.CreateAsync(competition);
+
+            var yearCompetitions = new List<YearCompetition>();
+            for (int year = competition.FirstYear; year <= competition.LastYear; year++)
+            {
+                var yearCompetition = new YearCompetition
+                {
+                    Year = year,
+                    CompetitionId = competition.Id
+                };
+                await _yearCompetitionsManager.CreateAsync(yearCompetition);
+
+                yearCompetition.GroupCompetitions = Enumerable.Range(0, 5).Select(i => new GroupCompetition(((char)('A' + i)).ToString(), yearCompetition.Id)).ToList();
+
+                foreach (var group in yearCompetition.GroupCompetitions)
+                    await _groupCompetitionsManager.CreateAsync(group);
+
+                await _yearCompetitionsManager.UpdateAsync(yearCompetition);
+                yearCompetitions.Add(yearCompetition);
+            }
+
+            competition.YearCompetitions = yearCompetitions;
+            await _manager.UpdateAsync(competition, true);
+
+            return RedirectToAction(nameof(AdministratorIndex));
+        }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var competition = await manager.ReadAsync((int)id);
-            if (competition == null)
-            {
-                return NotFound();
-            }
-            return View(competition);
+            var competition = await _manager.ReadAsync(id.Value);
+            return competition == null ? NotFound() : View(competition);
         }
-        [Authorize(Roles = "Admin")]
-        // POST: Competitions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Notation")] Competition competition)
         {
             if (id != competition.Id)
-            {
                 return BadRequest();
-            }
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await manager.UpdateAsync(competition);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompetitionExists(competition.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(AdministratorIndex));
-            }
-            return View(competition);
-        }
-        [Authorize(Roles = "Admin")]
-        // GET: Competitions/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var competition = await manager.ReadAsync((int)id);
-            if (competition == null)
-            {
-                return NotFound();
-            }
+            if (!ModelState.IsValid)
+                return View(competition);
 
-            return View(competition);
-        }
-        [Authorize(Roles = "Admin")]
-        // POST: Competitions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var competition = await manager.ReadAsync(id);
-            if (competition != null)
+            try
             {
-                await manager.DeleteAsync(id);
-                manager.DeleteDirectory("Problems", competition.Notation, prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-                manager.DeleteDirectory("TestCases", competition.Notation);
+                await _manager.UpdateAsync(competition);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await CompetitionExists(competition.Id))
+                    return NotFound();
+
+                throw;
             }
 
             return RedirectToAction(nameof(AdministratorIndex));
         }
 
-        private bool CompetitionExists(int id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
         {
-            return manager.ReadAsync(id) != null;
+            if (id == null) return NotFound();
+
+            var competition = await _manager.ReadAsync(id.Value);
+            return competition == null ? NotFound() : View(competition);
         }
+
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var competition = await _manager.ReadAsync(id);
+            if (competition != null)
+            {
+                await _manager.DeleteAsync(id);
+                _manager.DeleteDirectory("Problems", competition.Notation, Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+                _manager.DeleteDirectory("TestCases", competition.Notation);
+            }
+
+            return RedirectToAction(nameof(AdministratorIndex));
+        }
+
+        private async Task<bool> CompetitionExists(int id)
+            => await _manager.ReadAsync(id) != null;
     }
 }

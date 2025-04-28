@@ -1,80 +1,71 @@
-﻿using BusinessLayer.Entities;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using BusinessLayer.Entities;
 using ServiceLayer.EntityServices;
-using System.Text.RegularExpressions;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
     public class TestCasesController : Controller
     {
-        private readonly IWebHostEnvironment _environment;
-        private readonly ProblemsManager manager;
-        private readonly GroupCompetitionsManager groupCompetitionsManager;
-        private readonly YearCompetitionsManager yearCompetitionsManager;
-        private readonly CompetitionsManager competitionsManager;
+        private readonly IWebHostEnvironment _env;
+        private readonly ProblemsManager _problemsManager;
+        private readonly GroupCompetitionsManager _groupManager;
+        private readonly YearCompetitionsManager _yearManager;
+        private readonly CompetitionsManager _competitionManager;
 
-        public TestCasesController(IWebHostEnvironment environment, ProblemsManager manager, GroupCompetitionsManager groupCompetitionsManager, YearCompetitionsManager yearCompetitionsManager, CompetitionsManager competitionsManager)
+        public TestCasesController(
+            IWebHostEnvironment env,
+            ProblemsManager problemsManager,
+            GroupCompetitionsManager groupManager,
+            YearCompetitionsManager yearManager,
+            CompetitionsManager competitionManager)
         {
-            _environment = environment;
-            this.manager = manager;
-            this.groupCompetitionsManager = groupCompetitionsManager;
-            this.yearCompetitionsManager = yearCompetitionsManager;
-            this.competitionsManager = competitionsManager;
+            _env = env;
+            _problemsManager = problemsManager;
+            _groupManager = groupManager;
+            _yearManager = yearManager;
+            _competitionManager = competitionManager;
         }
+
         [Authorize(Roles = "Admin")]
-        [HttpPost] 
+        [HttpPost]
         public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
         {
             if (files == null || files.Length == 0)
-            {
                 return BadRequest("No files uploaded.");
-            }
-            
-            Problem problem = await manager.ReadAsync(id, true);
-            int groupId = problem.CompetitionId;
 
-            GroupCompetition groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
-            YearCompetition yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
-            Competition competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
+            var problem = await _problemsManager.ReadAsync(id, true);
+            var group = await _groupManager.ReadAsync(problem.CompetitionId, true);
+            var year = await _yearManager.ReadAsync(group.YearCompetitionId, true);
+            var competition = await _competitionManager.ReadAsync(year.CompetitionId, true);
 
-            var uploadFolder = Path.Combine(_environment.ContentRootPath, "TestCases", competition.Notation, yearCompetition.Year.ToString(), problem.ProblemNotation);
-            var inputFolderPath = Path.Combine(uploadFolder, "Input","tests");
-            var outputFolderPath = Path.Combine(uploadFolder, "Output", "tests");
+            string uploadPath = Path.Combine(_env.ContentRootPath, "TestCases", competition.Notation, year.Year.ToString(), problem.ProblemNotation);
+            string inputPath = Path.Combine(uploadPath, "Input", "tests");
+            string outputPath = Path.Combine(uploadPath, "Output", "tests");
 
-            if (!Directory.Exists(inputFolderPath))
-            {
-                Directory.CreateDirectory(inputFolderPath);
-            }
-            bool flag = !Directory.Exists(outputFolderPath);
-            if (flag)
-            {
-                Directory.CreateDirectory(outputFolderPath);
-            }
-
+            Directory.CreateDirectory(inputPath);
+            Directory.CreateDirectory(outputPath);
 
             foreach (var file in files)
             {
-                //string fileName = file.FileName.Substring(file.FileName.IndexOf('.') + 1);
-                var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                var ext = Path.GetExtension(file.FileName).ToLower();
+                if (file.Length == 0) continue;
 
-                if (fileExtension == ".in" && file.Length > 0)
+                string targetPath = ext switch
                 {
-                    var inputFilePath = Path.Combine(Path.Combine(uploadFolder, "Input"), file.FileName);
+                    ".in" => Path.Combine(uploadPath, "Input", file.FileName),
+                    ".out" => Path.Combine(uploadPath, "Output", file.FileName),
+                    ".sol" => Path.Combine(uploadPath, "Output", file.FileName),
+                    _ => null
+                };
 
-                    using (var stream = new FileStream(Path.Combine(uploadFolder, "Input"), FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-                }
-                else if (fileExtension == ".out" && file.Length > 0)
+                if (targetPath != null)
                 {
-                    var outputFilePath = Path.Combine(Path.Combine(uploadFolder, "Output"), file.FileName);
-
-                    using (var stream = new FileStream(Path.Combine(uploadFolder, "Output"), FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
+                    using var stream = new FileStream(targetPath, FileMode.Create);
+                    await file.CopyToAsync(stream);
                 }
             }
 

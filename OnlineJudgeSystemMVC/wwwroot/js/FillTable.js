@@ -12,7 +12,7 @@
 
         // Fetch years for the competition
         $.ajax({
-            url: `/api/competitions/${competitionId}/years`, // Update with your API endpoint
+            url: `/api/competitions/${competitionId}/years`, //  API endpoint
             type: 'GET',
             success: function (data) {
                 const yearsList = $('#yearsList');

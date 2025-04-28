@@ -23,7 +23,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresNonAlphanumeric),
-                Description = "Паролата трябва да съдържа поне един специален символ."
+                Description = "Паролата трябва да съдържа поне един специален символ. Например #, @, _ и др."
             };
         }
 

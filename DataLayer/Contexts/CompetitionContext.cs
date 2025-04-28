@@ -21,7 +21,7 @@ namespace DataLayer.Contexts
         {
             try
             {
-
+                if(item == null) throw new ArgumentNullException("Item cannot be null");
                 _context.Competitions.Add(item);
                 await _context.SaveChangesAsync();
             }
@@ -30,7 +30,6 @@ namespace DataLayer.Contexts
                 throw;
             }
         }
-
         public async Task DeleteAsync(int key)
         {
             try
@@ -105,6 +104,7 @@ namespace DataLayer.Contexts
             try
             {
                 Competition competitionFromDb = await ReadAsync(item.Id, navigationalProperties, false);
+                if(competitionFromDb == null) throw new ArgumentException("Competition with this id was not found");
                 _context.Entry(competitionFromDb).CurrentValues.SetValues(item);
                 if (navigationalProperties)
                 {
@@ -115,7 +115,7 @@ namespace DataLayer.Contexts
             catch (Exception)
             {
 
-                throw;
+                throw ;
             }
         }
     }

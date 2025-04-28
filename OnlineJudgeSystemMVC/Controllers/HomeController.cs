@@ -12,5 +12,9 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             return View();
         }
+        public IActionResult ChallengeMeInfo()
+        {
+            return View();
+        }
     }
 }

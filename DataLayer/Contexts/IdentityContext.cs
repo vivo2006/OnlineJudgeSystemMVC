@@ -22,36 +22,14 @@ namespace DataLayer.Contexts
             this.roleManager = roleManager;
         }
 
-        #region  Seeding Data with project
-
-        public async Task SeedDataAsync(string adminEmail, string adminPassword)
-        {
-            int userRoles = await context.UserRoles.CountAsync();
-            if (userRoles == 0)
-            {
-                await ConfigureAdminAccountAsync(adminEmail, adminPassword);
-            }
-        }
-
-        public async Task ConfigureAdminAccountAsync(string email, string password)
-        {
-            ApplicationUser adminIdentityUser = await context.Users.FirstAsync();
-            if (adminIdentityUser != null)
-            {
-                await userManager.AddToRoleAsync(adminIdentityUser, Role.Admin.ToString());
-                await userManager.AddPasswordAsync(adminIdentityUser, password);
-                await userManager.SetEmailAsync(adminIdentityUser, email);
-            }
-        }
-        #endregion Seeding
-
         #region CRUD
+        //Method for creating a new user
         public async Task<Tuple<IdentityResult, ApplicationUser>> CreateUserAsync(string username, string password, string email, string firstName, string lastName, Role role)
         {
             try
             {
                 ApplicationUser user = new ApplicationUser(username, email, firstName, lastName);
-                if (role == Role.Admin)
+                if (role == Role.Admin) //If the user is an admin, set the email as confirmed
                 {
                     user.EmailConfirmed = true;
                 }
@@ -70,7 +48,7 @@ namespace DataLayer.Contexts
 
                 return new Tuple<IdentityResult, ApplicationUser>(IdentityResult.Success, user);
             }
-            catch (Exception ex)
+            catch (Exception ex) //Handle exceptions and return an error result
             {
                 IdentityError er = new IdentityError()
                 {
@@ -82,7 +60,7 @@ namespace DataLayer.Contexts
                 return new Tuple<IdentityResult, ApplicationUser>(result, null);
             }
         }
-
+        //Method for logging in a user
         public async Task<ApplicationUser> LogInUserAsync(string username, string password)
         {
             try
@@ -95,7 +73,7 @@ namespace DataLayer.Contexts
                 }
                 else
                 {
-                    IdentityResult result = await userManager.PasswordValidators[0].ValidateAsync(userManager, userFromDb, password);
+                    IdentityResult result = await userManager.PasswordValidators[0].ValidateAsync(userManager, userFromDb, password); //Validate the password
 
                     if (result.Succeeded)
                     {
@@ -112,7 +90,7 @@ namespace DataLayer.Contexts
                 throw;
             }
         }
-
+        //Method for reading a user by id
         public async Task<ApplicationUser> ReadUserAsync(string key, bool useNavigationalProporties = false)
         {
             try
@@ -129,12 +107,12 @@ namespace DataLayer.Contexts
                 throw;
             }
         }
-
+        //Method for reading all users
         public async Task<ICollection<ApplicationUser>> ReadAllUsersAsync(bool useNavigationalProporties = false)
         {
             try
             {
-                IQueryable<ApplicationUser> query = context.Users.Where(u => u.UserName != "admin");
+                IQueryable<ApplicationUser> query = context.Users.Where(u => u.UserName != "admin"); //Exclude admin user
                 if (useNavigationalProporties)
                 {
                     query = query.Include(u => u.Submissions);
@@ -147,7 +125,7 @@ namespace DataLayer.Contexts
                 throw;
             }
         }
-
+        //Method for updating a user
         public async Task UpdateUserAsync(ApplicationUser newUser, bool useNavigationalProperties)
         {
             try
@@ -156,7 +134,7 @@ namespace DataLayer.Contexts
                 {
                     ApplicationUser user = await ReadUserAsync(newUser.Id);
 
-                    if (user != null)
+                    if (user != null) //Update the user if it exists
                     {
                         user.FirstName = newUser.FirstName;
                         user.LastName = newUser.LastName;

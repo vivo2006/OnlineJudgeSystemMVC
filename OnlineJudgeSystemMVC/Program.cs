@@ -13,6 +13,7 @@ using DataLayer.Contexts;
 using BusinessLayer.Entities;
 using Hangfire;
 using Hangfire.SqlServer;
+using ServiceLayer.ExternalServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,10 @@ builder.Services.AddScoped<IDb<TestCaseResult, int>, TestCaseResultContext>();
 builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
 
 builder.Services.AddScoped<IdentityManager, IdentityManager>();
-builder.Services.AddScoped<IdentityContext, IdentityContext>(); ;
+builder.Services.AddScoped<IdentityContext, IdentityContext>();
+
+builder.Services.AddScoped<Judge0Service>();
+
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<APIdata>(builder.Configuration.GetSection("APIdata"));

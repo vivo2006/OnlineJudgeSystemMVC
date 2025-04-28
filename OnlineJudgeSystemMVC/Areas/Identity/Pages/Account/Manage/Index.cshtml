@@ -9,20 +9,22 @@
 <table class="table table-bordered mb-4" style="width:100%;">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>Изпратен</th>
             <th>Състезание</th>
             <th>Задача</th>
             <th>Точки</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Submissions)
         {
             <tr>
-                <td><a class="text-dark" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>@item.Id</a></td>
+                <td>@item.Created</td>
                 <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
                 <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
                 <td>@item.Points</td>
+                <td><a class="text-dark text-decoration-none" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>→</a></td>
 
             </tr>
         }

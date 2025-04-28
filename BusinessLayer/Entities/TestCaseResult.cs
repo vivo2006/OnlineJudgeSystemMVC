@@ -10,16 +10,16 @@ namespace BusinessLayer.Entities
 {
     public class TestCaseResult
     {
-        [Key]
+        [Key] //Primary key
         public int Id { get; set; }
         [Required(ErrorMessage = "Foreign key is required.")]
         public int SubmissionId { get; set; }
-        [ForeignKey("SubmissionId")]
+        [ForeignKey("SubmissionId")] //Foreign key to Submission
         public Submission Submission { get; set; }
-        public string State { get; set; }
-        public int Memory { get; set; }
-        public string? Output { get; set; }
-        public string? Time { get; set; }
+        public string State { get; set; } //State of the test case
+        public int Memory { get; set; } //Memory used by the test case
+        public string? Output { get; set; } //Output of the test case
+        public string? Time { get; set; } //Time used by the test case
         public TestCaseResult()
         {
 

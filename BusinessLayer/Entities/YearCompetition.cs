@@ -10,14 +10,14 @@ namespace BusinessLayer.Entities
 {
     public class YearCompetition
     {
-        [Key]
-        public int Id { get; set; }
+        [Key] //Primary key
+        public int Id { get; set; } 
         [Required]
-        public int Year { get; set; }
-        public ICollection<GroupCompetition> GroupCompetitions { get; set; }
+        public int Year { get; set; } //Year of the competition
+        public ICollection<GroupCompetition> GroupCompetitions { get; set; } //A year competition can have many group competitions (one-to-many relationship)
         [Required]
         public int CompetitionId { get; set; }
-        [ForeignKey("CompetitionId")]
+        [ForeignKey("CompetitionId")] //Foreign key
         public Competition? Competition { get; set; }
         public YearCompetition()
         {

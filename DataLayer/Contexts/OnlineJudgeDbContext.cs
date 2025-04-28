@@ -16,12 +16,12 @@ namespace DataLayer.Contexts
         public OnlineJudgeDbContext() : base()
         {
 
-        }
+        } // constructor for migrations
         public OnlineJudgeDbContext(DbContextOptions options)
             : base(options)
         {
 
-        }
+        } // constructor for dependency injection
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,12 +32,14 @@ namespace DataLayer.Contexts
             base.OnConfiguring(optionsBuilder);
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder) //Setting up relationships and restrictions
         {
+            modelBuilder.Entity<Competition>().HasIndex(u => u.Notation).IsUnique();
+            modelBuilder.Entity<Problem>().HasIndex(u => u.ProblemNotation).IsUnique();
             base.OnModelCreating(modelBuilder);
         }
-
-        public DbSet<Competition> Competitions { get; set; }
+        //DbSets refer to the tables in the database
+        public virtual DbSet<Competition> Competitions { get; set; }
         public DbSet<GroupCompetition> GroupCompetitions { get; set; }
         public DbSet<YearCompetition> YearCompetitions { get; set; }
         public DbSet<Problem> Problems { get; set; }
