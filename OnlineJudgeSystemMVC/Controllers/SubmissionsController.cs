@@ -22,6 +22,8 @@ using DataLayer.Contexts;
 using BusinessLayer.Entities;
 using Hangfire;
 using ServiceLayer.ExternalServices;
+using Microsoft.AspNetCore.Hosting;
+using Humanizer;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -35,6 +37,8 @@ namespace OnlineJudgeSystemMVC.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly APIdata _apiData;
         private readonly Judge0Service _judge0Service;
+        private readonly IWebHostEnvironment _env;
+
 
         public SubmissionsController(
             SubmissionsManager manager,
@@ -43,7 +47,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             TestCaseResultContext testCaseResultManager,
             UserManager<ApplicationUser> userManager,
             IOptions<APIdata> apiData,
-            Judge0Service judge0Service)
+            Judge0Service judge0Service,
+            IWebHostEnvironment env)
         {
             _manager = manager;
             _problemsManager = problemsManager;
@@ -52,6 +57,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             _userManager = userManager;
             _apiData = apiData.Value;
             _judge0Service = judge0Service;
+            _env = env;
         }
 
         public async Task<IActionResult> Index(int problemId)
@@ -86,7 +92,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
         public Tuple<string[], string[]> GetTestFiles(string competitionNotation, int year, string problemNotation)
         {
-            var baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "TestCases", competitionNotation, year.ToString(), problemNotation);
+            var baseDirectory = Path.Combine(_env.WebRootPath, "TestCases", competitionNotation, year.ToString(), problemNotation);
             var inputPath = Path.Combine(baseDirectory, "Input");
             var outputPath = Path.Combine(baseDirectory, "Output");
 
@@ -112,12 +118,21 @@ namespace OnlineJudgeSystemMVC.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task ProcessSubmission(int ProblemId, string Code, int LanguageId, string CompetitionNotation, int Year, string ProblemNotation, string userId)
         {
-            try
-            {
+            /*try
+            {*/
                 var (inputTestFiles, outputTestFiles) = GetTestFiles(CompetitionNotation, Year, ProblemNotation);
 
                 var problem = await _problemsManager.ReadAsync(ProblemId, true);
                 var user = await _userManager.FindByIdAsync(userId);
+                var bestTime = user.Submissions
+                .Where(s => s.ProblemId == ProblemId && s.UserId == userId)
+                .Select(s => s.Time)
+                .DefaultIfEmpty(0)
+                .Max();
+                var bestMemory = user.Submissions
+                  .Where(s => s.ProblemId == ProblemId && s.UserId == userId)
+                    .Select(s => s.Memory).DefaultIfEmpty(0)
+                .Max();
 
                 var submission = new Submission(ProblemId, DateTime.Now, userId);
                 await _manager.CreateAsync(submission);
@@ -154,13 +169,27 @@ namespace OnlineJudgeSystemMVC.Controllers
                 submission.Points = (int)Math.Round(((decimal)submission.TestCaseResults.Count(r => r.State == "Accepted") / (decimal)submission.TestCaseResults.Count()) * 100.0m);
                 submission.Code = Code;
 
+                
+                int currentPoints = submission.Points;
+
+                int ind = (int)(Convert.ToChar(problem.ProblemNotation.Substring(0, 1)) - 'A');
+                user.Points[ind] += (currentPoints);
+                if(submission.Time < bestTime && ProblemId == user.LastChallengeTaskId)
+                {
+                    user.Points[ind] += 10;
+                }
+                else if(submission.Memory < bestMemory && ProblemId == user.LastChallengeTaskId)
+                {
+                    user.Points[ind] += 10;
+                }
+
                 await _userManager.UpdateAsync(user);
                 await _manager.UpdateAsync(submission, true);
-            }
+            /*}
             catch (Exception ex)
             {
                 Console.WriteLine($"Error processing submission: {ex.Message}");
-            }
+            }*/
         }
 
         public async Task<IActionResult> OutputDetails(int id)

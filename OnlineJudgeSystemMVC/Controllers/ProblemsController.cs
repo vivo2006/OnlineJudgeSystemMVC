@@ -65,7 +65,11 @@ namespace OnlineJudgeSystemMVC.Controllers
                 ViewBag.Year = globalYearCompetition.Year;
                 ViewBag.ChallengeId = user.LastChallengeTaskId;
 
-                return View("Details", problem);
+                var groupCompetition1 = await groupCompetitionsManager.ReadAsync(problem.CompetitionId, true);
+                var yearCompetition1 = await yearCompetitionsManager.ReadAsync(groupCompetition1.YearCompetitionId, true);
+                var competition1 = await competitionsManager.ReadAsync(yearCompetition1.CompetitionId, true);
+
+                return RedirectToAction("Details", new { id = problem.Id, competitionNotation = competition1.Notation, year = yearCompetition1.Year });
             }
 
             var solvedTaskIds = (await submissionsManager.ReadAllAsync(true)).Where(s => s.UserId == user.Id && s.Points >= 100).Select(s => s.ProblemId).Distinct().ToList();
@@ -77,7 +81,11 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             await UpdateChallenge(user, solvedTaskIds);
 
-            return View("Details", randomTask);
+            var groupCompetition = await groupCompetitionsManager.ReadAsync(randomTask.CompetitionId, true);
+            var yearCompetition = await yearCompetitionsManager.ReadAsync(groupCompetition.YearCompetitionId, true);
+            var competition = await competitionsManager.ReadAsync(yearCompetition.CompetitionId, true);
+
+            return RedirectToAction("Details", new {id = randomTask.Id, competitionNotation = competition.Notation, year = yearCompetition.Year });
         }
 
         public async Task UpdateChallenge(ApplicationUser user, List<int> solvedTaskIds)
