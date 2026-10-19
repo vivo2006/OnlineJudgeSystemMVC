@@ -11,11 +11,13 @@ public class LeaderboardModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IdentityManager _identityManager;
-
-    public LeaderboardModel(UserManager<ApplicationUser> userManager, IdentityManager identityManager)
+    private readonly SubmissionsManager _submissionsManager;
+    
+    public LeaderboardModel(UserManager<ApplicationUser> userManager, IdentityManager identityManager, SubmissionsManager submissionsManager)
     {
         _userManager = userManager;
         _identityManager = identityManager;
+        _submissionsManager = submissionsManager;
     }
 
     public List<UserRank> Leaderboard { get; set; }
