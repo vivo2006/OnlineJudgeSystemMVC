@@ -21,7 +21,7 @@ CodeXpert is a full-stack **online judge system** for hosting competitive progra
 - Email notifications for registration and password changes
 
 **For administrators**
-- Manage problems, competitions, years, groups, and user accounts
+- Full CRUD management of problems, competitions, years, groups, and user accounts
 - Upload problem statements (PDF) and test case folders directly through the UI
 
 ---
@@ -68,7 +68,7 @@ Submitted code is queued as a background job (via Hangfire) rather than processe
 
 ---
 
-## Project structure
+## Project Structure (high level)
 
 ```text
 OnlineJudgeSystemMVC/     MVC controllers, Razor/Identity pages, background processor, static statements
@@ -78,72 +78,69 @@ ServiceLayer/             Managers, Judge0 client, scoring and safe storage help
 SeedingLayer/             Explicit role/admin/demo seeding and leaderboard rebuild
 TestingLayer/             NUnit regression tests with fake judge responses and SQLite
 ```
-
-Private test cases live at `OnlineJudgeSystemMVC/TestCases/{Competition}/{Year}/{ProblemNotation}/Input|Output`, outside `wwwroot`. Input and output stems must match. The configured cap defaults to 20 tests; oversized or mismatched sets are rejected rather than partly judged. Historical data may need correcting before a problem can be judged.
-
-## Getting started
-
-Requirements: .NET 8 SDK, SQL Server (Windows LocalDB is suitable for local development), a Judge0 RapidAPI subscription for real submissions, and SMTP for registration/password-reset email. Tests do not need SQL Server, SMTP or Judge0 credentials.
-
-```powershell
-git clone https://github.com/vivo2006/OnlineJudgeSystemMVC.git
-cd OnlineJudgeSystemMVC
-dotnet restore
-dotnet build
-dotnet test
+CodeXpert/
+├── Models/              # EF Core entity classes (Problem, Submission, Competition, ...)
+├── Data/                # DbContext, Identity context, migrations
+├── Managers/            # Service-layer classes wrapping Context CRUD operations
+├── Services/            # Judge0Service, EmailSender, CustomIdentityErrorDescriber
+├── Controllers/         # MVC controllers (Problems, Submissions, Competitions, ...)
+├── Views/               # Razor views + shared layout
+├── wwwroot/             # Static assets (CSS, JS, images) + problem statements/test cases
+└── Program.cs           # App configuration & DI setup
 ```
 
-Configure `OnlineJudgeSystemMVC/appsettings.Local.json` for development. This file is ignored by Git and loaded only in Development by the web host. Copy the structure from `appsettings.json`, then set `ConnectionStrings:DefaultConnection`, `APIdata:Key`, and the SMTP settings. Never put real credentials into tracked configuration. Production uses environment variables or a deployment secret store; for example `ConnectionStrings__DefaultConnection`, `APIdata__Key`, and `EmailSettings__SmtpPassword`. Environment variables override the local file.
-
-Install the EF CLI if needed, and apply migrations explicitly:
-
-```powershell
-dotnet tool install --global dotnet-ef --version 8.0.11
-$env:ASPNETCORE_ENVIRONMENT = "Development"
-dotnet ef database update --project DataLayer --startup-project OnlineJudgeSystemMVC
+Test cases and problem statements are organized hierarchically on disk:
+```
+TestCases/{Competition}/{Year}/{ProblemNotation}/Input|Output
 ```
 
-For an existing database, back it up first. The `SecurityAndJudging` migration adds submission state and quota/scoring metadata. It does not send code to Judge0. Previously queued Hangfire jobs target the old controller method and must be reviewed/removed before starting the upgraded worker; they are not automatically resubmitted.
+---
 
-The seed console reads the same local configuration plus environment variables. It creates roles, optionally creates an administrator, and rebuilds leaderboard totals from best completed per-problem scores. Existing non-admin accounts are never silently promoted. Set these values privately in your local configuration or shell:
+## Getting Started
 
-```text
-SeedAdmin__Username
-SeedAdmin__Email
-SeedAdmin__Password
+### Prerequisites
+- .NET 8 SDK
+- Microsoft SQL Server (local or remote instance)
+- A [Judge0 API](https://judge0.com/) key (the hosted/shared instance is used by default; self-hosting is also supported — see below)
+- SMTP credentials for outgoing email (registration & password reset)
+
+### Setup
+1. Clone the repository
+   ```bash
+   git clone https://github.com/vivo2006/CodeXpert.git
+   cd CodeXpert
+   ```
+2. Configure `appsettings.json` with your:
+   - SQL Server connection string
+   - Judge0 API key/host
+   - SMTP email settings
+3. Apply database migrations
+   ```bash
+   dotnet ef database update
+   ```
+4. Run the seed console project once to create the `Admin`/`User` roles and an initial admin account.
+5. Start the application
+   ```bash
+   dotnet run
+   ```
+
+### Self-hosting Judge0 (optional)
+The free/shared Judge0 instance limits submissions (e.g. ~50/day, 500MB memory cap, standard I/O only). To lift these limits, Judge0 can be self-hosted via Docker:
+```bash
+git clone https://github.com/judge0/judge0.git
+cd judge0
+# configure docker-compose.yml (port, DB, cache settings)
+docker-compose up -d
 ```
+See Judge0's own documentation for full deployment details.
 
-Use a unique password with at least 12 characters, a digit, uppercase/lowercase letters and a symbol. Do not commit it. Set `SeedDemoData=true` to add the original English sample problem.
+---
 
-```powershell
-$env:SeedDemoData = "true"
-dotnet run --project SeedingLayer
-dotnet run --project OnlineJudgeSystemMVC --launch-profile https
-```
+## Known Limitations
 
-Use the HTTPS address printed by the application. Sign in with the locally configured administrator or register/confirm a normal account. Open the DEMO competition, select “Sum two integers”, submit a solution, and refresh its results page. Page refreshes read your database and do not call Judge0.
-
-## API budget and scoring
-
-- A valid submission makes at most one Judge0 batch POST and one batch GET, after a **10-second delay** by default. There is no automatic polling or API resubmission retry.
-- If Judge0 still reports queued/processing at that check, the submission becomes `Incomplete`, without a score. This deliberately trades automatic recovery for a fixed request budget. Increasing `Judging:ResultDelaySeconds` changes the wait without increasing the request count. Refreshing the page cannot recover provider results.
-- Default application limits are 10 submissions per UTC day globally and per user, with a 60-second per-user cooldown. Configure `MaxGlobalSubmissionsPerDay`, `MaxSubmissionsPerDay`, `SubmissionCooldownSeconds`, and `MaxTestCases` under `Judging` for your subscription. These limits count attempts; the provider may account for batch test executions separately, so check your own subscription's allowance.
-- The leaderboard counts the best score per user/problem. Repeating an accepted solution does not repeatedly add 100 points. A fully accepted daily challenge can earn a single 10-point bonus per UTC day by improving the best prior accepted runtime or memory usage.
-- Job redelivery does not resubmit a row that has already left `Queued`. A worker interruption can leave a row `Running`; automatic recovery is intentionally disabled to avoid an ambiguous duplicate API submission.
-
-## Security and validation
-
-Administrator pages and the Hangfire dashboard require the Admin role. Mutating MVC requests require antiforgery tokens. Submission identity and storage paths are derived on the server, and private submission code/results are visible only to their owner. Test uploads validate filenames, size, pairs and storage identifiers before replacing an existing test set.
-
-The committed configuration contains no real API or SMTP credentials. Credentials previously published in Git history must still be revoked/rotated through their providers; removing them from the latest files is insufficient. See [SECURITY.md](SECURITY.md).
-
-## Known limitations
-
-- The main navigation, sign-in/register screens and submission journey are in English; some administration/account pages and the historical contest PDFs remain Bulgarian.
-- Problem notation is unique within each competition year, so the same notation can be reused in another year. The migration checks conflicting legacy data before creating the matching database constraint.
-- The Judge0 client currently targets the RapidAPI endpoint. Running your own Judge0 instance requires adapting endpoint/authentication configuration.
-- SQL Server upgrade scripts are generated in tests, but applying them to your existing database is an explicit operator step. Integration tests use a disposable SQLite database and fake judge responses.
-- There are existing compiler/nullability warnings elsewhere in the school project. No throughput or production-security certification is claimed.
+- Relies on the shared Judge0 API tier by default: max 50 submissions/day, 500 MB memory limit, standard input/output problems only
+- Only Bulgarian national competition and olympiad problems are in scope (not a general-purpose judge like Codeforces)
+- UI is currently Bulgarian-only
 
 ---
 
