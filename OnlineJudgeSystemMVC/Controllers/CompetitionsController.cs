@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -160,8 +160,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             if (competition != null)
             {
                 await _manager.DeleteAsync(id);
-                _manager.DeleteDirectory("Problems", competition.Notation, Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-                _manager.DeleteDirectory("TestCases", competition.Notation);
+                _manager.DeleteDirectory("Problems", competition.Notation, prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+                _manager.DeleteDirectory("TestCases", competition.Notation, prefix: Directory.GetCurrentDirectory());
             }
 
             return RedirectToAction(nameof(AdministratorIndex));

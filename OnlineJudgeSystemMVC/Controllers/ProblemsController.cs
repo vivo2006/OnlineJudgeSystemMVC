@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using DataLayer;
 using ServiceLayer.EntityServices;
 using BusinessLayer.Entities;
+using ServiceLayer.Storage;
+using OnlineJudgeSystemMVC.Services;
 
 namespace OnlineJudgeSystemMVC.Controllers
 {
@@ -50,6 +52,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             return View(problems);
         }
 
+        [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> ChallengeMe()
         {
@@ -88,7 +91,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             return RedirectToAction("Details", new {id = randomTask.Id, competitionNotation = competition.Notation, year = yearCompetition.Year });
         }
 
-        public async Task UpdateChallenge(ApplicationUser user, List<int> solvedTaskIds)
+        private async Task UpdateChallenge(ApplicationUser user, List<int> solvedTaskIds)
         {
             var random = new Random();
             int randomTaskId = solvedTaskIds[random.Next(solvedTaskIds.Count)];
@@ -151,7 +154,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             var groupCompetition = await groupCompetitionsManager.ReadAsync(groupId, true);
             var problems = (await problemsManager.ReadAllAsync(true))
-                .Where(p => p.Competition.YearCompetitionId == groupCompetition.YearCompetitionId)
+                .Where(p => p.YearCompetitionId == groupCompetition.YearCompetitionId)
                 .ToList();
 
             if (problems.Any(p => p.ProblemNotation == problemNotation))
@@ -159,14 +162,22 @@ namespace OnlineJudgeSystemMVC.Controllers
                 ModelState.AddModelError("", "Нотацията трябва да е уникална.");
             }
 
+            try
+            {
+                ProblemStorage.Segment(problemNotation);
+                TestCaseUploads.Validate(testCases ?? Array.Empty<IFormFile>(), TestLimit);
+                ValidatePdf(pdfFile);
+            }
+            catch (ArgumentException e) { ModelState.AddModelError("", e.Message); }
             var problem = new Problem(name, timeLimit, memoryLimit, problemNotation, groupId);
+            problem.YearCompetitionId = groupCompetition.YearCompetitionId;
             await LoadCompetitions(groupId);
 
             if (ModelState.IsValid)
             {
                 await UploadTask(pdfFile, problem);
                 await problemsManager.CreateAsync(problem);
-                await UploadFolder(testCases, problem);
+                await UploadFolder(testCases!, problem);
 
                 return RedirectToAction(nameof(Index), "GroupCompetitions", new { competitionId = globalCompetition.Id, yearId = globalYearCompetition.Id });
             }
@@ -174,40 +185,15 @@ namespace OnlineJudgeSystemMVC.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UploadFolder(IFormFile[] files, Problem problem)
+        private async Task<IActionResult> UploadFolder(IFormFile[] files, Problem problem)
         {
             if (files == null || files.Length == 0)
                 throw new Exception("No files uploaded.");
 
             await LoadCompetitions(problem.CompetitionId);
 
-            var uploadDirectory = Path.Combine(webHostEnvironment.WebRootPath, "TestCases", globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation);
-            var inputFolderPath = Path.Combine(uploadDirectory, "Input");
-            var outputFolderPath = Path.Combine(uploadDirectory, "Output");
-
-            Directory.CreateDirectory(inputFolderPath);
-            Directory.CreateDirectory(outputFolderPath);
-
-            foreach (var file in files)
-            {
-                var fileName = Path.GetFileName(file.FileName);
-                var fileExtension = Path.GetExtension(fileName).ToLower();
-
-                var filePath = fileExtension switch
-                {
-                    ".in" => Path.Combine(inputFolderPath, fileName),
-                    ".sol" or ".out" => Path.Combine(outputFolderPath, fileName),
-                    _ => null
-                };
-
-                if (filePath != null)
-                {
-                    using var stream = new FileStream(filePath, FileMode.Create);
-                    await file.CopyToAsync(stream);
-                }
-            }
-
+            var uploadDirectory = ProblemStorage.DirectoryFor(Path.Combine(webHostEnvironment.ContentRootPath, "TestCases"), globalCompetition.Notation, globalYearCompetition.Year, problem.ProblemNotation);
+            await TestCaseUploads.SaveAsync(uploadDirectory, files, TestLimit);
             return RedirectToAction(nameof(Index), "GroupCompetitions", new { competitionId = globalCompetition.Id, yearId = globalYearCompetition.Id });
         }
 
@@ -235,9 +221,19 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             await LoadCompetitions(problem.CompetitionId);
             ModelState.Remove("Competition");
+            ModelState.Remove("YearCompetition");
+            problem.YearCompetitionId = globalGroupCompetition.YearCompetitionId;
+            problem.URL = $"/Problems/{Uri.EscapeDataString(globalCompetition.Notation)}/{globalYearCompetition.Year}/{Uri.EscapeDataString(problem.ProblemNotation)}.pdf";
+            ModelState.Remove("URL");
 
-            if (!ModelState.IsValid)
-                return View(problem);
+            try
+            {
+                ProblemStorage.Segment(problem.ProblemNotation);
+                if (pdfFile != null) ValidatePdf(pdfFile);
+                if (testCases?.Length > 0) TestCaseUploads.Validate(testCases, TestLimit);
+            }
+            catch (ArgumentException e) { ModelState.AddModelError("", e.Message); }
+            if (!ModelState.IsValid) return View(problem);
 
             try
             {
@@ -247,12 +243,12 @@ namespace OnlineJudgeSystemMVC.Controllers
                 {
                     DeleteDirectories(problem);
                     await UploadTask(pdfFile, problem);
+                    await problemsManager.UpdateAsync(problem);
                 }
 
                 if (testCases?.Length > 0)
                 {
-                    DeleteDirectories(problem, testCasesFolder: true);
-                    await UploadFolder(testCases, problem);
+                    await UploadFolder(testCases!, problem);
                 }
             }
             catch (DbUpdateConcurrencyException)
@@ -326,16 +322,27 @@ namespace OnlineJudgeSystemMVC.Controllers
             globalCompetition = await competitionsManager.ReadAsync(globalYearCompetition.CompetitionId, true);
         }
 
+        private int TestLimit => HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<BusinessLayer.API.JudgingOptions>>().Value.MaxTestCases;
+
+        private static void ValidatePdf(IFormFile? file)
+        {
+            if (file == null || file.Length == 0 || file.Length > 10 * 1024 * 1024 || !Path.GetExtension(file.FileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("Upload a PDF statement up to 10 MB.");
+            using var input = file.OpenReadStream();
+            Span<byte> header = stackalloc byte[5];
+            if (input.Read(header) != 5 || !header.SequenceEqual("%PDF-"u8))
+                throw new ArgumentException("The statement must contain a PDF document.");
+        }
+
         private async Task UploadTask(IFormFile pdfFile, Problem problem)
         {
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Problems", globalCompetition.Notation, globalYearCompetition.Year.ToString());
+            ValidatePdf(pdfFile);
+            var uploadDirectory = Path.Combine(webHostEnvironment.WebRootPath, "Problems", ProblemStorage.Segment(globalCompetition.Notation), globalYearCompetition.Year.ToString());
             Directory.CreateDirectory(uploadDirectory);
 
-            var filePath = Path.Combine(uploadDirectory, $"{problem.ProblemNotation}.pdf");
-            var port = HttpContext.Request.Host.Port?.ToString() ?? "80";
-            var localhost = $"https://localhost:{port}";
+            var filePath = Path.Combine(uploadDirectory, $"{ProblemStorage.Segment(problem.ProblemNotation)}.pdf");
 
-            problem.URL = $"{localhost}/Problems/{globalCompetition.Notation}/{globalYearCompetition.Year}/{problem.ProblemNotation}.pdf";
+            problem.URL = $"/Problems/{Uri.EscapeDataString(globalCompetition.Notation)}/{globalYearCompetition.Year}/{Uri.EscapeDataString(problem.ProblemNotation)}.pdf";
 
             using var stream = new FileStream(filePath, FileMode.Create);
             await pdfFile.CopyToAsync(stream);
@@ -344,7 +351,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         private void DeleteDirectories(Problem problem, bool testCasesFolder = false)
         {
             var folder = testCasesFolder ? "TestCases" : "Problems";
-            problemsManager.DeleteDirectory(folder, globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation, Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+            problemsManager.DeleteDirectory(folder, globalCompetition.Notation, globalYearCompetition.Year.ToString(), problem.ProblemNotation, testCasesFolder ? webHostEnvironment.ContentRootPath : webHostEnvironment.WebRootPath);
         }
     }
 }

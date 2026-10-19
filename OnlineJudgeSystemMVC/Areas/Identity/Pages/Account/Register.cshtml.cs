@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -80,21 +80,21 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required(ErrorMessage ="Имейлът е задължителен.")]
-            [EmailAddress(ErrorMessage ="Въведете правилен имейл.")]
+            [Required(ErrorMessage ="Email is required.")]
+            [EmailAddress(ErrorMessage ="Enter a valid email address.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required(ErrorMessage = "Потребителското име е задължително.")]
+            [Required(ErrorMessage = "Username is required.")]
             [Display(Name = "UserName")]
             public string UserName { get; set; }
-            [Required(ErrorMessage = "Името е задължително.")]
+            [Required(ErrorMessage = "Name is required.")]
             [Display(Name ="FirstName")]
-            [MaxLength(50, ErrorMessage ="Името не може да бъде повече от 50 символа")]
+            [MaxLength(50, ErrorMessage ="First name cannot exceed 50 characters.")]
             public string FirstName { get; set; }
-            [Required(ErrorMessage = "Фамилията е задължителна.")]
+            [Required(ErrorMessage = "Last name is required.")]
             [Display(Name ="LastName")]
-            [MaxLength(50, ErrorMessage = "Фамилията не може да бъде повече от 50 символа")]
+            [MaxLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
 
             public string LastName { get; set; }
 
@@ -102,8 +102,8 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required(ErrorMessage = "Паролата е задължителна.")]
-            [StringLength(50, ErrorMessage = "Паролата трябва да е поне {2} и най-много {1} символа.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Password is required.")]
+            [StringLength(50, ErrorMessage = "Password must contain between {2} and {1} characters.", MinimumLength = 12)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -114,7 +114,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "Паролите не съвпадат.")]
+            [Compare("Password", ErrorMessage = "Passwords do not match.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -134,14 +134,14 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                 var existingUserByEmail = await _userManager.FindByEmailAsync(Input.Email);
                 if (existingUserByEmail != null)
                 {
-                    ModelState.AddModelError("Input.Email", "Tози имейл е вече регистриран.");
+                    ModelState.AddModelError("Input.Email", "This email is already registered.");
                     return Page();
                 }
 
                 var existingUserByUsername = await _userManager.FindByNameAsync(Input.UserName);
                 if (existingUserByUsername != null)
                 {
-                    ModelState.AddModelError("Input.UserName", "Това потребителско име е заето.");
+                    ModelState.AddModelError("Input.UserName", "This username is already taken.");
                     return Page();
                 }
 
@@ -165,7 +165,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Потвърждение на регистрация в CodeXpert", $"На този имейл беше заявена регистрация в платформата за състезателно програмиране CodeXpert. За да завършите създаването на акаунта си в CodeXpert, <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявили това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your CodeXpert account", $"Confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>following this link</a>. If you did not register, ignore this email.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

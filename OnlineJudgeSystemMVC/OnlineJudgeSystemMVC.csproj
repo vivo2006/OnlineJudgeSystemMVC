@@ -29,11 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="TestCases\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Folder Include="TestCases\" />
     <Folder Include="wwwroot\Problems\" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="appsettings.Local.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     <Content Update="Areas\Identity\Pages\Account\Leaderboard.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

@@ -1,20 +1,23 @@
-﻿@model Submission
+@model Submission
 
 @{
     ViewData["Title"] = "Test Results";
     int testNumber = 1;
 }
 
-<h1 class="mb-5">Резултати от тестването</h1>
+<h1 class="mb-5">Submission results</h1>
+<p><strong>Status:</strong> @Model.Status</p>
+@if (!string.IsNullOrEmpty(Model.Error)) { <p class="alert alert-info">@Model.Error</p> }
+<p>Results are checked once after 10 seconds by default to conserve API quota. Refreshing this page reads saved results only.</p>
 
 <table class="table table-bordered mb-5">
     <thead>
         <tr>
-            <th>Тест</th>
-            <th>Статус</th>
-            <th>Време (ms)</th>
-            <th>Памет (MB)</th>
-            <th>Изход</th>
+            <th>Test</th>
+            <th>Status</th>
+            <th>Time (seconds)</th>
+            <th>Memory (MB)</th>
+            <th>Output</th>
 
         </tr>
     </thead>
@@ -39,14 +42,14 @@
         else
         {
             <tr>
-                <td colspan="5">Решението все още се обработва </td>
+                <td colspan="5">No completed test results are available. See the status above. </td>
             </tr>
         }
 
     </tbody>
 </table>
 
-<h3 class="text-start">Код:</h3>
+<h3 class="text-start">Source code:</h3>
 <pre class="fs-5 text-start">
 @Model.Code
 </pre>

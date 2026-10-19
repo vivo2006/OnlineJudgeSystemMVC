@@ -1,16 +1,16 @@
-﻿@using BusinessLayer;
+@using BusinessLayer;
 @using BusinessLayer.Entities;
 @model IEnumerable<Competition>
 
 @{
-    ViewData["Title"] = "Състезания";
+    ViewData["Title"] = "Competitions";
 }
 
 <link rel="stylesheet" href="~/css/IndexCompetitions.css" asp-append-version=true />
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <div class="mb-3 mt-3">
-    <h1>Състезания</h1>
+    <h1>Competitions</h1>
 </div>
 
 <div id="container-table">
@@ -35,7 +35,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="yearsModalLabel">Години</h5>
+                <h5 class="modal-title" id="yearsModalLabel">Years</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

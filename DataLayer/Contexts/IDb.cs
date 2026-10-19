@@ -1,4 +1,4 @@
-﻿using BusinessLayer;
+using BusinessLayer;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,8 +20,17 @@ namespace DataLayer.Contexts
         {
             try
             {
-                string competitionPath = Path.Combine(prefix, deleteType, competitionNotation, year, problemNotation + (deleteType == "Problems" ? ".pdf" : ""));
-                if (deleteType == "Problems")
+                if (deleteType != "Problems" && deleteType != "TestCases") throw new ArgumentException("Invalid storage type.");
+                foreach (var segment in new[] { competitionNotation, year, problemNotation })
+                    if (!string.IsNullOrEmpty(segment) && (segment is "." or ".." || segment.Any(c => !char.IsLetterOrDigit(c) && c != '-' && c != '_')))
+                        throw new ArgumentException("Invalid storage identifier.");
+                if (string.IsNullOrEmpty(prefix)) throw new ArgumentException("An absolute storage root is required.");
+                var storageRoot = Path.GetFullPath(Path.Combine(prefix, deleteType));
+                string competitionPath = Path.GetFullPath(Path.Combine(storageRoot, competitionNotation, year,
+                    problemNotation + (deleteType == "Problems" && !string.IsNullOrEmpty(problemNotation) ? ".pdf" : "")));
+                if (!competitionPath.StartsWith(storageRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                    throw new ArgumentException("Storage path must remain below its root.");
+                if (deleteType == "Problems" && !string.IsNullOrEmpty(problemNotation))
                 {
                     if (File.Exists(competitionPath))
                     {

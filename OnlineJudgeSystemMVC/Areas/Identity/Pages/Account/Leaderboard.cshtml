@@ -1,32 +1,32 @@
-﻿@page
+@page
 @model LeaderboardModel
 @{
-    ViewData["Title"] = "Класиране";
+    ViewData["Title"] = "Leaderboard";
 }
 
-<h1 class="mb-5">Класиране</h1>
+<h1 class="mb-5">Leaderboard</h1>
 
 <select id="groupFilter" class="form-select mb-3" onchange="filterLeaderboard()">
-    <option value="All">Всички</option>
-    <option value="0">Група A</option>
-    <option value="1">Група B</option>
-    <option value="2">Група C</option>
-    <option value="3">Група D</option>
-    <option value="4">Група E</option>
+    <option value="All">All</option>
+    <option value="0">Group A</option>
+    <option value="1">Group B</option>
+    <option value="2">Group C</option>
+    <option value="3">Group D</option>
+    <option value="4">Group E</option>
 </select>
 
 @if (Model.Leaderboard == null || !Model.Leaderboard.Any())
 {
-    <p>Няма активни потребители.</p>
+    <p>No users to display.</p>
 }
 else
 {
     <table class="table table-striped mt-5">
         <thead>
             <tr>
-                <th>Място</th>
-                <th>Име</th>
-                <th>Точки</th>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Score</th>
             </tr>
         </thead>
         <tbody>

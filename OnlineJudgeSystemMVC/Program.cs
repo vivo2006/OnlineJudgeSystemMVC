@@ -14,19 +14,27 @@ using BusinessLayer.Entities;
 using Hangfire;
 using Hangfire.SqlServer;
 using ServiceLayer.ExternalServices;
+using OnlineJudgeSystemMVC.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
+if (builder.Environment.IsDevelopment())
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false).AddEnvironmentVariables();
 
 builder.Services.AddHttpClient();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(Connection.conString));
+builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+builder.Services.AddRazorPages(options => options.Conventions.AuthorizeAreaFolder("Identity", "/Admin", "Administrator"));
+builder.Services.AddAuthorization(options => options.AddPolicy("Administrator", policy => policy.RequireRole("Admin")));
+builder.Services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>().AddEntityFrameworkStores<OnlineJudgeDbContext>().AddErrorDescriber<CustomIdentityErrorDescriber>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true; 
+    options.Password.RequiredLength = 12;
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddScoped<ProblemsManager, ProblemsManager>();
@@ -57,7 +65,11 @@ builder.Services.AddScoped<TestCaseResultContext, TestCaseResultContext>();
 builder.Services.AddScoped<IdentityManager, IdentityManager>();
 builder.Services.AddScoped<IdentityContext, IdentityContext>();
 
-builder.Services.AddScoped<Judge0Service>();
+builder.Services.AddScoped<IJudge0Service, Judge0Service>();
+builder.Services.AddScoped<SubmissionProcessor>();
+builder.Services.AddOptions<JudgingOptions>().Bind(builder.Configuration.GetSection("Judging"))
+    .Validate(o => o.ResultDelaySeconds >= 1 && o.ResultDelaySeconds <= 120 && o.MaxTestCases >= 1 && o.MaxTestCases <= 20 &&
+        o.MaxSubmissionsPerDay >= 1 && o.MaxGlobalSubmissionsPerDay >= 1 && o.SubmissionCooldownSeconds >= 1, "Invalid judging quota settings.").ValidateOnStart();
 
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -90,7 +102,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Identity/Account/Logout"; // Logout path
     options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Access denied path
     options.SlidingExpiration = true; // Reset the expiration time on each request
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Make sure the cookie is only sent over HTTPS
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.IsEssential = true; // Ensures cookie is used even in case of GDPR compliance
 });
 
@@ -104,7 +116,6 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-app.UseHangfireDashboard();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -119,8 +130,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
-//app.UseAuthentication();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new AdminDashboardAuthorization() } });
 
 app.UseHttpsRedirection();
 

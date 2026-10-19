@@ -16,6 +16,7 @@ using X.PagedList.Extensions;
 
 namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Admin.DeleteUser
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class DeleteUserModel : PageModel
     {
         private readonly IdentityManager _identityManager;
@@ -30,6 +31,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Admin.DeleteUser
         public async Task<IActionResult> OnGetAsync(string id)
         {
             PageUser = await _identityManager.ReadUserByNameAsync(id);
+            if (PageUser == null) return NotFound();
             return Page();
         }
         public async Task<IActionResult> OnPostAsync(string id)

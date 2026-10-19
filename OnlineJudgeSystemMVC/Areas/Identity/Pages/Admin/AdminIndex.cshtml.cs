@@ -16,6 +16,7 @@ using X.PagedList.Extensions;
 
 namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Admin.AdminIndex
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class AdminIndexModel : PageModel
     {
         private readonly IdentityManager _identityManager;

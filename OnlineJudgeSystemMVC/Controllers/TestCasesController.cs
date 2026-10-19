@@ -1,76 +1,39 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+using BusinessLayer.API;
+using DataLayer.Contexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using BusinessLayer.Entities;
-using ServiceLayer.EntityServices;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using OnlineJudgeSystemMVC.Services;
+using ServiceLayer.Storage;
 
-namespace OnlineJudgeSystemMVC.Controllers
+namespace OnlineJudgeSystemMVC.Controllers;
+
+[Authorize(Roles = "Admin")]
+public class TestCasesController : Controller
 {
-    public class TestCasesController : Controller
+    private readonly OnlineJudgeDbContext _db;
+    private readonly IWebHostEnvironment _environment;
+    private readonly JudgingOptions _options;
+    public TestCasesController(OnlineJudgeDbContext db, IWebHostEnvironment environment, IOptions<JudgingOptions> options)
+        => (_db, _environment, _options) = (db, environment, options.Value);
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
     {
-        private readonly IWebHostEnvironment _env;
-        private readonly ProblemsManager _problemsManager;
-        private readonly GroupCompetitionsManager _groupManager;
-        private readonly YearCompetitionsManager _yearManager;
-        private readonly CompetitionsManager _competitionManager;
-
-        public TestCasesController(
-            IWebHostEnvironment env,
-            ProblemsManager problemsManager,
-            GroupCompetitionsManager groupManager,
-            YearCompetitionsManager yearManager,
-            CompetitionsManager competitionManager)
+        var problem = await _db.Problems.Include(p => p.Competition).ThenInclude(g => g.YearCompetition)
+            .ThenInclude(y => y.Competition).SingleOrDefaultAsync(p => p.Id == id);
+        if (problem == null) return NotFound();
+        try
         {
-            _env = env;
-            _problemsManager = problemsManager;
-            _groupManager = groupManager;
-            _yearManager = yearManager;
-            _competitionManager = competitionManager;
+            var year = problem.Competition.YearCompetition;
+            var directory = ProblemStorage.DirectoryFor(Path.Combine(_environment.ContentRootPath, "TestCases"),
+                year.Competition.Notation, year.Year, problem.ProblemNotation);
+            TestCaseUploads.Validate(files ?? Array.Empty<IFormFile>(), _options.MaxTestCases);
+            // Validate all incoming files before replacing the existing test set.
+            await TestCaseUploads.SaveAsync(directory, files!, _options.MaxTestCases);
+            return Ok("Test cases uploaded.");
         }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<IActionResult> UploadFolder(IFormFile[] files, int id)
-        {
-            if (files == null || files.Length == 0)
-                return BadRequest("No files uploaded.");
-
-            var problem = await _problemsManager.ReadAsync(id, true);
-            var group = await _groupManager.ReadAsync(problem.CompetitionId, true);
-            var year = await _yearManager.ReadAsync(group.YearCompetitionId, true);
-            var competition = await _competitionManager.ReadAsync(year.CompetitionId, true);
-
-            string uploadPath = Path.Combine(_env.ContentRootPath, "TestCases", competition.Notation, year.Year.ToString(), problem.ProblemNotation);
-            string inputPath = Path.Combine(uploadPath, "Input", "tests");
-            string outputPath = Path.Combine(uploadPath, "Output", "tests");
-
-            Directory.CreateDirectory(inputPath);
-            Directory.CreateDirectory(outputPath);
-
-
-            foreach (var file in files)
-            {
-                var ext = Path.GetExtension(file.FileName).ToLower();
-                if (file.Length == 0) continue;
-
-                string targetPath = ext switch
-                {
-                    ".in" => Path.Combine(uploadPath, "Input", file.FileName),
-                    ".out" => Path.Combine(uploadPath, "Output", file.FileName),
-                    ".sol" => Path.Combine(uploadPath, "Output", file.FileName),
-                    _ => null
-                };
-
-                if (targetPath != null)
-                {
-                    using var stream = new FileStream(targetPath, FileMode.Create);
-                    await file.CopyToAsync(stream);
-                }
-            }
-
-            return Ok($"{files.Length} files uploaded successfully.");
-        }
+        catch (ArgumentException e) { return BadRequest(e.Message); }
     }
 }

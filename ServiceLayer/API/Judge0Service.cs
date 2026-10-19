@@ -9,7 +9,7 @@ using Formatting = Newtonsoft.Json.Formatting;
 
 namespace ServiceLayer.ExternalServices
 {
-    public class Judge0Service
+    public class Judge0Service : IJudge0Service
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly APIdata _apiData;
@@ -23,7 +23,9 @@ namespace ServiceLayer.ExternalServices
         public async Task<string> CreatePostQueryAsync(string[] inputTestFiles, string[] outputTestFiles, int languageId, string sourceCode, double timeLimit, double memoryLimit)
         {
             var batchRequest = new BatchSubmissions();
-            int boundary = Math.Min(inputTestFiles.Length, 20);
+            if (inputTestFiles.Length == 0 || inputTestFiles.Length != outputTestFiles.Length)
+                throw new ArgumentException("Matching test pairs are required.");
+            int boundary = inputTestFiles.Length;
 
             for (int i = 0; i < boundary; i++)
             {
@@ -46,6 +48,7 @@ namespace ServiceLayer.ExternalServices
 
         public async Task<List<PostResponse>> SubmitBatchAsync(string jsonRequest)
         {
+            if (string.IsNullOrWhiteSpace(_apiData.Key)) throw new InvalidOperationException("Configure the Judge0 API key before submitting.");
             var client = _httpClientFactory.CreateClient();
             var request = new HttpRequestMessage
             {
@@ -59,11 +62,11 @@ namespace ServiceLayer.ExternalServices
                 Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json"),
             };
 
-            var response = await client.SendAsync(request);
+            using var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<PostResponse>>(content);
+            return JsonSerializer.Deserialize<List<PostResponse>>(content) ?? throw new InvalidOperationException("Missing judge tokens.");
         }
 
         public async Task<BatchSubmissionResponse> GetBatchResultsAsync(List<PostResponse> tokens)
@@ -82,11 +85,11 @@ namespace ServiceLayer.ExternalServices
                 },
             };
 
-            var response = await client.SendAsync(request);
+            using var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<BatchSubmissionResponse>(content);
+            return JsonSerializer.Deserialize<BatchSubmissionResponse>(content) ?? throw new InvalidOperationException("Missing judge results.");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,11 +22,14 @@ namespace BusinessLayer.Entities
         [Range(1, 500, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
         public int MemoryLimit { get; set; } 
         [Required(ErrorMessage = "URL е задължителен.")]
-        [Url(ErrorMessage = "Невалиден URL формат.")]
+        [RegularExpression(@"^/Problems/[^?#]+\.pdf$|^/demo/[a-z-]+\.html$", ErrorMessage = "Use a local statement URL.")]
         public string URL { get; set; } 
         [Required(ErrorMessage = "Нотацията на задачата е задължителна.")]
+        [RegularExpression(@"^[\p{L}\p{Nd}_-]+$", ErrorMessage = "Use letters, numbers, hyphens or underscores for identifiers.")]
         public string ProblemNotation { get; set; } 
         public int CompetitionId { get; set; }
+        public int YearCompetitionId { get; set; }
+        public YearCompetition YearCompetition { get; set; } = null!;
         [ForeignKey("CompetitionId")] //Foreign key
         public GroupCompetition Competition { get; set; }
         public ICollection<Submission> Submissions { get; set; } //A problem can have many submissions (one-to-many relationship)

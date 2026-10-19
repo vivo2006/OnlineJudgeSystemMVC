@@ -1,33 +1,33 @@
-﻿@page
+@page
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Вход";
+    ViewData["Title"] = "Sign in";
 }
 
 <div class="row d-flex justify-content-center">
     <div class="col-md-4">
         <section>
             <form id="account" method="post">
-                <h2>Вход</h2>
+                <h2>Sign in</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
                     <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="example" />
-                    <label asp-for="Input.UserName" class="form-label">Потребителско име</label>
+                    <label asp-for="Input.UserName" class="form-label">Username</label>
                     <span asp-validation-for="Input.UserName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
                     <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Парола</label>
+                    <label asp-for="Input.Password" class="form-label">Password</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary ms-0">Влез</button>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary ms-0">Sign in</button>
                 </div>
                 <div>
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Забравена парола</a>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot password</a>
                     </p>
                 </div>
             </form>

@@ -35,8 +35,18 @@ namespace DataLayer.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder) //Setting up relationships and restrictions
         {
             modelBuilder.Entity<Competition>().HasIndex(u => u.Notation).IsUnique();
-            modelBuilder.Entity<Problem>().HasIndex(u => u.ProblemNotation).IsUnique();
+            modelBuilder.Entity<Problem>().HasIndex(p => new { p.YearCompetitionId, p.ProblemNotation }).IsUnique();
+            modelBuilder.Entity<Problem>().HasOne(p => p.YearCompetition).WithMany().HasForeignKey(p => p.YearCompetitionId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Submission>().Property(s => s.Status).HasDefaultValue("Completed");
+            modelBuilder.Entity<Submission>().Property(s => s.LanguageId).HasDefaultValue(0);
+            modelBuilder.Entity<Submission>().Property(s => s.ChallengeBonus).HasDefaultValue(0);
+            modelBuilder.Entity<Submission>().HasIndex(s => new { s.UserId, s.Created });
+            modelBuilder.Entity<Submission>().HasIndex(s => s.UserId);
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<IdentityUserLogin<string>>().Property(p => p.LoginProvider).HasMaxLength(128);
+            modelBuilder.Entity<IdentityUserLogin<string>>().Property(p => p.ProviderKey).HasMaxLength(128);
+            modelBuilder.Entity<IdentityUserToken<string>>().Property(p => p.LoginProvider).HasMaxLength(128);
+            modelBuilder.Entity<IdentityUserToken<string>>().Property(p => p.Name).HasMaxLength(128);
         }
         //DbSets refer to the tables in the database
         public virtual DbSet<Competition> Competitions { get; set; }

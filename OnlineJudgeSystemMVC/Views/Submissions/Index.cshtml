@@ -1,18 +1,18 @@
-﻿@model IEnumerable<Submission>
+@model IEnumerable<Submission>
 
 @{
-    ViewData["Title"] = "Събмити";
+    ViewData["Title"] = "Submissions";
 }
 
-<h1>Събмити на задача @ViewBag.Problem</h1>
+<h1>Submissions for @ViewBag.Problem</h1>
 
 <table class="table table-bordered" style="width:100%;">
     <thead>
         <tr>
-            <th>Изпратен</th>
-            <th>Състезание</th>
-            <th>Задача</th>
-            <th>Точки</th>
+            <th>Submitted</th>
+            <th>Competition</th>
+            <th>Problem</th>
+            <th>Score</th><th>Status</th>
             <th></th>
         </tr>
     </thead>
@@ -23,7 +23,7 @@
                 <td>@item.Created</td>
                 <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
                 <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
-                <td>@item.Points</td>
+                <td>@item.Points</td><td>@item.Status</td>
                 <td><a class="text-dark text-decoration-none" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>→</a></td>
             </tr>
         }

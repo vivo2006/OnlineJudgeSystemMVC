@@ -20,7 +20,7 @@ namespace DataLayer.Contexts
         {
             try
             {
-                item.Created = DateTime.Now;
+                item.Created = DateTime.UtcNow;
                 _context.Submissions.Add(item);
                 await _context.SaveChangesAsync();
             }

@@ -1,103 +1,77 @@
-﻿using BusinessLayer.Entities;
-using DataLayer;
+using BusinessLayer.Entities;
 using DataLayer.Contexts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Data;
+using ServiceLayer.EntityServices;
 
-namespace SeedingLayer
+var appDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../OnlineJudgeSystemMVC"));
+var configuration = new ConfigurationBuilder().SetBasePath(appDirectory)
+    .AddJsonFile("appsettings.json").AddJsonFile("appsettings.Local.json", optional: true)
+    .AddEnvironmentVariables().Build();
+var services = new ServiceCollection();
+services.AddLogging();
+services.AddDbContext<OnlineJudgeDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+services.AddIdentityCore<ApplicationUser>(options => { options.Password.RequiredLength = 12; options.User.RequireUniqueEmail = true; })
+    .AddRoles<IdentityRole>().AddEntityFrameworkStores<OnlineJudgeDbContext>();
+await using var provider = services.BuildServiceProvider();
+await using var scope = provider.CreateAsyncScope();
+var db = scope.ServiceProvider.GetRequiredService<OnlineJudgeDbContext>();
+// Migrations are applied explicitly by the operator, never automatically to an existing database.
+if ((await db.Database.GetPendingMigrationsAsync()).Any())
+    throw new InvalidOperationException("Apply database migrations before running the seeder.");
+var roles = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+foreach (var role in new[] { "Admin", "User" })
 {
-    internal class Program
+    if (!await roles.RoleExistsAsync(role))
     {
-        static async Task Main(string[] args)
-        {
-            try
-            {
-                IdentityOptions options = new IdentityOptions();
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 6;
-
-                DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
-                builder.UseSqlServer(Connection.conString);
-
-                OnlineJudgeDbContext dbContext = new OnlineJudgeDbContext(builder.Options);
-
-                // Ensure database is migrated
-                await dbContext.Database.MigrateAsync();
-
-                // Create UserManager
-                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(
-                    new UserStore<ApplicationUser>(dbContext),
-                    Options.Create(options),
-                    new PasswordHasher<ApplicationUser>(),
-                    new List<IUserValidator<ApplicationUser>>() { new UserValidator<ApplicationUser>() },
-                    new List<IPasswordValidator<ApplicationUser>>() { new PasswordValidator<ApplicationUser>() },
-                    new UpperInvariantLookupNormalizer(),
-                    new IdentityErrorDescriber(),
-                    new ServiceCollection().BuildServiceProvider(),
-                    new Logger<UserManager<ApplicationUser>>(new LoggerFactory())
-                );
-
-                // Create RoleManager
-                var roleStore = new RoleStore<IdentityRole>(dbContext);
-                var roleManager = new RoleManager<IdentityRole>(
-                    roleStore,
-                    new List<IRoleValidator<IdentityRole>>() { new RoleValidator<IdentityRole>() },
-                    new UpperInvariantLookupNormalizer(),
-                    new IdentityErrorDescriber(),
-                    new Logger<RoleManager<IdentityRole>>(new LoggerFactory())
-                );
-
-                // Add roles if they don't exist
-                var adminRoleExists = await roleManager.RoleExistsAsync(Role.Admin.ToString());
-                if (!adminRoleExists)
-                {
-                    await roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
-                }
-
-                var userRoleExists = await roleManager.RoleExistsAsync(Role.User.ToString());
-                if (!userRoleExists)
-                {
-                    await roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
-                }
-
-                Console.WriteLine("Roles Added");
-
-                // Verify roles
-                var roles = await dbContext.Roles.ToListAsync();
-                foreach (var role in roles)
-                {
-                    Console.WriteLine($"Role: {role.Name}");
-                }
-
-                // Create admin user
-                IdentityContext identityContext = new IdentityContext(dbContext, userManager, roleManager);
-                Tuple<IdentityResult, ApplicationUser> result = await identityContext.CreateUserAsync("admin", "Admin1234_", "vivo2006@abv.bg", "Велислав", "Борисов", Role.Admin);
-
-                if (result.Item1.Succeeded)
-                {
-                    Console.WriteLine("Admin account added successfully!");
-                }
-                else
-                {
-                    Console.WriteLine("Admin account failed to be created!");
-                    foreach (var error in result.Item1.Errors)
-                    {
-                        Console.WriteLine($"Error: {error.Description}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
+        var result = await roles.CreateAsync(new IdentityRole(role));
+        if (!result.Succeeded) throw new InvalidOperationException("Could not create role: " + role);
     }
 }
+var username = configuration["SeedAdmin:Username"];
+var email = configuration["SeedAdmin:Email"];
+var password = configuration["SeedAdmin:Password"];
+if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
+{
+    var users = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var admin = await users.FindByNameAsync(username);
+    if (admin == null)
+    {
+        admin = new ApplicationUser(username, email, "Demo", "Administrator") { EmailConfirmed = true };
+        var created = await users.CreateAsync(admin, password);
+        if (!created.Succeeded) throw new InvalidOperationException("Admin creation failed: " + string.Join(", ", created.Errors.Select(e => e.Code)));
+        var assigned = await users.AddToRoleAsync(admin, "Admin");
+        if (!assigned.Succeeded) throw new InvalidOperationException("Could not assign administrator role.");
+    }
+    else if (!await users.IsInRoleAsync(admin, "Admin"))
+        throw new InvalidOperationException("The configured username already belongs to a non-admin account. Refusing to elevate it.");
+}
+else Console.WriteLine("Roles created. Set SeedAdmin__Username, SeedAdmin__Email and SeedAdmin__Password to create an admin.");
+
+if (configuration.GetValue<bool>("SeedDemoData"))
+{
+    var competition = await db.Competitions.FirstOrDefaultAsync(c => c.Notation == "DEMO");
+    if (competition == null)
+    {
+        competition = new Competition { Name = "English demo", Notation = "DEMO", FirstYear = 2026, LastYear = 2026 };
+        db.Competitions.Add(competition);
+    }
+    if (!await db.Problems.AnyAsync(p => p.ProblemNotation == "E_DEMO_SUM"))
+    {
+        var year = await db.YearCompetitions.FirstOrDefaultAsync(y => y.CompetitionId == competition.Id && y.Year == 2026)
+            ?? new YearCompetition { Competition = competition, Year = 2026 };
+        var group = await db.GroupCompetitions.FirstOrDefaultAsync(g => g.YearCompetitionId == year.Id && g.Group == "E")
+            ?? new GroupCompetition { YearCompetition = year, Group = "E" };
+        db.Problems.Add(new Problem { Name = "Sum two integers", ProblemNotation = "E_DEMO_SUM", Competition = group, YearCompetition = year,
+            URL = "/demo/sum.html", TimeLimit = 1, MemoryLimit = 64 });
+        await db.SaveChangesAsync();
+    }
+}
+
+// Repair historical repeat-submission score inflation from stored best results.
+foreach (var user in await db.Users.Include(u => u.Submissions).ThenInclude(s => s.Problem).ToListAsync())
+    user.Points = SubmissionScoring.Calculate(user.Submissions);
+await db.SaveChangesAsync();
+Console.WriteLine("Seeding completed; leaderboard totals rebuilt from best per-problem scores.");

@@ -11,10 +11,10 @@ namespace BusinessLayer.Entities
     public class ApplicationUser : IdentityUser
     {
         [Required] //Data validation using DataAnnotations
-        [MaxLength(25, ErrorMessage = "Името не може да е повече от 25 символа.")] 
+        [MaxLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
         public string FirstName { get; set; } //First name of the user
         [Required]
-        [MaxLength(25, ErrorMessage = "Фамилията не може да е повече от 25 символа.")]
+        [MaxLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
         public string LastName { get; set; } //Last name of the user
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>(); //A user can have many submissions (one-to-many relationship)
         public int? LastChallengeTaskId { get; set; } 

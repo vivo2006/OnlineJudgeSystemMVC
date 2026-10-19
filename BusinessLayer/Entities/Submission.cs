@@ -20,6 +20,10 @@ namespace BusinessLayer.Entities
         public string? Error { get; set; }
         public double Time { get; set; }
         public int Memory { get; set; }
+        [MaxLength(30)]
+        public string Status { get; set; } = "Queued";
+        public int LanguageId { get; set; }
+        public int ChallengeBonus { get; set; }
         [Required(ErrorMessage = "Foreign key is required.")]
         public int ProblemId { get; set; }
         [ForeignKey("ProblemId")] //Foreign key to Problem

@@ -1,14 +1,14 @@
-﻿@{
-    ViewData["Title"] = "Начало";
+@{
+    ViewData["Title"] = "Home";
 }
 
 <link rel="stylesheet" href="~/css/HomeIndex.css" asp-append-version="true" />
 
-<h1 class="h overflow-auto">Добре дошли в CodeXpert!</h1>
-<p class="p">Платформа за състезателно програмиране</p>
+<h1 class="h overflow-auto">Welcome to CodeXpert!</h1>
+<p class="p">Competitive programming practice platform</p>
 <div class="buttons">
-    <a asp-controller="Problems" asp-action="ChallengeMe" class="btn btn-primary">Предизвикай ме</a>
-    <a asp-controller="Home" asp-action="About" class="btn btn-secondary">За нас</a>
+    <form method="post" asp-controller="Problems" asp-action="ChallengeMe" class="d-inline"><button type="submit" class="btn btn-primary">Challenge me</button></form>
+    <a asp-controller="Home" asp-action="About" class="btn btn-secondary">About</a>
 </div>
 
 @if (TempData["NoSolvedTasks"] != null)

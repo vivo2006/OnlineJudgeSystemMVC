@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,12 +16,13 @@ namespace BusinessLayer.Entities
         public string Name { get; set; } 
         public ICollection<YearCompetition>? YearCompetitions { get; set; } //A competition can have many years (one-to-many relationship)
         [Required(ErrorMessage = "Началната година е задължителна.")]
-        [Range(2000, 2025, ErrorMessage = "Годината трябва да е между 2000 и 2025.")] 
+        [Range(2000, 2100, ErrorMessage = "Year must be between 2000 and 2100.")]
         public int FirstYear { get; set; } 
         [Required(ErrorMessage = "Крайната година е задължителна.")]
-        [Range(2000, 2025, ErrorMessage = "Годината трябва да е между 2000 и 2025.")]
+        [Range(2000, 2100, ErrorMessage = "Year must be between 2000 and 2100.")]
         public int LastYear { get; set; } 
         [Required(ErrorMessage = "Нотацията на състезанието е задължителна.")]
+        [RegularExpression(@"^[\p{L}\p{Nd}_-]+$", ErrorMessage = "Use letters, numbers, hyphens or underscores for identifiers.")]
         public string Notation { get; set; } 
         public Competition()
         {

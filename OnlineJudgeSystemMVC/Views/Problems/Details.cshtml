@@ -1,6 +1,6 @@
-﻿@model Problem
+@model Problem
 @{
-    ViewData["Title"] = "Задача";
+    ViewData["Title"] = "Problem";
 }
 <link rel="stylesheet" href="~/css/ProblemDetails.css" asp-append-version="true" />
 
@@ -15,16 +15,16 @@
             </h1>
             <div class="me-4" id="icons">
                 <span class="fs-5">⏳</span>
-                <span>@Model.TimeLimit сек.</span>
+                <span>@Model.TimeLimit seconds</span>
             </div>
             <div class="me-2" id="icons">
                 <span class="fs-5">💾</span>
-                <span>@Model.MemoryLimit МБ</span>
+                <span>@Model.MemoryLimit MB</span>
             </div>
         </div>    
         <div>
-            <a href="@Model.URL" class="btn btn-primary" target="_blank">Отвори</a>
-            <button type="submit" form="code-submit" class="btn btn-secondary me-0">Изпрати</button>
+            <a href="@Model.URL" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open statement</a>
+            <button type="submit" form="code-submit" class="btn btn-secondary me-0">Submit</button>
         </div>
         
     </div>
@@ -38,15 +38,15 @@
     </select>
     <!-- Buttons -->
     <div class="mb-4">
-        <form id="code-submit" method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id asp-route-ProblemNotation=@Model.ProblemNotation asp-route-CompetitionNotation=@ViewBag.CompetitionNotation asp-route-Year=@ViewBag.Year>
+        <form id="code-submit" method="post" asp-area="" asp-controller="Submissions" asp-action="Create" asp-route-ProblemId=@Model.Id >
             <input type="hidden" name="ProblemId" value="@Model.Id" />
-            <textarea name="Code" class="form-control border-danger mb-1" rows="10" placeholder="Постави кода тук..." required></textarea>
+            <textarea name="Code" class="form-control border-danger mb-1" rows="10" placeholder="Paste your code here..." required></textarea>
         </form>
     </div>
     @if(Model.Id == ViewBag.ChallengeId)
     {
         <hr>
-        <p>За всяко вярно решение, което подобрява използваното време или използваната памет, ще получавате по 10 точки допълнително.</p>
+        <p>Earn a 10-point bonus once per UTC day by improving your best accepted runtime or memory usage on the daily challenge.</p>
     }
 </div>
 

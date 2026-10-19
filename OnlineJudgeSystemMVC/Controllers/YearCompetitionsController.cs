@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -127,8 +127,8 @@ namespace OnlineJudgeSystemMVC.Controllers
             await _yearManager.DeleteAsync(id);
 
             var competition = yearCompetition.Competition;
-            _yearManager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-            _yearManager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString());
+            _yearManager.DeleteDirectory("Problems", competition.Notation, yearCompetition.Year.ToString(), prefix: Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+            _yearManager.DeleteDirectory("TestCases", competition.Notation, yearCompetition.Year.ToString(), prefix: Directory.GetCurrentDirectory());
 
             return RedirectToAction(nameof(Index));
         }

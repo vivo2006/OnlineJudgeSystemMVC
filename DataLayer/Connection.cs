@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace DataLayer;
 
-namespace DataLayer
+public static class Connection
 {
-    public class Connection
-    {
-        public const string conString =
-            @"Server=DESKTOP-K42STG6\SQLEXPRESS;
-            Database=OnlineJudgeSystem; Trusted_Connection=True; TrustServerCertificate=True;";
-    }
+    // Used by design-time tools only. Runtime hosts use their own configuration.
+    public static string conString => System.Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+        ?? @"Server=(localdb)\MSSQLLocalDB;Database=CodeXpert;Trusted_Connection=True;TrustServerCertificate=True;";
 }
