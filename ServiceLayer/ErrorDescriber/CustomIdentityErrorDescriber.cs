@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordTooShort),
-                Description = $"Паролата трябва да е поне {length} символа."
+                Description = $"The password must contain at least {length} characters."
             };
         }
 
@@ -23,7 +23,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresNonAlphanumeric),
-                Description = "Паролата трябва да съдържа поне един специален символ. Например #, @, _ и др."
+                Description = "The password must include a special character, such as #, @ or _."
             };
         }
 
@@ -32,7 +32,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresDigit),
-                Description = "Паролата трябва да съдържа число."
+                Description = "The password must include a digit."
             };
         }
 
@@ -41,7 +41,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresUpper),
-                Description = "Паролата трябва да съдържа главна буква."
+                Description = "The password must include an uppercase letter."
             };
         }
 
@@ -50,7 +50,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresLower),
-                Description = "Паролата трябва да съдържа малка буква."
+                Description = "The password must include a lowercase letter."
             };
         }
         public override IdentityError PasswordMismatch()
@@ -58,7 +58,7 @@ namespace ServiceLayer.ErrorDescriber
             return new IdentityError
             {
                 Code = nameof(PasswordMismatch),
-                Description = "Неправилна парола."
+                Description = "Incorrect password."
             };
         }
     }

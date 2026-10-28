@@ -1,4 +1,4 @@
-﻿@model YearCompetition
+@model YearCompetition
 
 @{
     ViewData["Title"] = "Details";
@@ -20,7 +20,7 @@
             @Html.DisplayNameFor(model => model.Competition)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Competition.Name)
+            @EnglishContent.CompetitionName(Model.Competition)
         </dd>
     </dl>
 </div>

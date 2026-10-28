@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace ServiceLayer.EmailSender
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(_emailSettings.SmtpUsername, "Екипът на CodeXpert"),
+                    From = new MailAddress(_emailSettings.SmtpUsername, "The CodeXpert team"),
                     Subject = subject,
                     Body = htmlMessage,
                     IsBodyHtml = true

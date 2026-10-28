@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     let pdfInput = document.getElementById("pdfFile");
     let pdfLabel = document.getElementById("fileLabel");
     let testCasesInput = document.getElementById("testCases");
@@ -7,20 +7,20 @@
 
     if (pdfInput && pdfLabel) {
         pdfInput.addEventListener("change", function () {
-            pdfLabel.textContent = this.files.length > 0 ? this.files[0].name : "Изберете PDF файл";
+            pdfLabel.textContent = this.files.length > 0 ? this.files[0].name : "Choose a PDF file";
         });
     }
 
     if (testCasesInput && testCasesLabel) {
         testCasesInput.addEventListener("change", function () {
-            testCasesLabel.textContent = this.files.length > 0 ? `Избрани ${this.files.length} файла` : "Изберете тестови случаи";
+            testCasesLabel.textContent = this.files.length > 0 ? `${this.files.length} files selected` : "Choose test cases";
         });
     }
 
     if (form) {
         form.addEventListener("submit", function (event) {
             if (!pdfInput.files.length || !testCasesInput.files.length) {
-                alert("Моля, качете и двата файла.");
+                alert("Please upload a problem statement and a test-case set.");
                 event.preventDefault();
             }
         });

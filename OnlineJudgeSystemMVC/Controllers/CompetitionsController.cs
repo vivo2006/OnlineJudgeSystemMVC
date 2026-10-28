@@ -70,10 +70,10 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<IActionResult> Create([Bind("Name,FirstYear,LastYear,Notation")] Competition competition)
         {
             if ((await _manager.ReadAllAsync()).Any(c => c.Notation == competition.Notation))
-                ModelState.AddModelError("", "Нотацията трябва да е уникална.");
+                ModelState.AddModelError("", "The identifier must be unique.");
 
             if (competition.FirstYear > competition.LastYear)
-                ModelState.AddModelError("", "Началната година трябва да е по-малка от крайната.");
+                ModelState.AddModelError("", "The first year must not be later than the last year.");
 
             if (!ModelState.IsValid)
                 return View(competition);

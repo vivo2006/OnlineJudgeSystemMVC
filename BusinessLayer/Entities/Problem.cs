@@ -12,19 +12,19 @@ namespace BusinessLayer.Entities
     {
         [Key] 
         public int Id { get; set; }
-        [Required(ErrorMessage = "Името е задължително.")]
-        [MaxLength(200, ErrorMessage = "Името не може да надхвърля 200 символа.")]
+        [Required(ErrorMessage = "A name is required.")]
+        [MaxLength(200, ErrorMessage = "The name cannot exceed 200 characters.")]
         public string Name { get; set; } 
-        [Required(ErrorMessage = "Времевото ограничение е задължително.")]
-        [Range(0.1, 10, ErrorMessage = "Времевото ограничение трябва да приема стойности между 0.1 и 10 сек.")]
+        [Required(ErrorMessage = "The time limit is required.")]
+        [Range(0.1, 10, ErrorMessage = "The time limit must be between 0.1 and 10 seconds.")]
         public double TimeLimit { get; set; } 
-        [Required(ErrorMessage = "Ограничението за паметта е задължително.")]
-        [Range(1, 500, ErrorMessage = "Ограничението за паметта трябва да приема стойности между 1 и 500 МБ.")]
+        [Required(ErrorMessage = "The memory limit is required.")]
+        [Range(1, 500, ErrorMessage = "The memory limit must be between 1 and 500 MB.")]
         public int MemoryLimit { get; set; } 
-        [Required(ErrorMessage = "URL е задължителен.")]
+        [Required(ErrorMessage = "A statement URL is required.")]
         [RegularExpression(@"^/Problems/[^?#]+\.pdf$|^/demo/[a-z-]+\.html$", ErrorMessage = "Use a local statement URL.")]
         public string URL { get; set; } 
-        [Required(ErrorMessage = "Нотацията на задачата е задължителна.")]
+        [Required(ErrorMessage = "The problem identifier is required.")]
         [RegularExpression(@"^[\p{L}\p{Nd}_-]+$", ErrorMessage = "Use letters, numbers, hyphens or underscores for identifiers.")]
         public string ProblemNotation { get; set; } 
         public int CompetitionId { get; set; }

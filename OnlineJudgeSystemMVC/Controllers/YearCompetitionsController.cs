@@ -1,3 +1,4 @@
+using OnlineJudgeSystemMVC.Presentation;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace OnlineJudgeSystemMVC.Controllers
         {
             var competition = await _competitionManager.ReadAsync(id);
             ViewBag.CompetitionId = id;
-            ViewBag.Competition = competition.Name;
+            ViewBag.Competition = EnglishContent.CompetitionName(competition);
             return View();
         }
 
@@ -40,10 +41,10 @@ namespace OnlineJudgeSystemMVC.Controllers
         public async Task<IActionResult> Create([Bind("Year,CompetitionId")] YearCompetition yearCompetition)
         {
             ViewBag.CompetitionId = yearCompetition.CompetitionId;
-            ViewBag.Competition = (await _competitionManager.ReadAsync(yearCompetition.CompetitionId)).Name;
+            ViewBag.Competition = EnglishContent.CompetitionName(await _competitionManager.ReadAsync(yearCompetition.CompetitionId));
 
             if ((await _yearManager.ReadAllAsync()).Any(c => c.Year == yearCompetition.Year))
-                ModelState.AddModelError("", "Годината трябва да е уникална.");
+                ModelState.AddModelError("", "The year must be unique within the competition.");
 
             if (!ModelState.IsValid)
                 return View(yearCompetition);
@@ -72,7 +73,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             var yearCompetition = await _yearManager.ReadAsync(id.Value, true);
             if (yearCompetition == null) return NotFound();
 
-            ViewBag.CompetitionName = yearCompetition.Competition.Name;
+            ViewBag.CompetitionName = EnglishContent.CompetitionName(yearCompetition.Competition);
             return View(yearCompetition);
         }
 

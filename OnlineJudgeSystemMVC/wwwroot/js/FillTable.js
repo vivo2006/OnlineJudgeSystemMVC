@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     // When a competition button is clicked
     $('.btn-open-modal').click(function () {
         const competitionId = $(this).data('id');
@@ -8,7 +8,7 @@
         if (userIsAdmin) margin = 20;
 
         // Set the modal title
-        $('#yearsModalLabel').text(`Години`);
+        $('#yearsModalLabel').text(`Years`);
 
         // Fetch years for the competition
         $.ajax({

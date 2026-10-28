@@ -11,7 +11,7 @@
         <div class="d-flex align-items-center mb-4">
             <h1 class="me-4" id="icons">
                 @Model.ProblemNotation. 
-                <a class="text-decoration-none" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@Model.Id style="color:#ED2A4F">@Model.Name</a>
+                <a class="text-decoration-none" asp-area="" asp-controller="Submissions" asp-action="Index" asp-route-problemId=@Model.Id style="color:#ED2A4F">@EnglishContent.ProblemName(Model)</a>
             </h1>
             <div class="me-4" id="icons">
                 <span class="fs-5">⏳</span>
@@ -23,7 +23,7 @@
             </div>
         </div>    
         <div>
-            <a href="@Model.URL" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open statement</a>
+            <a href="@EnglishContent.StatementUrl(Model.URL)" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open statement</a>
             <button type="submit" form="code-submit" class="btn btn-secondary me-0">Submit</button>
         </div>
         

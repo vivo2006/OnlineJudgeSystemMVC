@@ -1,4 +1,5 @@
-﻿using System;
+using OnlineJudgeSystemMVC.Presentation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace OnlineJudgeSystemMVC.Controllers
             var yearCompetition = await _yearCompetitionsManager.ReadAsync(yearId, true);
             var competition = await _competitionsManager.ReadAsync(competitionId);
 
-            ViewBag.Competition = competition.Name;
+            ViewBag.Competition = EnglishContent.CompetitionName(competition);
             ViewBag.Year = yearCompetition.Year;
             ViewBag.CompetitionNotation = competition.Notation;
 

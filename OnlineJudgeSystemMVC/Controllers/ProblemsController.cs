@@ -1,3 +1,4 @@
+using OnlineJudgeSystemMVC.Presentation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -159,7 +160,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             if (problems.Any(p => p.ProblemNotation == problemNotation))
             {
-                ModelState.AddModelError("", "Нотацията трябва да е уникална.");
+                ModelState.AddModelError("", "The identifier must be unique.");
             }
 
             try
@@ -309,7 +310,7 @@ namespace OnlineJudgeSystemMVC.Controllers
 
             ViewBag.GroupId = id;
             ViewBag.Year = yearCompetition.Year;
-            ViewBag.Competition = competition.Name;
+            ViewBag.Competition = EnglishContent.CompetitionName(competition);
             ViewBag.Group = groupCompetition.Group;
             ViewBag.CompetitionId = competition.Id;
             ViewBag.YearId = yearCompetition.Id;

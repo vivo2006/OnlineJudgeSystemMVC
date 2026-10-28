@@ -1,7 +1,7 @@
-﻿@page
+@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Изход";
+    ViewData["Title"] = "Log out";
 }
 
 <header>
@@ -10,12 +10,12 @@
         if (User.Identity?.IsAuthenticated ?? false)
         {
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Натисни тук за изход</button>
+                <button type="submit" class="nav-link btn btn-link text-dark">Click here to log out</button>
             </form>
         }
         else
         {
-            <p>Успешно излязохте от профила си.</p>
+            <p>You have successfully logged out.</p>
         }
     }
 </header>

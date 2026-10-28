@@ -1,13 +1,13 @@
-﻿@page
+@page
 @model DeletePersonalDataModel
 @{
-    ViewData["Title"] = "Изтриване на акаунт";
+    ViewData["Title"] = "Delete account";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 }
 
 <div class="alert alert-warning" role="alert">
     <p>
-        <strong>Изтриването на акаунта е необратимо.</strong>
+        <strong>Deleting your account is permanent and cannot be undone.</strong>
     </p>
 </div>
 
@@ -17,12 +17,12 @@
         @if (Model.RequirePassword)
         {
             <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Въведи паролата си." />
-                <label asp-for="Input.Password" class="form-label">Парола</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Enter your password." />
+                <label asp-for="Input.Password" class="form-label">Password</label>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
         }
-        <button class="w-100 btn btn-lg btn-danger ms-0" type="submit">Изтрий данните ми и закрий акаунта</button>
+        <button class="w-100 btn btn-lg btn-danger ms-0" type="submit">Delete my data and close my account</button>
     </form>
 </div>
 

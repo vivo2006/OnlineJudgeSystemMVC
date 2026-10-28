@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LIKE - CodeXpert</title><link rel="stylesheet" href="/css/problem-statement.css"></head><body><main><nav><a href="/Competitions/Index">CodeXpert competitions</a><span>English translation</span><a href="/Problems/%D0%9D%D0%95%D0%A2%D0%98/2010/E4.pdf">Original statement (Bulgarian)</a></nav><h1>LIKE</h1><p class="credit">10th John Atanasoff National Autumn Tournament, Shumen, 27 November 2010. Group A (grades 11-12). Original problem A1. Author: Aleksandar Georgiev.</p><p class="notice">For CodeXpert, read from standard input and write to standard output. Use the time and memory limits displayed on the problem page.</p><p>Removing the letter <code>k</code> from <code>like</code> and rotating the remaining letters produces <code>eli</code>. That could be a word problem, but this problem is about a graph.</p><p>Eli has been accused of being liked by more classmates than she likes herself. She wants every student to be liked by approximately as many people as they like, while avoiding mutual romantic relationships.</p><p>You know every pair of students who are acquainted. Treat each student as a vertex and each acquaintance as an undirected edge. Direct every edge in exactly one direction. An edge from A to B means that A likes B; an acquaintance cannot be directed both ways.</p><p>For every vertex, the absolute difference between its indegree and outdegree must be at most 1. Determine whether such an orientation exists and, if it does, print one.</p><h2>Input</h2><p>The first line contains two positive integers <var>N</var> and <var>M</var>, separated by a space: the number of students and the number of acquaintances. Each of the next <var>M</var> lines contains two positive integers <var>P<sub>1</sub></var> and <var>P<sub>2</sub></var>, where 1 &le; P<sub>1</sub>, P<sub>2</sub> &le; N, describing an acquaintance. Each pair appears at most once.</p><h2>Output</h2><p>Print <code>Yes</code> if a valid orientation exists, or <code>No</code> otherwise. If the answer is <code>Yes</code>, print <var>M</var> lines, each containing two vertex numbers <var>P<sub>1</sub></var> and <var>P<sub>2</sub></var>, separated by a space, meaning that the edge is directed from P<sub>1</sub> to P<sub>2</sub>. If there are several valid orientations, print any one.</p><h2>Constraints</h2><ul><li>1 &le; N &le; 1,000</li><li>1 &le; M &le; 100,000</li><li>In 30% of the tests, both M and N are at most 20.</li></ul><h2>Sample</h2><div class="samples"><section><h3>Input</h3><pre>5 7
+1 2
+1 3
+4 1
+1 5
+3 2
+4 5
+3 5</pre></section><section><h3>Output</h3><pre>Yes
+1 2
+3 1
+4 1
+1 5
+2 3
+5 4
+3 5</pre></section></div><h2>Explanation</h2><p>There are five students and seven acquaintances. In the illustrated orientation, every student likes as many people as like them, except student 5, whose indegree is larger by one, and student 3, whose outdegree is larger by one.</p><footer>English translation for the CodeXpert archive. Original contest statements, problem titles and authors are credited above. The original PDF is retained unchanged; decorative illustrations are omitted from this text edition.</footer></main></body></html>

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -45,8 +45,8 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required(ErrorMessage = "Имейлът е задължителен.")]
-            [EmailAddress(ErrorMessage ="Въведете валиден имейл адрес.")]
+            [Required(ErrorMessage = "An email address is required.")]
+            [EmailAddress(ErrorMessage ="Enter a valid email address.")]
             public string Email { get; set; }
         }
 
@@ -73,8 +73,8 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Анулиране на парола",
-                    $"На този имейл беше изпратена заявка за анулиране на паролата на акаунта в платформата за състезателно програмиране CodeXpert. Променете паролата си, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.<br><br>Ако не сте заявявали това, може да игнорирате този имейл.<br><br>Екипът на CodeXpert");
+                    "Password reset",
+                    $"A password reset was requested for your CodeXpert account. To reset your password, <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>follow this link</a>.<br><br>If you did not request this, you can ignore this email.<br><br>The CodeXpert team");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

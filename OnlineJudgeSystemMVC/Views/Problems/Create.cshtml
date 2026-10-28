@@ -1,11 +1,11 @@
-﻿@model Problem
+@model Problem
 
 @{
-    ViewData["Title"] = "Създай задача";
+    ViewData["Title"] = "Create problem";
 }
 
 
-<h1>Добави задача</h1>
+<h1>Add problem</h1>
 
 <hr />
 <div class="d-flex justify-content-center">
@@ -13,7 +13,7 @@
         <form asp-action="Create" method="post" enctype="multipart/form-data" id="myForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label">Име</label>
+                <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -22,38 +22,38 @@
                 <input type="hidden" id="GroupId" name="GroupId" class="form-control" value="@ViewBag.GroupId" />
             </div>
             <div class="form-group">
-                <label for="Competition">Състезание</label>
+                <label for="Competition">Competition</label>
                 <input type="text" id="Competition" name="Competition" class="form-control" value="@ViewBag.Competition - @ViewBag.Year, @ViewBag.Group" readonly />
             </div>
             <div class="form-group">
-                <label asp-for="TimeLimit" class="control-label">Лимит за време</label>
+                <label asp-for="TimeLimit" class="control-label">Time limit</label>
                 <input asp-for="TimeLimit" step="0.1" class="form-control" type="number"/>
                 <span asp-validation-for="TimeLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MemoryLimit" class="control-label">Лимит за памет</label>
+                <label asp-for="MemoryLimit" class="control-label">Memory limit</label>
                 <input asp-for="MemoryLimit" class="form-control" />
                 <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProblemNotation" class="control-label">Нотация</label>
+                <label asp-for="ProblemNotation" class="control-label">Identifier</label>
                 <input asp-for="ProblemNotation" class="form-control" />
                 <span asp-validation-for="ProblemNotation" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label for="pdfFile">Условие</label>
+                <label for="pdfFile">Problem statement</label>
                 <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" style="display:none" />
-                <label for="pdfFile" class="btn btn-secondary" id="fileLabel">Изберете PDF файл</label> 
+                <label for="pdfFile" class="btn btn-secondary" id="fileLabel">Choose a PDF file</label>
             </div>
             <div>
-                <label for="testCases">Тестови случаи</label>
+                <label for="testCases">Test cases</label>
                 <input type="file" id="testCases" name="testCases" webkitdirectory multiple style="display:none" />
-                <label for="testCases" class="btn btn-secondary" id="testCasesLabel" style="margin-left:0px;">Изберете тестови случаи</label>
+                <label for="testCases" class="btn btn-secondary" id="testCasesLabel" style="margin-left:0px;">Choose test cases</label>
             </div>
             <div class="d-flex flex-row justify-content-center mt-3">
                 <div class="form-group">
-                    <input type="submit" value="Създай" class="btn btn-primary" />
+                    <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
             </div>
     </form>

@@ -1,10 +1,10 @@
-﻿@model Problem
+@model Problem
 
 @{
-    ViewData["Title"] = "Редактирай задача";
+    ViewData["Title"] = "Edit problem";
 }
 
-<h1>Редактирай</h1>
+<h1>Edit</h1>
 
 <hr />
 <div class="d-flex justify-content-center">
@@ -13,35 +13,35 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label">Име</label>
+                <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="URL" />
             <div class="form-group">
-                <label asp-for="TimeLimit" class="control-label">Лимит за време (сек.)</label>
+                <label asp-for="TimeLimit" class="control-label">Time limit (seconds)</label>
                 <input asp-for="TimeLimit" step="0.1" class="form-control" type="number"/>
                 <span asp-validation-for="TimeLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MemoryLimit" class="control-label">Лимит за памет (МБ)</label>
+                <label asp-for="MemoryLimit" class="control-label">Memory limit (MB)</label>
                 <input asp-for="MemoryLimit" class="form-control" />
                 <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="ProblemNotation" />
              <input type="hidden" asp-for="CompetitionId" />
             <div class="form-group">
-                <label for="pdfFile">Условие</label>
+                <label for="pdfFile">Problem statement</label>
                 <input type="file" class="form-control-file" id="pdfFile" name="pdfFile" accept=".pdf" style="display:none" />
-                <label for="pdfFile" class="btn btn-secondary" id="fileLabel">Изберете PDF файл</label>
+                <label for="pdfFile" class="btn btn-secondary" id="fileLabel">Choose a PDF file</label>
             </div>
             <div>
-                <label for="testCases">Тестови случаи</label>
+                <label for="testCases">Test cases</label>
                 <input type="file" id="testCases" name="testCases" webkitdirectory multiple style="display:none" />
-                <label for="testCases" class="btn btn-secondary" id="testCasesLabel" style="margin-left:0px;">Изберете тестови случаи</label>
+                <label for="testCases" class="btn btn-secondary" id="testCasesLabel" style="margin-left:0px;">Choose test cases</label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Запази" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

@@ -1,19 +1,19 @@
-﻿@model Problem
+@model Problem
 
 @{
-    ViewData["Title"] = "Изтрий";
+    ViewData["Title"] = "Delete";
 }
 
-<h2>Сигурни ли сте, че искате да изтриете тази задача?</h2>
+<h2>Are you sure you want to delete this problem?</h2>
 
 <div>
     <hr />
     <h5>
-        Име: @Model.Name
+        Name: @EnglishContent.ProblemName(Model)
     </h5>
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Изтрий" class="btn btn-danger" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
     </form>
 </div>

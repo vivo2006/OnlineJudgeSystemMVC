@@ -17,7 +17,7 @@
     </li>
         <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Излез</button>
+                <button id="logout" style="white-space:nowrap;flex-shrink:0" type="submit" class="nav-link text-dark d-block d-lg-none align-middle">Log out</button>
         </form>
     </li>
     <li class="nav-item">
@@ -25,20 +25,20 @@
     </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout" type="submit" class="btn btn-secondary d-lg-block align-middle">Излез</button>
+                <button id="logout" style="white-space:nowrap;flex-shrink:0" type="submit" class="btn btn-secondary d-lg-block align-middle">Log out</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+        <a class="nav-link text-dark d-block d-lg-none" id="login" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
     </li>
     <li class="nav-item">
         <a class="nav-link text-dark d-block d-lg-none" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>
     <li class="nav-item">
-        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Влез</a>
+        <a class="btn btn-primary d-none d-lg-block" id="login" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
     </li>
     <li class="nav-item">
             <a class="btn btn-secondary d-none d-lg-block" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>

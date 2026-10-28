@@ -1,7 +1,7 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Събмити";
+    ViewData["Title"] = "Submissions";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 @using X.PagedList.Mvc.Core
@@ -9,10 +9,10 @@
 <table class="table table-bordered mb-4" style="width:100%;">
     <thead>
         <tr>
-            <th>Изпратен</th>
-            <th>Състезание</th>
-            <th>Задача</th>
-            <th>Точки</th>
+            <th>Submitted</th>
+            <th>Competition</th>
+            <th>Problem</th>
+            <th>Score</th>
             <th></th>
         </tr>
     </thead>
@@ -21,8 +21,8 @@
         {
             <tr>
                 <td>@item.Created</td>
-                <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
-                <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
+                <td>@EnglishContent.CompetitionCode(item.Problem.Competition.YearCompetition.Competition), @item.Problem.Competition.YearCompetition.Year</td>
+                <td>@item.Problem.ProblemNotation. @EnglishContent.ProblemName(item.Problem)</td>
                 <td>@item.Points</td>
                 <td><a class="text-dark text-decoration-none" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>→</a></td>
 

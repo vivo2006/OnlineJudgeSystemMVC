@@ -21,8 +21,8 @@
         {
             <tr>
                 <td>@item.Created</td>
-                <td>@item.Problem.Competition.YearCompetition.Competition.Notation, @item.Problem.Competition.YearCompetition.Year</td>
-                <td>@item.Problem.ProblemNotation. @item.Problem.Name</td>
+                <td>@EnglishContent.CompetitionCode(item.Problem.Competition.YearCompetition.Competition), @item.Problem.Competition.YearCompetition.Year</td>
+                <td>@item.Problem.ProblemNotation. @EnglishContent.ProblemName(item.Problem)</td>
                 <td>@item.Points</td><td>@item.Status</td>
                 <td><a class="text-dark text-decoration-none" asp-controller="Submissions" asp-action="Details" asp-route-id=@item.Id>→</a></td>
             </tr>

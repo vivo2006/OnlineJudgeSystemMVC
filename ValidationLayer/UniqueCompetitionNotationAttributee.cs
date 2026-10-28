@@ -1,4 +1,4 @@
-﻿using DataLayer;
+using DataLayer;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -17,7 +17,7 @@ namespace OnlineJudgeSystemMVC.Validation
 
             if (existingTask)
             {
-                return new ValidationResult("Нотацията на състезанието трябва да е уникална.");
+                return new ValidationResult("The competition identifier must be unique.");
             }
 
             return ValidationResult.Success;

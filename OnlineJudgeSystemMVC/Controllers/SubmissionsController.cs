@@ -1,3 +1,4 @@
+using OnlineJudgeSystemMVC.Presentation;
 using System.Data;
 using System.Security.Claims;
 using BusinessLayer.API;
@@ -32,7 +33,7 @@ public class SubmissionsController : Controller
     {
         var problem = await _db.Problems.FindAsync(problemId);
         if (problem == null) return NotFound();
-        ViewBag.Problem = problem.Name;
+        ViewBag.Problem = EnglishContent.ProblemName(problem);
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return View(await _db.Submissions.AsNoTracking().Include(s => s.Problem).ThenInclude(p => p.Competition)
             .ThenInclude(g => g.YearCompetition).ThenInclude(y => y.Competition)

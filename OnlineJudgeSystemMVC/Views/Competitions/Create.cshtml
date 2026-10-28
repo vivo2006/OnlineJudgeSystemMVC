@@ -1,38 +1,38 @@
-﻿@model Competition;
+@model Competition;
 
 @{
-    ViewData["Title"] = "Създай състезание";
+    ViewData["Title"] = "Create competition";
 }
 
-<h1>Добави състезание</h1>
+<h1>Add competition</h1>
 <hr />
 <div class="d-flex justify-content-center">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label">Име</label>
+                <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FirstYear" class="control-label">Начална година</label>
+                <label asp-for="FirstYear" class="control-label">First year</label>
                 <input asp-for="FirstYear" class="form-control" />
                 <span asp-validation-for="FirstYear" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastYear" class="control-label">Последна година</label>
+                <label asp-for="LastYear" class="control-label">Last year</label>
                 <input asp-for="LastYear" class="form-control" />
                 <span asp-validation-for="LastYear" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Notation" class="control-label">Нотация</label>
+                <label asp-for="Notation" class="control-label">Identifier</label>
                 <input asp-for="Notation" class="form-control" />
                 <span asp-validation-for="Notation" class="text-danger"></span>
             </div>
             <div class="d-flex flex-row justify-content-center mt-3">
                 <div class="form-group">
-                    <input type="submit" value="Създай" class="btn btn-primary" />
+                    <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
             </div>
             

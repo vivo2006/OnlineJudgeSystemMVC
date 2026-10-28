@@ -52,22 +52,8 @@ else Console.WriteLine("Roles created. Set SeedAdmin__Username, SeedAdmin__Email
 
 if (configuration.GetValue<bool>("SeedDemoData"))
 {
-    var competition = await db.Competitions.FirstOrDefaultAsync(c => c.Notation == "DEMO");
-    if (competition == null)
-    {
-        competition = new Competition { Name = "English demo", Notation = "DEMO", FirstYear = 2026, LastYear = 2026 };
-        db.Competitions.Add(competition);
-    }
-    if (!await db.Problems.AnyAsync(p => p.ProblemNotation == "E_DEMO_SUM"))
-    {
-        var year = await db.YearCompetitions.FirstOrDefaultAsync(y => y.CompetitionId == competition.Id && y.Year == 2026)
-            ?? new YearCompetition { Competition = competition, Year = 2026 };
-        var group = await db.GroupCompetitions.FirstOrDefaultAsync(g => g.YearCompetitionId == year.Id && g.Group == "E")
-            ?? new GroupCompetition { YearCompetition = year, Group = "E" };
-        db.Problems.Add(new Problem { Name = "Sum two integers", ProblemNotation = "E_DEMO_SUM", Competition = group, YearCompetition = year,
-            URL = "/demo/sum.html", TimeLimit = 1, MemoryLimit = 64 });
-        await db.SaveChangesAsync();
-    }
+    var placement = await DemoProblemSetup.EnsureAsync(db, appDirectory, createIfMissing: true);
+    Console.WriteLine($"Sample problem placed in {placement!.CompetitionNotation}, {placement.Year}.");
 }
 
 // Repair historical repeat-submission score inflation from stored best results.

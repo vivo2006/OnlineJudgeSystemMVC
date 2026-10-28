@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -53,19 +53,19 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required(ErrorMessage ="Текущата парола е задължителна.")]
+            [Required(ErrorMessage ="Your current password is required.")]
             [DataType(DataType.Password)]
-            [Display(Name = "Текуща парола")]
+            [Display(Name = "Current password")]
             public string OldPassword { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required(ErrorMessage ="Новата парола е задължителна.")]
-            [StringLength(50, ErrorMessage = "Паролата трябва да е между {2} и {1} символа.", MinimumLength = 6)]
+            [Required(ErrorMessage ="A new password is required.")]
+            [StringLength(50, ErrorMessage = "The password must contain between {2} and {1} characters.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Нова парола")]
+            [Display(Name = "New password")]
             public string NewPassword { get; set; }
 
             /// <summary>
@@ -73,8 +73,8 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Потвърди новата парола")]
-            [Compare("NewPassword", ErrorMessage = "Паролите не съвпадат.")]
+            [Display(Name = "Confirm new password")]
+            [Compare("NewPassword", ErrorMessage = "The passwords do not match.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -120,7 +120,7 @@ namespace OnlineJudgeSystemMVC.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Успешно променихте паролата си.";
+            StatusMessage = "Your password has been changed.";
 
             return RedirectToPage();
         }

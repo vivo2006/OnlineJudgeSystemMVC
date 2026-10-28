@@ -140,7 +140,7 @@ See Judge0's own documentation for full deployment details.
 
 - Relies on the shared Judge0 API tier by default: max 50 submissions/day, 500 MB memory limit, standard input/output problems only
 - Only Bulgarian national competition and olympiad problems are in scope (not a general-purpose judge like Codeforces)
-- UI is currently Bulgarian-only
+- All application interface text, account/admin flows, validation and emails are in English. Bundled archive problems open English statements by default, with unchanged Bulgarian originals available for reference. User-entered names remain as entered.
 
 ---
 
@@ -156,3 +156,19 @@ This project uses the [Judge0 API](https://judge0.com/) for code execution and t
 
 **Velislav Borisov**
 [GitHub](https://github.com/vivo2006) · [LinkedIn](https://linkedin.com/in/velislavborisov)
+
+## English archive
+
+The nine bundled archive entries open English HTML statements under `wwwroot/Problems/english`. Each preserves the material problem rules, input/output formats, bounds, samples, and author/event credits from its source PDF, with the original PDF linked for reference. The two Note2 PDFs and the two A+B PDFs are duplicates already present in the original archive and each has a corresponding English entry. Decorative illustrations are omitted. The Maya the Bee sample explanation corrects the original's arithmetic typo explicitly; sample input/output are unchanged.
+
+The display catalog is `OnlineJudgeSystemMVC/Presentation/EnglishContent.cs`. It recognizes decoded, percent-encoded, and legacy absolute statement URLs. It does not rename persisted identifiers or fixture directories. Unknown or newly uploaded statements keep their supplied URL and content: upload English statements for new problems. User-entered names and code are never automatically rewritten.
+
+Application text and framework validation use English even if the browser prefers another language. No database migration or extra Judge0 calls are required for the language change. Restart the application after rebuilding to load the compiled Razor and C# changes.
+
+## Sample problem placement
+
+“Sum two integers” belongs to group E in an ordinary competition archive year, preferring 2011 in the Autumn Informatics Tournament when available. `SeedDemoData=true` uses this placement rather than creating a separate DEMO competition. If the sample has already been placed in another archive year, that placement is respected.
+
+On the next Development startup, `DemoProblemSetup` moves the old sample row out of the standalone demo competition, copies its tests into the corresponding archive directory, and removes the old demo competition only if it has no other problems. Problem IDs, submissions and challenge links are preserved. The canonical sample test files remain available for fresh seeding. This is a data update; no new schema migration is required. Production deployments should run the seeder explicitly.
+
+The sample remains identified as a CodeXpert demonstration problem, not an original contest problem. The logout control uses “Log out” and never wraps onto two lines.

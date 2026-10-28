@@ -19,12 +19,12 @@
         <div class="competition-item">
             <button class="btn btn-primary btn-open-modal mt-5" id="box"
                     data-id="@competition.Id"
-                    data-name="@competition.Name"
+                    data-name="@EnglishContent.CompetitionName(competition)"
                     data-bs-toggle="modal"
                     data-bs-target="#yearsModal"
                     data-role="@Role.Admin" 
                     data-is-admin="@User.IsInRole(Role.Admin.ToString())">
-                @competition.Name
+                @EnglishContent.CompetitionName(competition)
             </button>
         </div>
     }
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<script src="~/js/FillTable.js?6">
+<script src="~/js/FillTable.js?7">
     
 </script>
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,8 +12,8 @@ namespace BusinessLayer.Entities
     {
         [Key] //Primary key
         public int Id { get; set; }
-        [Required(ErrorMessage = "Името е задължително.")] //Data validation using DataAnnotations
-        [MaxLength(100, ErrorMessage = "Името не може да надхвърля 100 символа.")]
+        [Required(ErrorMessage = "A name is required.")] //Data validation using DataAnnotations
+        [MaxLength(100, ErrorMessage = "The name cannot exceed 100 characters.")]
         public string Group { get; set; } //Name of the group
         public List<Problem>? Problems { get; set; } //A group can have many problems (one-to-many relationship)
         [Required]

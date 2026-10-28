@@ -116,6 +116,21 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
+// Upgrade the old local demo placement once the operator has applied the existing schema migrations.
+// The same sample row is reused, so submission history and daily-challenge links stay valid.
+if (app.Environment.IsDevelopment())
+{
+    await using var sampleScope = app.Services.CreateAsyncScope();
+    var sampleDb = sampleScope.ServiceProvider.GetRequiredService<OnlineJudgeDbContext>();
+    if (!(await sampleDb.Database.GetPendingMigrationsAsync()).Any())
+        await DemoProblemSetup.EnsureAsync(sampleDb, app.Environment.ContentRootPath);
+}
+
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture("en")
+    .AddSupportedCultures("en")
+    .AddSupportedUICultures("en"));
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

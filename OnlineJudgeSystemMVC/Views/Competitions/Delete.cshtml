@@ -1,19 +1,19 @@
-﻿@model Competition
+@model Competition
 
 @{
-    ViewData["Title"] = "Изтрий състезание";
+    ViewData["Title"] = "Delete competition";
 }
 
-<h2 class="mb-5 mt-5">Сигурни ли сте, че искате да изтриете това състезание?</h2>
+<h2 class="mb-5 mt-5">Are you sure you want to delete this competition?</h2>
 <div class="d-flex flex-column justify-content-center">
     <hr />
     <h5>
-        Име: @Model.Name
+        Name: @EnglishContent.CompetitionName(Model)
     </h5>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Изтрий" class="btn btn-danger" /> 
-        <a asp-action="AdministratorIndex" class="btn btn-secondary">Назад</a>
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="AdministratorIndex" class="btn btn-secondary">Back</a>
     </form>
 </div>

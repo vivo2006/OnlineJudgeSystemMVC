@@ -1,4 +1,4 @@
-﻿@model Competition
+@model Competition
 
 @{
     ViewData["Title"] = "Details";
@@ -14,7 +14,7 @@
             @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @EnglishContent.CompetitionName(Model)
         </dd>
     </dl>
 </div>

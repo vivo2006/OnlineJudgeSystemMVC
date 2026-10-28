@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Problem>
+@model IEnumerable<Problem>
 
 @{
     ViewData["Title"] = "Index";
@@ -28,10 +28,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @EnglishContent.ProblemName(item)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.URL)
+                <a href="@EnglishContent.StatementUrl(item.URL)" target="_blank" rel="noopener noreferrer">Open statement</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Competition.Group)
