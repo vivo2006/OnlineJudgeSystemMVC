@@ -2,6 +2,9 @@
 
 CodeXpert is a full-stack **online judge system** for hosting competitive programming problems and automatically evaluating submitted solutions. It was built to serve Bulgarian competitive programmers preparing for national olympiads and tournaments, offering a more modern, feature-rich alternative to existing local platforms.
 
+A 2-minute walkthrough covering problem browsing, Python and C++ submissions, judging results, rankings and submission history:
+https://github.com/user-attachments/assets/30323b3a-2289-43c3-bb87-880060c31388
+
 > 🎓 Originally developed as a diploma project at the High School of Mathematics "Akad. Kiril Popov" — Plovdiv (2025).
 
 ---
